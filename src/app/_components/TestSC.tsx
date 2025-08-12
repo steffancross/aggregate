@@ -1,10 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SoundCloudAdapter } from "./player/adapters/SoundCloudAdapter";
+import { AudioController } from "./player/AudioController";
+import type { Track } from "./player/types/player";
+
+const testTrack: Track = {
+  title: "Test Track",
+  url: "https://soundcloud.com/evens/evens-year-walk-free-download",
+  source: "soundcloud",
+};
 
 export default function TestPlayer() {
-  const [adapter, setAdapter] = useState<SoundCloudAdapter | null>(null);
+  const [controller, setController] = useState<AudioController | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -25,11 +32,9 @@ export default function TestPlayer() {
 
   const loadTrack = async () => {
     try {
-      const newAdapter = new SoundCloudAdapter("test-player");
-      await newAdapter.loadTrack(
-        "https://soundcloud.com/evens/evens-year-walk-free-download",
-      );
-      setAdapter(newAdapter);
+      const controller = new AudioController();
+      await controller.loadTrack(testTrack);
+      setController(controller);
       setIsLoaded(true);
       console.log("Track loaded successfully!");
     } catch (error) {
@@ -37,19 +42,17 @@ export default function TestPlayer() {
     }
   };
 
-  const play = () => {
-    if (adapter && isLoaded) {
-      adapter.play();
+  const play = async () => {
+    if (controller && isLoaded) {
+      await controller.play();
       setIsPlaying(true);
-      console.log("Play called");
     }
   };
 
-  const pause = () => {
-    if (adapter && isLoaded) {
-      adapter.pause();
+  const pause = async () => {
+    if (controller && isLoaded) {
+      await controller.pause();
       setIsPlaying(false);
-      console.log("Pause called");
     }
   };
 
