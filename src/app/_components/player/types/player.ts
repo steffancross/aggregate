@@ -2,10 +2,10 @@ export interface MusicPlayerAdapter {
   loadTrack(trackUrl: string): Promise<void>;
   play(): void;
   pause(): void;
-  // isPlaying(): Promise<boolean>;
-  // getCurrentTime(): Promise<number>;
-  // seekTo(seconds: number): void;
-  // setVolume(value: number): void;
+  isPlaying(): Promise<boolean>;
+  getCurrentTime(): Promise<number>;
+  seekTo(seconds: number): void;
+  setVolume(value: number): void;
 }
 
 export interface Track {
