@@ -4,20 +4,81 @@ import type { MusicPlayerAdapter, Track } from "./types/player";
 export class AudioController {
   private currentAdapter: MusicPlayerAdapter | null = null;
   private currentTrack: Track | null = null;
+  private playlist: Track[] = [];
+  private currentIndex: number = -1;
 
-  async loadTrack(track: Track) {
-    switch (track.source) {
-      case "soundcloud":
-        this.currentAdapter = new SoundCloudAdapter();
-        break;
-      default:
-        throw new Error(`Unsupported track source: ${track.source}`);
+  private async createAdapterForSource(source: Track["source"]): Promise<void> {
+    // if we don't have a current adapter, or the we're swapping source type, reset the adapter
+    if (this.currentAdapter && this.currentTrack?.source !== source) {
+      this.currentAdapter = null;
     }
 
-    this.currentTrack = track;
-    await this.currentAdapter.loadTrack(track.url);
+    if (!this.currentAdapter) {
+      switch (source) {
+        case "soundcloud":
+          this.currentAdapter = new SoundCloudAdapter();
+          break;
+        default:
+          console.error(`Unsupported track source: ${source}`);
+      }
+    }
   }
 
+  async loadPlaylist(playlist: Track[]) {
+    this.playlist = playlist;
+    this.currentIndex = 0;
+
+    if (this.playlist.length > 0) {
+      await this.createAdapterForSource(this.playlist[0]!.source);
+      await this.loadTrackByIndex(this.currentIndex);
+    }
+  }
+
+  async loadTrack(track: Track) {
+    await this.createAdapterForSource(track.source);
+    await this.currentAdapter!.loadTrack(track.url);
+    this.currentTrack = track;
+  }
+
+  private async loadTrackByIndex(index: number) {
+    if (index < 0 || index >= this.playlist.length) {
+      console.warn("invalid index, loadTrackByIndex");
+      return;
+    }
+
+    const track = this.playlist[index];
+    if (!track) {
+      console.warn("no track, loadTrackByIndex");
+      return;
+    }
+
+    await this.createAdapterForSource(track.source);
+
+    await this.currentAdapter!.loadTrack(track.url);
+    this.currentTrack = track;
+    this.currentIndex = index;
+  }
+
+  // NAVIGATION
+  async nextTrack() {
+    if (!this.canGoNext()) {
+      console.warn("no next track, goNextTrack");
+      return;
+    }
+
+    await this.loadTrackByIndex(this.currentIndex + 1);
+  }
+
+  async previousTrack() {
+    if (!this.canGoPrevious()) {
+      console.warn("no previous track, goPreviousTrack");
+      return;
+    }
+
+    await this.loadTrackByIndex(this.currentIndex - 1);
+  }
+
+  // PLAYBACK
   async play() {
     if (!this.currentAdapter) {
       console.warn("no adapter, play");
@@ -45,7 +106,7 @@ export class AudioController {
   async getCurrentTime() {
     if (!this.currentAdapter) {
       console.warn("no adapter, getCurrentTime");
-      return 0;
+      return -1;
     }
     return await this.currentAdapter.getCurrentTime();
   }
@@ -64,5 +125,26 @@ export class AudioController {
       return;
     }
     this.currentAdapter.setVolume(value);
+  }
+
+  // GETTERS
+  private canGoNext(): boolean {
+    return this.currentIndex < this.playlist.length - 1;
+  }
+
+  private canGoPrevious(): boolean {
+    return this.currentIndex > 0;
+  }
+
+  getCurrentTrack(): Track | null {
+    return this.currentTrack;
+  }
+
+  getCurrentIndex(): number {
+    return this.currentIndex;
+  }
+
+  getPlaylistLength(): number {
+    return this.playlist.length;
   }
 }

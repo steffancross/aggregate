@@ -4,11 +4,18 @@ import { useEffect, useState } from "react";
 import { AudioController } from "./player/AudioController";
 import type { Track } from "./player/types/player";
 
-const testTrack: Track = {
-  title: "Test Track",
-  url: "https://soundcloud.com/evens/evens-year-walk-free-download",
-  source: "soundcloud",
-};
+const testPlaylist: Track[] = [
+  {
+    title: "Test Track 1",
+    url: "https://soundcloud.com/evens/evens-year-walk-free-download",
+    source: "soundcloud",
+  },
+  {
+    title: "Test Track 2",
+    url: "https://soundcloud.com/janu4ryss/dont-want-u-prod-me",
+    source: "soundcloud",
+  },
+];
 
 export default function TestPlayer() {
   const [controller, setController] = useState<AudioController | null>(null);
@@ -30,19 +37,20 @@ export default function TestPlayer() {
     };
   }, []);
 
-  const loadTrack = async () => {
-    try {
-      const controller = new AudioController();
-      await controller.loadTrack(testTrack);
-      setController(controller);
-      setIsLoaded(true);
-      console.log("Track loaded successfully!");
-    } catch (error) {
-      console.error("Failed to load track:", error);
-    }
-  };
-
   const play = async () => {
+    if (!controller) {
+      try {
+        const controller = new AudioController();
+        await controller.loadPlaylist(testPlaylist);
+        setController(controller);
+        setIsLoaded(true);
+        await controller.play();
+        setIsPlaying(true);
+      } catch (error) {
+        console.error("Failed to load playlist:", error);
+      }
+    }
+
     if (controller && isLoaded) {
       await controller.play();
       setIsPlaying(true);
@@ -56,6 +64,18 @@ export default function TestPlayer() {
     }
   };
 
+  const next = async () => {
+    if (controller && isLoaded) {
+      await controller.nextTrack();
+    }
+  };
+
+  const previous = async () => {
+    if (controller && isLoaded) {
+      await controller.previousTrack();
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="mb-4 text-2xl font-bold">SoundCloud Adapter Test</h1>
@@ -66,16 +86,8 @@ export default function TestPlayer() {
 
       <div className="space-x-4">
         <button
-          onClick={loadTrack}
-          disabled={isLoaded}
-          className="rounded bg-blue-500 px-4 py-2 text-white disabled:bg-gray-300"
-        >
-          {isLoaded ? "Track Loaded" : "Load Track"}
-        </button>
-
-        <button
           onClick={play}
-          disabled={!isLoaded}
+          disabled={isPlaying}
           className="rounded bg-green-500 px-4 py-2 text-white disabled:bg-gray-300"
         >
           Play
@@ -83,10 +95,26 @@ export default function TestPlayer() {
 
         <button
           onClick={pause}
-          disabled={!isLoaded}
+          disabled={!isLoaded || !isPlaying}
           className="rounded bg-red-500 px-4 py-2 text-white disabled:bg-gray-300"
         >
           Pause
+        </button>
+
+        <button
+          onClick={next}
+          disabled={!isLoaded}
+          className="rounded bg-yellow-500 px-4 py-2 text-white disabled:bg-gray-300"
+        >
+          Next
+        </button>
+
+        <button
+          onClick={previous}
+          disabled={!isLoaded}
+          className="rounded bg-purple-500 px-4 py-2 text-white disabled:bg-gray-300"
+        >
+          Previous
         </button>
       </div>
 
