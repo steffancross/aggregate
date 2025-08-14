@@ -1,5 +1,5 @@
 import { LatestPost } from "~/app/_components/post";
-import TestSC from "~/app/_components/TestSC";
+import MusicPlayer from "~/app/_components/MusicPlayer";
 import { api, HydrateClient } from "~/trpc/server";
 
 export default async function Home() {
@@ -17,7 +17,7 @@ export default async function Home() {
             </p>
           </div>
           <LatestPost />
-          <TestSC />
+          <MusicPlayer />
         </div>
       </main>
     </HydrateClient>
