@@ -17,7 +17,7 @@ const testPlaylist: Track[] = [
   },
 ];
 
-export default function TestPlayer() {
+export default function MusicPlayer() {
   const [controller, setController] = useState<AudioController | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
