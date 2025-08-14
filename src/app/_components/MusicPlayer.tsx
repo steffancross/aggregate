@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { AudioController } from "./player/AudioController";
 import type { Track } from "./player/types/player";
+import { Slider } from "~/components/ui/slider";
+import { Button } from "~/components/ui/button";
 
 const testPlaylist: Track[] = [
   {
@@ -21,6 +23,7 @@ export default function MusicPlayer() {
   const [controller, setController] = useState<AudioController | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(100);
 
   useEffect(() => {
     // Load SoundCloud API script
@@ -76,6 +79,13 @@ export default function MusicPlayer() {
     }
   };
 
+  const handleVolumeChange = (volume: number[]) => {
+    if (controller && isLoaded && volume[0]) {
+      controller.setVolume(volume[0]);
+      setVolume(volume[0]);
+    }
+  };
+
   return (
     <div className="p-8">
       <h1 className="mb-4 text-2xl font-bold">SoundCloud Adapter Test</h1>
@@ -84,38 +94,47 @@ export default function MusicPlayer() {
         {/* Iframe will be inserted here */}
       </div>
 
-      <div className="space-x-4">
-        <button
+      <div className="flex items-baseline space-x-4">
+        <Button
           onClick={play}
           disabled={isPlaying}
-          className="rounded bg-green-500 px-4 py-2 text-white disabled:bg-gray-300"
+          className="rounded bg-green-500 disabled:bg-gray-300"
         >
           Play
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={pause}
           disabled={!isLoaded || !isPlaying}
-          className="rounded bg-red-500 px-4 py-2 text-white disabled:bg-gray-300"
+          className="rounded bg-red-500 disabled:bg-gray-300"
         >
           Pause
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={next}
           disabled={!isLoaded}
           className="rounded bg-yellow-500 px-4 py-2 text-white disabled:bg-gray-300"
         >
           Next
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={previous}
           disabled={!isLoaded}
           className="rounded bg-purple-500 px-4 py-2 text-white disabled:bg-gray-300"
         >
           Previous
-        </button>
+        </Button>
+
+        <Slider
+          value={[volume]}
+          onValueChange={handleVolumeChange}
+          max={100}
+          step={1}
+          orientation="vertical"
+          className="mt-6"
+        />
       </div>
 
       <div className="mt-4">
