@@ -23,23 +23,32 @@ interface SoundCloudWidget {
   setVolume: (value: number) => void;
   bind: (event: string, callback: () => void) => void;
   unbind: (event: string) => void;
+  load: (url: string, options?: { auto_play?: boolean }) => void;
 }
 
 export class SoundCloudAdapter implements MusicPlayerAdapter {
   private player: SoundCloudWidget | null = null;
   private iframeId: string;
-  private currentUrl: string = "";
   private isReady: boolean = false;
-  private readyPromise: Promise<void> | null = null;
+  private isInitialized: boolean = false;
 
   constructor(iframeId: string = "soundcloud-player") {
     this.iframeId = iframeId;
   }
 
   async loadTrack(trackUrl: string): Promise<void> {
-    this.currentUrl = trackUrl;
     this.isReady = false;
 
+    if (!this.isInitialized) {
+      // First time, create the widget
+      await this.initializeWidget(trackUrl);
+    } else {
+      // Subsequent loads
+      await this.loadNewTrack(trackUrl);
+    }
+  }
+
+  private async initializeWidget(trackUrl: string): Promise<void> {
     const iframe = this.getOrCreateIframe();
     const encodedUrl = encodeURIComponent(trackUrl);
     const scUrl = `https://w.soundcloud.com/player/?url=${encodedUrl}`;
@@ -58,6 +67,7 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
 
         this.player.bind(window.SC.Widget.Events.READY, () => {
           this.isReady = true;
+          this.isInitialized = true;
           resolve();
         });
 
@@ -69,6 +79,24 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
       iframe.onerror = () => {
         console.warn("Failed to load SoundCloud iframe");
       };
+    });
+  }
+
+  private async loadNewTrack(trackUrl: string): Promise<void> {
+    this.isReady = false;
+    if (!this.player) {
+      console.warn("Player not initialized");
+      return;
+    }
+
+    return new Promise((resolve) => {
+      this.player!.bind(window.SC.Widget.Events.READY, () => {
+        this.isReady = true;
+        this.player!.unbind(window.SC.Widget.Events.READY);
+        resolve();
+      });
+
+      this.player!.load(trackUrl, { auto_play: true });
     });
   }
 
