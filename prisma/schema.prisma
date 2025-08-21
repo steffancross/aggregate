@@ -25,9 +25,10 @@ model User {
     updatedAt DateTime @updatedAt
 
     playlists         Playlist[]
-    userTrackMetadata  UserTrackMetadata[]
+    libraryTracks     LibraryTrack[]
 }
 
+// belongs to a user and contains ordered entries of library tracks
 model Playlist {
     id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
@@ -37,7 +38,7 @@ model Playlist {
 
     userId          Int
     user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    playlistTracks  PlaylistTrack[]
+    playlistEntries  PlaylistEntry[]
 }
 
 enum SongSource {
@@ -47,6 +48,8 @@ enum SongSource {
     local
 }
 
+// a track represents a unique audio item from a source (e.g. soundcloud, spotify, etc..)
+// it is not user specific. each user may have their own library track pointing here that holds THEIR metadata
 model Track {
     id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
@@ -56,33 +59,23 @@ model Track {
     source             SongSource
     sourceIdentifier   String
 
-    playlistTracks     PlaylistTrack[]
-    userTrackMetadata   UserTrackMetadata[]
+    libraryTracks   LibraryTrack[]
 
     @@unique ([source, sourceIdentifier])
 }
 
-model PlaylistTrack {
+// join table for each entry in a playlist, position enforces order for display
+model PlaylistEntry {
     position    Int
 
     playlistId  Int
-    playlist    Playlist @relation(fields: [playlistId], references: [id])
+    playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
 
-    trackId      Int
-    track        Track     @relation(fields: [trackId], references: [id], onDelete: Cascade)
+    libraryTrackId      Int
+    libraryTrack        LibraryTrack     @relation(fields: [libraryTrackId], references: [id], onDelete: Cascade)
 
-    @@id([playlistId, trackId])
+    @@id([playlistId, libraryTrackId])
     @@unique ([playlistId, position])
-}
-
-model Artist {
-    id        Int      @id @default(autoincrement())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    name      String
-
-    userTrackMetadata UserTrackMetadata[]
 }
 
 model Album {
@@ -92,18 +85,27 @@ model Album {
 
     name      String
 
-    userTrackMetadata UserTrackMetadata[]
+    libraryTracks LibraryTrack[]
+}
+model Artist {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name      String
+
+    libraryTracks LibraryTrackArtist[]
 }
 
-model UserTrackMetadata {
+// a library track is a user's personal copy of a track
+// this lets different users have the same track in their library but with different metadata
+model LibraryTrack {
     id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
     title     String
 
-    artistId  Int?
-    artist    Artist?   @relation(fields: [artistId], references: [id], onDelete: SetNull)
     albumId   Int?
     album     Album?    @relation(fields:[albumId], references: [id], onDelete: SetNull)
     trackId   Int
@@ -111,5 +113,19 @@ model UserTrackMetadata {
     userId    Int
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    playlistEntries PlaylistEntry[]
+    artists         LibraryTrackArtist[]
+
     @@unique ([trackId, userId])
+}
+
+// join table for each artist in a library track, allows for multiple artists per library track
+model LibraryTrackArtist {
+    libraryTrackId Int
+    libraryTrack   LibraryTrack @relation(fields: [libraryTrackId], references: [id], onDelete: Cascade)
+
+    artistId Int
+    artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+    @@id([libraryTrackId, artistId])
 }
