@@ -18,3 +18,98 @@ model Post {
 
     @@index([name])
 }
+
+model User {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    playlists         Playlist[]
+    userTrackMetadata  UserTrackMetadata[]
+}
+
+model Playlist {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name      String
+
+    userId          Int
+    user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    playlistTracks  PlaylistTrack[]
+}
+
+enum SongSource {
+    soundcloud
+    spotify
+    youtube
+    local
+}
+
+model Track {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    duration           Int?
+    source             SongSource
+    sourceIdentifier   String
+
+    playlistTracks     PlaylistTrack[]
+    userTrackMetadata   UserTrackMetadata[]
+
+    @@unique ([source, sourceIdentifier])
+}
+
+model PlaylistTrack {
+    position    Int
+
+    playlistId  Int
+    playlist    Playlist @relation(fields: [playlistId], references: [id])
+
+    trackId      Int
+    track        Track     @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+    @@id([playlistId, trackId])
+    @@unique ([playlistId, position])
+}
+
+model Artist {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name      String
+
+    userTrackMetadata UserTrackMetadata[]
+}
+
+model Album {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name      String
+
+    userTrackMetadata UserTrackMetadata[]
+}
+
+model UserTrackMetadata {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    title     String
+
+    artistId  Int?
+    artist    Artist?   @relation(fields: [artistId], references: [id], onDelete: SetNull)
+    albumId   Int?
+    album     Album?    @relation(fields:[albumId], references: [id], onDelete: SetNull)
+    trackId   Int
+    track     Track     @relation(fields: [trackId], references: [id], onDelete: Cascade)
+    userId    Int
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique ([trackId, userId])
+}
