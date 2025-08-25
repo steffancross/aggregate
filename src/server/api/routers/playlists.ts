@@ -1,8 +1,11 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const playlistsRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.playlist.findMany({
+      where: {
+        userId: ctx.user.id,
+      },
       include: {
         playlistEntries: true,
       },
