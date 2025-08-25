@@ -10,7 +10,9 @@ const db = new PrismaClient({
 
 const seed = async () => {
   const user = await db.user.create({
-    data: {},
+    data: {
+      clerkId: process.env.CLERK_ID!,
+    },
   });
 
   console.log("user created");
