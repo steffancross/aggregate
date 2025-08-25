@@ -9,6 +9,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { auth } from "@clerk/nextjs/server";
 
 import { db } from "~/server/db";
 
@@ -25,8 +26,11 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const { userId } = await auth();
+
   return {
     db,
+    userId,
     ...opts,
   };
 };
@@ -104,3 +108,38 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+/**
+ * Protected (authenticated) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to logged in users, use this. It verifies
+ * the session is valid and guarantees `ctx.userId` is not null.
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const protectedProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(async ({ ctx, next }) => {
+    if (!ctx.userId) {
+      throw new Error("UNAUTHORIZED");
+    }
+
+    // Get or create user in database
+    let user = await ctx.db.user.findUnique({
+      where: { clerkId: ctx.userId },
+    });
+
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    if (!user) {
+      user = await ctx.db.user.create({
+        data: { clerkId: ctx.userId },
+      });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user,
+      },
+    });
+  });
