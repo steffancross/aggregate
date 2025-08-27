@@ -1,8 +1,15 @@
-"use client";
+import { redirect } from "next/navigation";
 
 import { SignInButton } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
-const Login = () => {
+const Login = async () => {
+  const user = await currentUser();
+
+  if (user) {
+    redirect("/playlists");
+  }
+
   return (
     <main className="bg-green flex min-h-screen flex-col items-center justify-center text-black">
       <h1 className="text-4xl font-bold">Aggregate</h1>
