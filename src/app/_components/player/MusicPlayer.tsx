@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AudioController } from "./player/AudioController";
-import type { Track } from "./player/types/player";
+import { AudioController } from "./AudioController";
+import type { Track } from "./types/player";
 import { Slider } from "~/components/ui/slider";
 import { Button } from "~/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { Play, Pause, SkipForward, SkipBack, Volume2 } from "lucide-react";
 
 const testPlaylist: Track[] = [
   {
@@ -87,59 +93,54 @@ export default function MusicPlayer() {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="mb-4 text-2xl font-bold">SoundCloud Adapter Test</h1>
-
+    <div className="fixed bottom-10 left-1/2 -translate-x-1/2">
       <div id="player-container" className="mb-4">
         {/* Iframe will be inserted here */}
       </div>
 
       <div className="flex items-baseline space-x-4">
         <Button
-          onClick={play}
-          disabled={isPlaying}
-          className="rounded bg-green-500 disabled:bg-gray-300"
+          onClick={previous}
+          className="px-4 py-2 text-white disabled:bg-gray-300"
         >
-          Play
+          <SkipBack className="h-4 w-4" />
         </Button>
 
         <Button
-          onClick={pause}
-          disabled={!isLoaded || !isPlaying}
-          className="rounded bg-red-500 disabled:bg-gray-300"
+          onClick={isPlaying ? pause : play}
+          className="bg-green-500 disabled:bg-gray-300"
         >
-          Pause
+          {isPlaying ? (
+            <Pause className="h-4 w-4" />
+          ) : (
+            <Play className="h-4 w-4" />
+          )}
         </Button>
 
         <Button
           onClick={next}
-          disabled={!isLoaded}
-          className="rounded bg-yellow-500 px-4 py-2 text-white disabled:bg-gray-300"
+          className="px-4 py-2 text-white disabled:bg-gray-300"
         >
-          Next
+          <SkipForward className="h-4 w-4" />
         </Button>
 
-        <Button
-          onClick={previous}
-          disabled={!isLoaded}
-          className="rounded bg-purple-500 px-4 py-2 text-white disabled:bg-gray-300"
-        >
-          Previous
-        </Button>
-
-        <Slider
-          value={[volume]}
-          onValueChange={handleVolumeChange}
-          max={100}
-          step={1}
-          orientation="vertical"
-          className="mt-6"
-        />
-      </div>
-
-      <div className="mt-4">
-        <p>Status: {isLoaded ? "Ready" : "Not loaded"}</p>
-        <p>Playing: {isPlaying ? "Yes" : "No"}</p>
+        <Popover>
+          <PopoverTrigger>
+            <Button>
+              <Volume2 className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent side="top" className="w-fit">
+            <Slider
+              value={[volume]}
+              onValueChange={handleVolumeChange}
+              max={100}
+              step={1}
+              orientation="vertical"
+              className="w-fit"
+            />
+          </PopoverContent>
+        </Popover>
       </div>
     </div>
   );
