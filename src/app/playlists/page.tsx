@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
+import Link from "next/link";
 
 const Playlists = () => {
   const { data: playlists, isLoading } = api.playlists.getAll.useQuery();
@@ -13,10 +14,10 @@ const Playlists = () => {
     <>
       {playlists?.map((playlist) => {
         return (
-          <div key={playlist.id}>
+          <Link href={`/playlist/${playlist.id}`} key={playlist.id}>
             <h3>{playlist.name}</h3>
             <p>{playlist.playlistEntries.length} songs</p>
-          </div>
+          </Link>
         );
       })}
     </>
