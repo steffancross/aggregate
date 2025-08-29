@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Play, Pause, SkipForward, SkipBack, Volume2 } from "lucide-react";
+import { formatTime } from "./utils";
 
 const testPlaylist: Track[] = [
   {
@@ -30,6 +31,9 @@ export default function MusicPlayer() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(100);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isSeeking, setIsSeeking] = useState(false);
 
   useEffect(() => {
     // Load SoundCloud API script
@@ -45,6 +49,37 @@ export default function MusicPlayer() {
       document.head.removeChild(script);
     };
   }, []);
+
+  const updateDuration = async () => {
+    if (controller && isLoaded) {
+      const duration = await controller.getDuration();
+      setDuration(duration);
+    }
+  };
+
+  useEffect(() => {
+    void updateDuration();
+  }, [controller, isLoaded, updateDuration]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (isPlaying && controller && isLoaded) {
+      interval = setInterval(() => {
+        if (!isSeeking) {
+          void controller.getCurrentTime().then((time) => {
+            setCurrentTime(time);
+          });
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isPlaying, controller, isLoaded, isSeeking]);
 
   const play = async () => {
     if (!controller) {
@@ -76,12 +111,14 @@ export default function MusicPlayer() {
   const next = async () => {
     if (controller && isLoaded) {
       await controller.nextTrack();
+      void updateDuration();
     }
   };
 
   const previous = async () => {
     if (controller && isLoaded) {
       await controller.previousTrack();
+      void updateDuration();
     }
   };
 
@@ -89,6 +126,20 @@ export default function MusicPlayer() {
     if (controller && isLoaded && volume[0]) {
       controller.setVolume(volume[0]);
       setVolume(volume[0]);
+    }
+  };
+
+  const handleProgressChange = (value: number[]) => {
+    if (controller && isLoaded && value[0] !== undefined) {
+      setIsSeeking(true);
+      setCurrentTime(value[0]);
+    }
+  };
+
+  const handleProgressCommit = (value: number[]) => {
+    if (controller && isLoaded && value[0] !== undefined) {
+      controller.seekTo(value[0] * 1000);
+      setIsSeeking(false);
     }
   };
 
@@ -124,11 +175,22 @@ export default function MusicPlayer() {
           <SkipForward className="h-4 w-4" />
         </Button>
 
+        <Slider
+          value={[currentTime]}
+          onValueChange={handleProgressChange}
+          onValueCommit={handleProgressCommit}
+          max={duration}
+          step={1}
+          className="w-100"
+        />
+
+        <span className="w-24">
+          {formatTime(currentTime)} / {formatTime(duration)}
+        </span>
+
         <Popover>
           <PopoverTrigger>
-            <Button>
-              <Volume2 className="h-4 w-4" />
-            </Button>
+            <Volume2 className="h-4 w-4 bg-black text-white" />
           </PopoverTrigger>
           <PopoverContent side="top" className="w-fit">
             <Slider

@@ -147,4 +147,12 @@ export class AudioController {
   getPlaylistLength(): number {
     return this.playlist.length;
   }
+
+  async getDuration(): Promise<number> {
+    if (!this.currentAdapter) {
+      console.warn("no adapter, getDuration");
+      return 0;
+    }
+    return await this.currentAdapter.getDuration();
+  }
 }
