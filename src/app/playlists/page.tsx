@@ -1,7 +1,6 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import MainLayout from "~/app/MainLayout";
 
 const Playlists = () => {
   const { data: playlists, isLoading } = api.playlists.getAll.useQuery();
@@ -11,7 +10,7 @@ const Playlists = () => {
   }
 
   return (
-    <MainLayout>
+    <>
       {playlists?.map((playlist) => {
         return (
           <div key={playlist.id}>
@@ -20,7 +19,7 @@ const Playlists = () => {
           </div>
         );
       })}
-    </MainLayout>
+    </>
   );
 };
 
