@@ -6,6 +6,7 @@ export interface MusicPlayerAdapter {
   getCurrentTime(): Promise<number>;
   seekTo(seconds: number): void;
   setVolume(value: number): void;
+  getDuration(): Promise<number>;
 }
 
 export interface Track {

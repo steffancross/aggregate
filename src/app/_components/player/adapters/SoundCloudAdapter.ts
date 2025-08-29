@@ -24,6 +24,7 @@ interface SoundCloudWidget {
   bind: (event: string, callback: () => void) => void;
   unbind: (event: string) => void;
   load: (url: string, options?: { auto_play?: boolean }) => void;
+  getDuration: (callback: (duration: number) => void) => void;
 }
 
 export class SoundCloudAdapter implements MusicPlayerAdapter {
@@ -168,6 +169,19 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
     }
 
     this.player.setVolume(value);
+  }
+
+  async getDuration(): Promise<number> {
+    if (!this.player || !this.isReady) {
+      console.warn("SoundCloud player not ready for getDuration");
+      return 0;
+    }
+
+    return new Promise((resolve) => {
+      this.player!.getDuration((duration: number) => {
+        resolve(duration / 1000);
+      });
+    });
   }
 
   private getOrCreateIframe(): HTMLIFrameElement {
