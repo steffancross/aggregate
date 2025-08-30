@@ -1,12 +1,11 @@
 import { api } from "~/trpc/server";
 
-const Playlist = async ({ params }: { params: { id: string } }) => {
+const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id: playlistId } = await params;
   const playlist = await api.playlists.getById({
-    id: parseInt(params.id),
+    id: parseInt(playlistId),
   });
   const songs = playlist?.playlistEntries;
-
-  console.log(playlist, "+++++");
 
   return (
     <>

@@ -1,4 +1,4 @@
-import type { MusicPlayerAdapter } from "../types/player";
+import type { MusicPlayerAdapter, SoundCloudSound } from "../types/player";
 
 declare global {
   interface Window {
@@ -8,6 +8,7 @@ declare global {
         Events: {
           READY: string;
           ERROR: string;
+          LOAD_PROGRESS: number;
         };
       };
     };
@@ -23,8 +24,12 @@ interface SoundCloudWidget {
   setVolume: (value: number) => void;
   bind: (event: string, callback: () => void) => void;
   unbind: (event: string) => void;
-  load: (url: string, options?: { auto_play?: boolean }) => void;
+  load: (
+    url: string,
+    options?: { auto_play?: boolean; callback?: () => void },
+  ) => void;
   getDuration: (callback: (duration: number) => void) => void;
+  getCurrentSound: (callback: (sound: SoundCloudSound) => void) => void;
 }
 
 export class SoundCloudAdapter implements MusicPlayerAdapter {
@@ -32,6 +37,7 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
   private iframeId: string;
   private isReady: boolean = false;
   private isInitialized: boolean = false;
+  private currentSound: SoundCloudSound | null = null;
 
   constructor(iframeId: string = "soundcloud-player") {
     this.iframeId = iframeId;
@@ -47,6 +53,21 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
       // Subsequent loads
       await this.loadNewTrack(trackUrl);
     }
+  }
+
+  private async waitForValidSound(): Promise<SoundCloudSound> {
+    return new Promise((resolve) => {
+      const checkSound = () => {
+        this.player!.getCurrentSound((sound: SoundCloudSound) => {
+          if (sound && sound.full_duration > 0) {
+            resolve(sound);
+          } else {
+            setTimeout(checkSound, 100);
+          }
+        });
+      };
+      checkSound();
+    });
   }
 
   private async initializeWidget(trackUrl: string): Promise<void> {
@@ -67,9 +88,17 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
         }
 
         this.player.bind(window.SC.Widget.Events.READY, () => {
-          this.isReady = true;
-          this.isInitialized = true;
-          resolve();
+          this.waitForValidSound()
+            .then((sound) => {
+              this.currentSound = sound;
+              this.isReady = true;
+              this.isInitialized = true;
+              resolve();
+            })
+            .catch((error) => {
+              console.warn("Failed to wait for valid sound:", error);
+              resolve();
+            });
         });
 
         this.player.bind(window.SC.Widget.Events.ERROR, (error?: string) => {
@@ -91,13 +120,21 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
     }
 
     return new Promise((resolve) => {
-      this.player!.bind(window.SC.Widget.Events.READY, () => {
-        this.isReady = true;
-        this.player!.unbind(window.SC.Widget.Events.READY);
-        resolve();
+      this.player!.load(trackUrl, {
+        auto_play: true,
+        callback: () => {
+          this.waitForValidSound()
+            .then((sound) => {
+              this.currentSound = sound;
+              this.isReady = true;
+              resolve();
+            })
+            .catch((error) => {
+              console.warn("Failed to wait for valid sound:", error);
+              resolve();
+            });
+        },
       });
-
-      this.player!.load(trackUrl, { auto_play: true });
     });
   }
 
@@ -171,17 +208,15 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
     this.player.setVolume(value);
   }
 
-  async getDuration(): Promise<number> {
-    if (!this.player || !this.isReady) {
-      console.warn("SoundCloud player not ready for getDuration");
+  get duration(): number {
+    if (!this.currentSound) {
       return 0;
     }
+    return this.currentSound.full_duration / 1000;
+  }
 
-    return new Promise((resolve) => {
-      this.player!.getDuration((duration: number) => {
-        resolve(duration / 1000);
-      });
-    });
+  get sound(): SoundCloudSound | null {
+    return this.currentSound;
   }
 
   private getOrCreateIframe(): HTMLIFrameElement {
