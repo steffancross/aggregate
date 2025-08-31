@@ -104,13 +104,21 @@ export function useMusicPlayer() {
 
   const previous = useCallback(async () => {
     if (controller && isLoaded) {
+      // user expectation, if into the song, hitting previous should go back to the start
+      // if at the start, go previous track
+      if (currentTime > 3) {
+        controller.seekTo(0);
+        setCurrentTime(0);
+        return;
+      }
+
       setCurrentTime(0.01);
       setDuration(0.9);
       await controller.previousTrack();
       controller.setVolume(volume);
       setDuration(controller.duration);
     }
-  }, [controller, isLoaded, volume]);
+  }, [controller, isLoaded, volume, currentTime]);
 
   const handleVolumeChange = useCallback(
     (volume: number[]) => {
