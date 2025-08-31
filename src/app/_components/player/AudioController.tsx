@@ -1,5 +1,9 @@
 import { SoundCloudAdapter } from "./adapters/SoundCloudAdapter";
-import type { MusicPlayerAdapter, Track } from "./types/player";
+import type {
+  MusicPlayerAdapter,
+  Track,
+  SoundCloudSound,
+} from "./types/player";
 
 export class AudioController {
   private currentAdapter: MusicPlayerAdapter | null = null;
@@ -148,11 +152,19 @@ export class AudioController {
     return this.playlist.length;
   }
 
-  async getDuration(): Promise<number> {
+  get duration(): number {
     if (!this.currentAdapter) {
       console.warn("no adapter, getDuration");
       return 0;
     }
-    return await this.currentAdapter.getDuration();
+    return this.currentAdapter.duration;
+  }
+
+  get sound(): SoundCloudSound | null {
+    if (!this.currentAdapter) {
+      console.warn("no adapter, getSound");
+      return null;
+    }
+    return this.currentAdapter.sound;
   }
 }

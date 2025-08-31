@@ -6,7 +6,22 @@ export interface MusicPlayerAdapter {
   getCurrentTime(): Promise<number>;
   seekTo(seconds: number): void;
   setVolume(value: number): void;
-  getDuration(): Promise<number>;
+  readonly duration: number;
+  readonly sound: SoundCloudSound | null;
+}
+
+export interface SoundCloudSound {
+  artwork_url: string;
+  full_duration: number; //in ms
+  permalink_url: string;
+  id: number;
+  title: string;
+  streamable: boolean;
+  user: {
+    avatar_url: string;
+    username: string;
+  };
+  waveform_url: string;
 }
 
 export interface Track {
@@ -15,6 +30,6 @@ export interface Track {
   // artist?: string;
   url: string;
   source: "spotify" | "soundcloud" | "youtube" | "local";
-  // duration?: number;
+  duration?: number;
   // artwork?: string;
 }
