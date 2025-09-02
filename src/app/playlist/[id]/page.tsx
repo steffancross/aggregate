@@ -1,5 +1,5 @@
 import { api } from "~/trpc/server";
-import { Ellipsis } from "lucide-react";
+import { PlaylistItem } from "./PlaylistItem";
 
 const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id: playlistId } = await params;
@@ -13,25 +13,13 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
       <h1 className="mt-7">{playlist?.name}</h1>
       {songs?.map((song, index) => {
         return (
-          <div
+          <PlaylistItem
             key={song.position}
-            className="flex w-7/10 flex-row items-center justify-between border border-blue-500"
-          >
-            <div className="flex flex-row items-center gap-4">
-              <p>{index + 1}.</p>
-              <div className="flex flex-col">
-                <p>{song.libraryTrack.title}</p>
-                <p>
-                  {song.libraryTrack.artists
-                    .map((artist) => artist.artist.name)
-                    .join(", ")}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-row">
-              <Ellipsis />
-            </div>
-          </div>
+            index={index}
+            title={song.libraryTrack.title}
+            position={song.position}
+            artists={song.libraryTrack.artists}
+          />
         );
       })}
     </div>
