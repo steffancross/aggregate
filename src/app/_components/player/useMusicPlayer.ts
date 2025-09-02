@@ -66,6 +66,13 @@ export function useMusicPlayer() {
     if (!controller) {
       try {
         const controller = new AudioController();
+
+        // TODO: this area is a little funky, refactor after logic of fetching from playlist updating data of songs.
+        controller.onTrackEnd(() => {
+          setCurrentTime(0);
+          setDuration(controller.duration);
+        });
+
         await controller.loadPlaylist(testPlaylist);
         setController(controller);
         setIsLoaded(true);

@@ -9,6 +9,7 @@ declare global {
           READY: string;
           ERROR: string;
           LOAD_PROGRESS: number;
+          FINISH: string;
         };
       };
     };
@@ -38,6 +39,7 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
   private isReady: boolean = false;
   private isInitialized: boolean = false;
   private currentSound: SoundCloudSound | null = null;
+  private onTrackEndCallback: (() => void) | null = null;
 
   constructor(iframeId: string = "soundcloud-player") {
     this.iframeId = iframeId;
@@ -103,6 +105,12 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
 
         this.player.bind(window.SC.Widget.Events.ERROR, (error?: string) => {
           console.warn(`SoundCloud widget error: ${error}`);
+        });
+
+        this.player.bind(window.SC.Widget.Events.FINISH, () => {
+          if (this.onTrackEndCallback) {
+            this.onTrackEndCallback();
+          }
         });
       };
 
@@ -206,6 +214,10 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
     }
 
     this.player.setVolume(value);
+  }
+
+  onTrackEnd(callback: () => void): void {
+    this.onTrackEndCallback = callback;
   }
 
   get duration(): number {

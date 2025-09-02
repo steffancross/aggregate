@@ -10,6 +10,7 @@ export class AudioController {
   private currentTrack: Track | null = null;
   private playlist: Track[] = [];
   private currentIndex: number = -1;
+  private onTrackEndCallback: (() => void) | null = null;
 
   private async createAdapterForSource(source: Track["source"]): Promise<void> {
     // if we don't have a current adapter, or the we're swapping source type, reset the adapter
@@ -21,6 +22,10 @@ export class AudioController {
       switch (source) {
         case "soundcloud":
           this.currentAdapter = new SoundCloudAdapter();
+          this.currentAdapter.onTrackEnd(() => {
+            console.log("track end");
+            void this.handleTrackEnd();
+          });
           break;
         default:
           console.error(`Unsupported track source: ${source}`);
@@ -61,6 +66,10 @@ export class AudioController {
     await this.currentAdapter!.loadTrack(track.url);
     this.currentTrack = track;
     this.currentIndex = index;
+
+    if (this.onTrackEndCallback) {
+      this.onTrackEndCallback();
+    }
   }
 
   // NAVIGATION
@@ -129,6 +138,14 @@ export class AudioController {
       return;
     }
     this.currentAdapter.setVolume(value);
+  }
+
+  private async handleTrackEnd(): Promise<void> {
+    await this.nextTrack();
+  }
+
+  onTrackEnd(callback: () => void): void {
+    this.onTrackEndCallback = callback;
   }
 
   // GETTERS

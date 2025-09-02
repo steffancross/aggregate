@@ -8,6 +8,7 @@ export interface MusicPlayerAdapter {
   setVolume(value: number): void;
   readonly duration: number;
   readonly sound: SoundCloudSound | null;
+  onTrackEnd(callback: () => void): void;
 }
 
 export interface SoundCloudSound {
