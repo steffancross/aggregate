@@ -6,6 +6,7 @@ import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { MusicPlayer } from "~/app/_components/player/MusicPlayer";
+import { GlobalContextMenu } from "~/app/_components/ContextMenu";
 
 export const metadata: Metadata = {
   title: "Aggregate",
@@ -27,6 +28,7 @@ export default function RootLayout({
         <body>
           <TRPCReactProvider>
             {children}
+            <GlobalContextMenu />
             <MusicPlayer />
           </TRPCReactProvider>
         </body>
