@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import type { PlaylistTrack } from "~/app/_components/player/types/player";
 
 export const playlistsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -12,10 +13,11 @@ export const playlistsRouter = createTRPCRouter({
       },
     });
   }),
+
   getById: protectedProcedure
     .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.db.playlist.findUnique({
+    .query(async ({ ctx, input }): Promise<PlaylistTrack[] | []> => {
+      const dbPlaylist = await ctx.db.playlist.findUnique({
         where: {
           id: input.id,
           userId: ctx.user.id,
@@ -36,5 +38,28 @@ export const playlistsRouter = createTRPCRouter({
           },
         },
       });
+
+      if (!dbPlaylist) return [];
+
+      const flattenedPlaylist = dbPlaylist.playlistEntries
+        .map((entry) => {
+          return {
+            playlistId: entry.playlistId,
+            playlistName: dbPlaylist.name,
+            trackId: entry.libraryTrackId,
+            position: entry.position,
+            albumId: entry.libraryTrack.albumId,
+            artists: entry.libraryTrack.artists.map((artist) => {
+              return {
+                artistId: artist.artistId,
+                artistName: artist.artist.name,
+              };
+            }),
+            title: entry.libraryTrack.title,
+          };
+        })
+        .sort((a, b) => a.position - b.position);
+
+      return flattenedPlaylist;
     }),
 });
