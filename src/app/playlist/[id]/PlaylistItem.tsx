@@ -7,7 +7,7 @@ interface PlaylistItemProps {
   index: number;
   title: string;
   position: number;
-  artists: { artist: { name: string } }[];
+  artists: { artistId: number; artistName: string }[];
 }
 
 export const PlaylistItem = ({
@@ -29,7 +29,7 @@ export const PlaylistItem = ({
         {hovered ? <Play /> : <p>{index + 1}</p>}
         <div className="flex flex-col">
           <p>{title}</p>
-          <p>{artists.map((artist) => artist.artist.name).join(", ")}</p>
+          <p>{artists.map((artist) => artist.artistName).join(", ")}</p>
         </div>
       </div>
       <div className="flex flex-row">

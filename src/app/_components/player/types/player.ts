@@ -25,8 +25,18 @@ export interface SoundCloudSound {
   waveform_url: string;
 }
 
+export interface PlaylistTrack {
+  playlistId: number;
+  playlistName: string;
+  trackId: number;
+  position: number;
+  albumId: number | null;
+  artists: { artistId: number; artistName: string }[];
+  title: string;
+}
+
 export interface Track {
-  // id: string;
+  id: number;
   title: string;
   // artist?: string;
   url: string;

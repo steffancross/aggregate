@@ -6,19 +6,20 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
   const playlist = await api.playlists.getById({
     id: parseInt(playlistId),
   });
-  const songs = playlist?.playlistEntries;
+
+  if (!playlist) return <div>Playlist not found</div>;
 
   return (
     <div className="grid w-full place-items-center">
-      <h1 className="mt-7">{playlist?.name}</h1>
-      {songs?.map((song, index) => {
+      <h1 className="mt-7">{playlist[0]?.playlistName}</h1>
+      {playlist?.map((song, index) => {
         return (
           <PlaylistItem
             key={song.position}
             index={index}
-            title={song.libraryTrack.title}
+            title={song.title}
             position={song.position}
-            artists={song.libraryTrack.artists}
+            artists={song.artists}
           />
         );
       })}
