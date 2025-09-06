@@ -27,6 +27,7 @@ export const playlistsRouter = createTRPCRouter({
             include: {
               libraryTrack: {
                 include: {
+                  track: true,
                   artists: {
                     include: {
                       artist: true,
@@ -56,6 +57,9 @@ export const playlistsRouter = createTRPCRouter({
               };
             }),
             title: entry.libraryTrack.title,
+            source: entry.libraryTrack.track.source,
+            sourceIdentifier: entry.libraryTrack.track.sourceIdentifier,
+            duration: entry.libraryTrack.track.duration,
           };
         })
         .sort((a, b) => a.position - b.position);

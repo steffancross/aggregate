@@ -1,30 +1,33 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { AudioController } from "./AudioController";
-import type { Track } from "./types/player";
-
-const testPlaylist: Track[] = [
-  {
-    title: "year walk",
-    url: "https://soundcloud.com/evens/evens-year-walk-free-download",
-    source: "soundcloud",
-    // duration: 120,
-  },
-  {
-    title: "dont want",
-    url: "https://soundcloud.com/janu4ryss/dont-want-u-prod-me",
-    source: "soundcloud",
-    // duration: 180,
-  },
-];
+import {
+  useMusicPlayerStore,
+  useMusicPlayerComputed,
+} from "./MusicPlayerStore";
 
 export function useMusicPlayer() {
-  const [controller, setController] = useState<AudioController | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(100);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isSeeking, setIsSeeking] = useState(false);
+  const {
+    currentPlaylist,
+    currentTrackIndex,
+    isPlaying,
+    isLoaded,
+    volume,
+    currentTime,
+    controller,
+    isSeeking,
+    setCurrentTime,
+    setDuration,
+    setIsPlaying,
+    setIsLoaded,
+    setCurrentTrackIndex,
+    setVolume,
+    setIsSeeking,
+    setLoadedOnce,
+    setController,
+    duration,
+  } = useMusicPlayerStore();
+
+  const { hasNextTrack, hasPreviousTrack } = useMusicPlayerComputed();
 
   // load soundcloud script
   useEffect(() => {
@@ -45,11 +48,22 @@ export function useMusicPlayer() {
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (isPlaying && controller && isLoaded) {
+    if (isPlaying && isLoaded) {
       interval = setInterval(() => {
-        if (!isSeeking) {
+        if (!isSeeking && controller) {
           void controller.getCurrentTime().then((time) => {
             setCurrentTime(time);
+
+            if (duration > 0 && time >= duration - 0.5) {
+              if (hasNextTrack) {
+                void next();
+              } else {
+                // End of playlist
+                setCurrentTime(0);
+                setDuration(0);
+                setIsPlaying(false);
+              }
+            }
           });
         }
       }, 500);
@@ -60,57 +74,114 @@ export function useMusicPlayer() {
         clearInterval(interval);
       }
     };
-  }, [isPlaying, controller, isLoaded, isSeeking]);
+    // next is a useCallback with its own dependencies, no need to include here
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isPlaying,
+    isLoaded,
+    isSeeking,
+    setCurrentTime,
+    controller,
+    setDuration,
+    setIsPlaying,
+    hasNextTrack,
+    duration,
+  ]);
 
   const play = useCallback(async () => {
+    setLoadedOnce(true);
+    // needed the freshest values from the store as before when calling play,
+    // the react state hadn't updated yet with the new values.
+    // other areas aren't same tick updates so it should be fine.
+    const { currentPlaylist, currentTrackIndex } =
+      useMusicPlayerStore.getState();
+
+    if (!currentPlaylist || currentPlaylist.length === 0) {
+      console.warn("No playlist loaded");
+      return;
+    }
+
+    const currentTrack = currentPlaylist[currentTrackIndex];
+    if (!currentTrack) {
+      console.warn("No current track");
+      return;
+    }
+
     if (!controller) {
       try {
-        const controller = new AudioController();
+        const newController = new AudioController();
 
-        // TODO: this area is a little funky, refactor after logic of fetching from playlist updating data of songs.
-        controller.onTrackEnd(() => {
-          setCurrentTime(0);
-          setDuration(controller.duration);
-        });
-
-        await controller.loadPlaylist(testPlaylist);
-        setController(controller);
+        await newController.loadPlaylist(currentPlaylist, currentTrackIndex);
+        setController(newController);
         setIsLoaded(true);
-        await controller.play();
-        controller.setVolume(volume);
-        setDuration(controller.duration);
+        await newController.play();
+        newController.setVolume(volume);
+        setDuration(newController.duration);
         setIsPlaying(true);
       } catch (error) {
         console.error("Failed to load playlist:", error);
       }
-    }
-
-    if (controller && isLoaded) {
-      await controller.play();
+    } else if (controller && isLoaded) {
+      const controllerCurrentIndex = controller.getCurrentIndex();
+      if (controllerCurrentIndex !== currentTrackIndex) {
+        try {
+          await controller.loadPlaylist(currentPlaylist, currentTrackIndex);
+          setCurrentTime(0);
+          setDuration(controller.duration);
+          await controller.play();
+          controller.setVolume(volume);
+        } catch (error) {
+          console.error("Failed to load new track:", error);
+        }
+      } else {
+        await controller.play();
+      }
       setIsPlaying(true);
     }
-  }, [controller, isLoaded, volume]);
+  }, [
+    controller,
+    isLoaded,
+    volume,
+    setCurrentTime,
+    setDuration,
+    setIsPlaying,
+    setIsLoaded,
+    setLoadedOnce,
+    setController,
+  ]);
 
   const pause = useCallback(async () => {
     if (controller && isLoaded) {
       await controller.pause();
       setIsPlaying(false);
     }
-  }, [controller, isLoaded]);
+  }, [controller, isLoaded, setIsPlaying]);
 
   const next = useCallback(async () => {
-    if (controller && isLoaded) {
+    if (currentPlaylist && hasNextTrack && controller) {
+      setCurrentTrackIndex(currentTrackIndex + 1);
       // hacky loading state to get the slider and duration to properly display while loading next track
       setCurrentTime(0.01);
       setDuration(0.9);
       await controller.nextTrack();
       controller.setVolume(volume);
       setDuration(controller.duration);
+      setIsPlaying(true);
     }
-  }, [controller, isLoaded, volume]);
+  }, [
+    controller,
+    volume,
+    currentPlaylist,
+    hasNextTrack,
+    currentTrackIndex,
+    setCurrentTrackIndex,
+    setCurrentTime,
+    setDuration,
+    setIsPlaying,
+  ]);
 
   const previous = useCallback(async () => {
-    if (controller && isLoaded) {
+    if (currentPlaylist && hasPreviousTrack && controller) {
       // user expectation, if into the song, hitting previous should go back to the start
       // if at the start, go previous track
       if (currentTime > 3) {
@@ -119,13 +190,26 @@ export function useMusicPlayer() {
         return;
       }
 
+      setCurrentTrackIndex(currentTrackIndex - 1);
       setCurrentTime(0.01);
       setDuration(0.9);
       await controller.previousTrack();
       controller.setVolume(volume);
       setDuration(controller.duration);
+      setIsPlaying(true);
     }
-  }, [controller, isLoaded, volume, currentTime]);
+  }, [
+    controller,
+    volume,
+    currentTime,
+    currentPlaylist,
+    hasPreviousTrack,
+    setCurrentTime,
+    currentTrackIndex,
+    setDuration,
+    setCurrentTrackIndex,
+    setIsPlaying,
+  ]);
 
   const handleVolumeChange = useCallback(
     (volume: number[]) => {
@@ -137,7 +221,7 @@ export function useMusicPlayer() {
         }
       }
     },
-    [controller, isLoaded],
+    [controller, isLoaded, setVolume],
   );
 
   const handleProgressChange = useCallback(
@@ -147,7 +231,7 @@ export function useMusicPlayer() {
         setCurrentTime(value[0]);
       }
     },
-    [controller, isLoaded],
+    [controller, isLoaded, setIsSeeking, setCurrentTime],
   );
 
   const handleProgressCommit = useCallback(
@@ -157,14 +241,10 @@ export function useMusicPlayer() {
         setIsSeeking(false);
       }
     },
-    [controller, isLoaded],
+    [controller, isLoaded, setIsSeeking],
   );
 
   return {
-    isPlaying,
-    volume,
-    duration,
-    currentTime,
     play,
     pause,
     next,
