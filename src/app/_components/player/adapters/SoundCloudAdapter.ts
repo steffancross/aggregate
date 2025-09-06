@@ -39,7 +39,6 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
   private isReady: boolean = false;
   private isInitialized: boolean = false;
   private currentSound: SoundCloudSound | null = null;
-  private onTrackEndCallback: (() => void) | null = null;
 
   constructor(iframeId: string = "soundcloud-player") {
     this.iframeId = iframeId;
@@ -108,9 +107,8 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
         });
 
         this.player.bind(window.SC.Widget.Events.FINISH, () => {
-          if (this.onTrackEndCallback) {
-            this.onTrackEndCallback();
-          }
+          // deprecated, unreliable for now
+          // just handling with duration checks
         });
       };
 
@@ -214,10 +212,6 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
     }
 
     this.player.setVolume(value);
-  }
-
-  onTrackEnd(callback: () => void): void {
-    this.onTrackEndCallback = callback;
   }
 
   get duration(): number {

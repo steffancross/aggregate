@@ -1,18 +1,19 @@
 import { SoundCloudAdapter } from "./adapters/SoundCloudAdapter";
 import type {
   MusicPlayerAdapter,
-  Track,
+  PlaylistTrack,
   SoundCloudSound,
 } from "./types/player";
 
 export class AudioController {
   private currentAdapter: MusicPlayerAdapter | null = null;
-  private currentTrack: Track | null = null;
-  private playlist: Track[] = [];
+  private currentTrack: PlaylistTrack | null = null;
+  private playlist: PlaylistTrack[] = [];
   private currentIndex: number = -1;
-  private onTrackEndCallback: (() => void) | null = null;
 
-  private async createAdapterForSource(source: Track["source"]): Promise<void> {
+  private async createAdapterForSource(
+    source: PlaylistTrack["source"],
+  ): Promise<void> {
     // if we don't have a current adapter, or the we're swapping source type, reset the adapter
     if (this.currentAdapter && this.currentTrack?.source !== source) {
       this.currentAdapter = null;
@@ -22,10 +23,6 @@ export class AudioController {
       switch (source) {
         case "soundcloud":
           this.currentAdapter = new SoundCloudAdapter();
-          this.currentAdapter.onTrackEnd(() => {
-            console.log("track end");
-            void this.handleTrackEnd();
-          });
           break;
         default:
           console.error(`Unsupported track source: ${source}`);
@@ -33,19 +30,19 @@ export class AudioController {
     }
   }
 
-  async loadPlaylist(playlist: Track[]) {
+  async loadPlaylist(playlist: PlaylistTrack[], index: number) {
     this.playlist = playlist;
-    this.currentIndex = 0;
+    this.currentIndex = index;
 
     if (this.playlist.length > 0) {
-      await this.createAdapterForSource(this.playlist[0]!.source);
+      await this.createAdapterForSource(this.playlist[index]!.source);
       await this.loadTrackByIndex(this.currentIndex);
     }
   }
 
-  async loadTrack(track: Track) {
+  async loadTrack(track: PlaylistTrack) {
     await this.createAdapterForSource(track.source);
-    await this.currentAdapter!.loadTrack(track.url);
+    await this.currentAdapter!.loadTrack(track.sourceIdentifier);
     this.currentTrack = track;
   }
 
@@ -63,13 +60,9 @@ export class AudioController {
 
     await this.createAdapterForSource(track.source);
 
-    await this.currentAdapter!.loadTrack(track.url);
+    await this.currentAdapter!.loadTrack(track.sourceIdentifier);
     this.currentTrack = track;
     this.currentIndex = index;
-
-    if (this.onTrackEndCallback) {
-      this.onTrackEndCallback();
-    }
   }
 
   // NAVIGATION
@@ -140,14 +133,6 @@ export class AudioController {
     this.currentAdapter.setVolume(value);
   }
 
-  private async handleTrackEnd(): Promise<void> {
-    await this.nextTrack();
-  }
-
-  onTrackEnd(callback: () => void): void {
-    this.onTrackEndCallback = callback;
-  }
-
   // GETTERS
   private canGoNext(): boolean {
     return this.currentIndex < this.playlist.length - 1;
@@ -157,7 +142,7 @@ export class AudioController {
     return this.currentIndex > 0;
   }
 
-  getCurrentTrack(): Track | null {
+  getCurrentTrack(): PlaylistTrack | null {
     return this.currentTrack;
   }
 

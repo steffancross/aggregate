@@ -8,7 +8,6 @@ export interface MusicPlayerAdapter {
   setVolume(value: number): void;
   readonly duration: number;
   readonly sound: SoundCloudSound | null;
-  onTrackEnd(callback: () => void): void;
 }
 
 export interface SoundCloudSound {
@@ -33,14 +32,7 @@ export interface PlaylistTrack {
   albumId: number | null;
   artists: { artistId: number; artistName: string }[];
   title: string;
-}
-
-export interface Track {
-  id: number;
-  title: string;
-  // artist?: string;
-  url: string;
   source: "spotify" | "soundcloud" | "youtube" | "local";
-  duration?: number;
-  // artwork?: string;
+  sourceIdentifier: string;
+  duration: number | null;
 }

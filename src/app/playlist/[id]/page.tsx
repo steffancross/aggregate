@@ -20,6 +20,8 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
             title={song.title}
             position={song.position}
             artists={song.artists}
+            playlist={playlist}
+            playlistId={song.playlistId}
           />
         );
       })}

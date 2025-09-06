@@ -4,13 +4,13 @@ import { useMusicPlayer } from "./useMusicPlayer";
 import { ProgressBar } from "./components/ProgressBar";
 import { PlaybackControl } from "./components/PlaybackControl";
 import { VolumeControl } from "./components/VolumeControl";
+import { useMusicPlayerStore } from "./MusicPlayerStore";
 
 export const MusicPlayer = () => {
+  const { loadedOnce, isPlaying, volume, duration, currentTime } =
+    useMusicPlayerStore();
+
   const {
-    isPlaying,
-    volume,
-    duration,
-    currentTime,
     play,
     pause,
     next,
@@ -19,6 +19,8 @@ export const MusicPlayer = () => {
     handleProgressChange,
     handleProgressCommit,
   } = useMusicPlayer();
+
+  if (!loadedOnce) return null;
 
   return (
     <div className="fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 gap-4">
