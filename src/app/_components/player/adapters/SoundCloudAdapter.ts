@@ -1,3 +1,5 @@
+// reference: https://developers.soundcloud.com/docs/api/html5-widget#methods
+
 import type { MusicPlayerAdapter, SoundCloudSound } from "../types/player";
 
 declare global {
