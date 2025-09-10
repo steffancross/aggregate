@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-// import { db } from "../src/server/db";
 import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient({
@@ -34,6 +30,22 @@ const seed = async () => {
   });
   console.log("dont want u added");
 
+  const track3 = await db.track.create({
+    data: {
+      source: "youtube",
+      sourceIdentifier: "-bORJzjLGSU",
+    },
+  });
+  console.log("transcendence added");
+
+  const track4 = await db.track.create({
+    data: {
+      source: "youtube",
+      sourceIdentifier: "3K6POJzvZlI",
+    },
+  });
+  console.log("xtayalive added");
+
   const artist1 = await db.artist.create({
     data: {
       name: "evenS",
@@ -47,6 +59,20 @@ const seed = async () => {
     },
   });
   console.log("janu4ryss added");
+
+  const artist3 = await db.artist.create({
+    data: {
+      name: "Nujabes",
+    },
+  });
+  console.log("nujabes added");
+
+  const artist4 = await db.artist.create({
+    data: {
+      name: "9lives",
+    },
+  });
+  console.log("9lives added");
 
   const libraryTrack1 = await db.libraryTrack.create({
     data: {
@@ -67,6 +93,26 @@ const seed = async () => {
     },
   });
   console.log("library track 2 created");
+
+  const libraryTrack3 = await db.libraryTrack.create({
+    data: {
+      title: "Transcendence",
+      user: { connect: { id: user.id } },
+      track: { connect: { id: track3.id } },
+      artists: { create: [{ artist: { connect: { id: artist3.id } } }] },
+    },
+  });
+  console.log("library track 3 created");
+
+  const libraryTrack4 = await db.libraryTrack.create({
+    data: {
+      title: "xtayalive",
+      user: { connect: { id: user.id } },
+      track: { connect: { id: track4.id } },
+      artists: { create: [{ artist: { connect: { id: artist4.id } } }] },
+    },
+  });
+  console.log("library track 4 created");
 
   const playlist = await db.playlist.create({
     data: {
@@ -91,6 +137,16 @@ const seed = async () => {
         position: 2,
         playlistId: playlist.id,
         libraryTrackId: libraryTrack2.id,
+      },
+      {
+        position: 3,
+        playlistId: playlist.id,
+        libraryTrackId: libraryTrack3.id,
+      },
+      {
+        position: 4,
+        playlistId: playlist.id,
+        libraryTrackId: libraryTrack4.id,
       },
     ],
   });
