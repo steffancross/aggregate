@@ -143,7 +143,7 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
       return;
     }
 
-    this.player.seekTo(seconds, true);
+    this.player.seekTo(seconds / 1000, true); // coming in as ms, youtube wants seconds
   }
 
   setVolume(value: number): void {
