@@ -29,18 +29,27 @@ export function useMusicPlayer() {
 
   const { hasNextTrack, hasPreviousTrack } = useMusicPlayerComputed();
 
-  // load soundcloud script
+  // load scripts
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://w.soundcloud.com/player/api.js";
-    script.async = true;
-    script.onload = () => {
+    const scScript = document.createElement("script");
+    scScript.src = "https://w.soundcloud.com/player/api.js";
+    scScript.async = true;
+    scScript.onload = () => {
       console.log("SoundCloud API loaded");
     };
-    document.head.appendChild(script);
+    document.head.appendChild(scScript);
+
+    const ytScript = document.createElement("script");
+    ytScript.src = "https://www.youtube.com/iframe_api";
+    ytScript.async = true;
+    ytScript.onload = () => {
+      console.log("YouTube API loaded");
+    };
+    document.head.appendChild(ytScript);
 
     return () => {
-      document.head.removeChild(script);
+      document.head.removeChild(scScript);
+      document.head.removeChild(ytScript);
     };
   }, []);
 

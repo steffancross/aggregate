@@ -1,4 +1,5 @@
 import { SoundCloudAdapter } from "./adapters/SoundCloudAdapter";
+import { YouTubeAdapter } from "./adapters/YouTubeAdapter";
 import type {
   MusicPlayerAdapter,
   PlaylistTrack,
@@ -23,6 +24,9 @@ export class AudioController {
       switch (source) {
         case "soundcloud":
           this.currentAdapter = new SoundCloudAdapter();
+          break;
+        case "youtube":
+          this.currentAdapter = new YouTubeAdapter();
           break;
         default:
           console.error(`Unsupported track source: ${source}`);
