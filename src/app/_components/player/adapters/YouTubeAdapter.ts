@@ -13,6 +13,9 @@ declare global {
             onStateChange?: (event: number) => void;
             onError?: (event: { data: number }) => void;
           };
+          playerVars?: {
+            disablekb?: number;
+          };
         },
       ) => YouTubeWidget;
       PlayerState: {
@@ -48,8 +51,14 @@ interface YouTubeWidget {
   getPlayerState: () => number; // -1 = unstarted, 0 = ended, 1 = playing, 2 = paused, 3 = buffering, 5 = video cued
   getCurrentTime: () => number;
   getDuration: () => number;
-  addEventListener: (event: string, listener: string) => void; // The listener is a string that identifies the function that will no longer execute when the specified event fires
-  removeEventListener: (event: string, listener: string) => void;
+  addEventListener: (
+    event: string,
+    listener: (event: { data: number }) => void,
+  ) => void; // The listener is a string that identifies the function that will no longer execute when the specified event fires
+  removeEventListener: (
+    event: string,
+    listener: (event: { data: number }) => void,
+  ) => void;
 }
 
 export class YouTubeAdapter implements MusicPlayerAdapter {
@@ -79,6 +88,9 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
 
     return new Promise((resolve) => {
       this.player = new window.YT.Player(this.iframeId, {
+        playerVars: {
+          disablekb: 1,
+        },
         events: {
           onReady: () => {
             this.isReady = true;
@@ -94,11 +106,28 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
   }
 
   private async loadNewTrack(trackUrl: string): Promise<void> {
-    console.log("loading new track", trackUrl);
-    this.player!.loadVideoById({
-      videoId: trackUrl,
+    if (!this.player) {
+      console.warn("Player not initialized");
+      return;
+    }
+
+    this.isReady = false;
+
+    return new Promise((resolve) => {
+      const onStateChange = (event: { data: number }) => {
+        if (event.data === 1) {
+          this.isReady = true;
+          this.player!.removeEventListener("onStateChange", onStateChange);
+          resolve();
+        }
+      };
+
+      this.player!.addEventListener("onStateChange", onStateChange);
+
+      this.player!.loadVideoById({
+        videoId: trackUrl,
+      });
     });
-    console.log("loading new track", this.player);
   }
 
   play(): void {
