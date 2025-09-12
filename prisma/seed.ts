@@ -134,12 +134,12 @@ const seed = async () => {
         libraryTrackId: libraryTrack1.id,
       },
       {
-        position: 2,
+        position: 3,
         playlistId: playlist.id,
         libraryTrackId: libraryTrack2.id,
       },
       {
-        position: 3,
+        position: 2,
         playlistId: playlist.id,
         libraryTrackId: libraryTrack3.id,
       },
