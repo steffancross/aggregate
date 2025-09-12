@@ -11,27 +11,32 @@ export class AudioController {
   private currentTrack: PlaylistTrack | null = null;
   private playlist: PlaylistTrack[] = [];
   private currentIndex: number = -1;
+  private adapters = new Map<string, MusicPlayerAdapter>();
 
   private async createAdapterForSource(
     source: PlaylistTrack["source"],
   ): Promise<void> {
-    // if we don't have a current adapter, or the we're swapping source type, reset the adapter
-    if (this.currentAdapter && this.currentTrack?.source !== source) {
-      this.currentAdapter = null;
+    // persist adapter update
+    if (this.adapters.has(source)) {
+      this.currentAdapter = this.adapters.get(source)!;
+      return;
     }
 
-    if (!this.currentAdapter) {
-      switch (source) {
-        case "soundcloud":
-          this.currentAdapter = new SoundCloudAdapter();
-          break;
-        case "youtube":
-          this.currentAdapter = new YouTubeAdapter();
-          break;
-        default:
-          console.error(`Unsupported track source: ${source}`);
-      }
+    let adapter: MusicPlayerAdapter;
+    switch (source) {
+      case "soundcloud":
+        adapter = new SoundCloudAdapter();
+        break;
+      case "youtube":
+        adapter = new YouTubeAdapter();
+        break;
+      default:
+        console.error(`Unsupported track source: ${source}`);
+        return;
     }
+
+    this.adapters.set(source, adapter);
+    this.currentAdapter = adapter;
   }
 
   async loadPlaylist(playlist: PlaylistTrack[], index: number) {
@@ -62,8 +67,12 @@ export class AudioController {
       return;
     }
 
-    await this.createAdapterForSource(track.source);
+    // if check, only to filter the noise on first play
+    if (this.currentAdapter) {
+      this.currentAdapter.pause();
+    }
 
+    await this.createAdapterForSource(track.source);
     await this.currentAdapter!.loadTrack(track.sourceIdentifier);
     this.currentTrack = track;
     this.currentIndex = index;

@@ -169,9 +169,11 @@ export function useMusicPlayer() {
   const next = useCallback(async () => {
     if (currentPlaylist && hasNextTrack && controller) {
       setCurrentTrackIndex(currentTrackIndex + 1);
+
       // hacky loading state to get the slider and duration to properly display while loading next track
       setCurrentTime(0.01);
       setDuration(0.9);
+
       await controller.nextTrack();
       controller.setVolume(volume);
       setDuration(controller.duration);
@@ -200,8 +202,10 @@ export function useMusicPlayer() {
       }
 
       setCurrentTrackIndex(currentTrackIndex - 1);
+
       setCurrentTime(0.01);
       setDuration(0.9);
+
       await controller.previousTrack();
       controller.setVolume(volume);
       setDuration(controller.duration);
