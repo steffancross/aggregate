@@ -18,6 +18,10 @@ export const GlobalContextMenu = () => {
     router.push("/playlists");
   };
 
+  const handleLibrary = () => {
+    router.push("/library");
+  };
+
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -27,6 +31,7 @@ export const GlobalContextMenu = () => {
         <ContextMenuItem>add song</ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem onClick={handlePlaylists}>playlists</ContextMenuItem>
+        <ContextMenuItem onClick={handleLibrary}>library</ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem>
           <SignOutButton>log out</SignOutButton>
