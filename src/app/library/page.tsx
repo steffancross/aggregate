@@ -1,12 +1,10 @@
-"use client";
+import { api } from "~/trpc/server";
+import { DataTable, type LibraryTrack } from "./DataTable";
 
-import { api } from "~/trpc/react";
+const Library = async () => {
+  const libraryTracks: LibraryTrack[] = await api.library.getAll();
 
-const Library = () => {
-  const { data: libraryTracks } = api.library.getAll.useQuery();
-  console.log(libraryTracks);
-
-  return <div>test</div>;
+  return <DataTable data={libraryTracks} />;
 };
 
 export default Library;
