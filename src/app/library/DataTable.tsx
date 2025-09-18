@@ -23,7 +23,9 @@ export type LibraryTrack = {
   album: { id: number; name: string } | null;
   duration: number | null;
   source: "soundcloud" | "spotify" | "youtube" | "local";
-  sourceIdentifier: string;
+  sourceId: string | null;
+  sourceUrl: string | null;
+  artworkUrl: string | null;
 };
 
 const columns: ColumnDef<LibraryTrack>[] = [

@@ -58,7 +58,9 @@ export const playlistsRouter = createTRPCRouter({
             }),
             title: entry.libraryTrack.title,
             source: entry.libraryTrack.track.source,
-            sourceIdentifier: entry.libraryTrack.track.sourceIdentifier,
+            sourceId: entry.libraryTrack.track.sourceId,
+            sourceUrl: entry.libraryTrack.track.sourceUrl,
+            artworkUrl: entry.libraryTrack.track.artworkUrl,
             duration: entry.libraryTrack.track.duration,
           };
         })

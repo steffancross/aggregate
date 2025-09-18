@@ -33,7 +33,9 @@ export const libraryRouter = createTRPCRouter({
         album: track.album,
         duration: track.track.duration,
         source: track.track.source,
-        sourceIdentifier: track.track.sourceIdentifier,
+        sourceId: track.track.sourceId,
+        sourceUrl: track.track.sourceUrl,
+        artworkUrl: track.track.artworkUrl,
       };
     });
 
