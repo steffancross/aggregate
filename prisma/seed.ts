@@ -16,8 +16,7 @@ const seed = async () => {
   const track1 = await db.track.create({
     data: {
       source: "soundcloud",
-      sourceIdentifier:
-        "https://soundcloud.com/evens/evens-year-walk-free-download",
+      sourceUrl: "https://soundcloud.com/evens/evens-year-walk-free-download",
     },
   });
   console.log("year walk added");
@@ -25,7 +24,7 @@ const seed = async () => {
   const track2 = await db.track.create({
     data: {
       source: "soundcloud",
-      sourceIdentifier: "https://soundcloud.com/janu4ryss/dont-want-u-prod-me",
+      sourceUrl: "https://soundcloud.com/janu4ryss/dont-want-u-prod-me",
     },
   });
   console.log("dont want u added");
@@ -33,7 +32,7 @@ const seed = async () => {
   const track3 = await db.track.create({
     data: {
       source: "youtube",
-      sourceIdentifier: "-bORJzjLGSU",
+      sourceId: "-bORJzjLGSU",
     },
   });
   console.log("transcendence added");
@@ -41,7 +40,7 @@ const seed = async () => {
   const track4 = await db.track.create({
     data: {
       source: "youtube",
-      sourceIdentifier: "3K6POJzvZlI",
+      sourceId: "3K6POJzvZlI",
     },
   });
   console.log("xtayalive added");

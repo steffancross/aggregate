@@ -58,11 +58,14 @@ model Track {
 
     duration           Int?
     source             SongSource
-    sourceIdentifier   String
+    sourceId           String?
+    sourceUrl          String?
+    artworkUrl         String?
+    isPlayable         Boolean @default(true)
 
     libraryTracks   LibraryTrack[]
 
-    @@unique ([source, sourceIdentifier])
+    @@unique ([source, sourceId])
 }
 
 // join table for each entry in a playlist, position enforces order for display
