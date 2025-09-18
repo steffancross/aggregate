@@ -51,8 +51,21 @@ export class AudioController {
 
   async loadTrack(track: PlaylistTrack) {
     await this.createAdapterForSource(track.source);
-    await this.currentAdapter!.loadTrack(track.sourceIdentifier);
+    const trackIdentifier = this.getTrackIdentifier(track);
+    await this.currentAdapter!.loadTrack(trackIdentifier!);
     this.currentTrack = track;
+  }
+
+  private getTrackIdentifier(track: PlaylistTrack) {
+    switch (track.source) {
+      case "soundcloud":
+        return track.sourceUrl;
+      case "youtube":
+        return track.sourceId;
+      default:
+        console.error(`Unsupported track source: ${track.source}`);
+        return "";
+    }
   }
 
   private async loadTrackByIndex(index: number) {
@@ -73,7 +86,8 @@ export class AudioController {
     }
 
     await this.createAdapterForSource(track.source);
-    await this.currentAdapter!.loadTrack(track.sourceIdentifier);
+    const trackIdentifier = this.getTrackIdentifier(track);
+    await this.currentAdapter!.loadTrack(trackIdentifier!); // based on source type, we know the identifier will exist
     this.currentTrack = track;
     this.currentIndex = index;
   }

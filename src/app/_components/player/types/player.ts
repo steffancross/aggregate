@@ -33,6 +33,8 @@ export interface PlaylistTrack {
   artists: { artistId: number; artistName: string }[];
   title: string;
   source: "spotify" | "soundcloud" | "youtube" | "local";
-  sourceIdentifier: string;
+  sourceId: string | null;
+  sourceUrl: string | null;
+  artworkUrl: string | null;
   duration: number | null;
 }
