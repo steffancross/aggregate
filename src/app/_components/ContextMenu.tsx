@@ -7,7 +7,7 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator,
 } from "~/components/ui/context-menu";
-import { AddSong } from "~/app/_components/AddSong";
+import { AddSong } from "~/app/_components/forms/AddSong";
 
 import { SignOutButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";

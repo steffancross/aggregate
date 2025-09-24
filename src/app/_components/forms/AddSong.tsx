@@ -23,12 +23,13 @@ import {
 import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "~/components/ui/button";
+import { MultiSelect } from "./MultiSelectCombo";
 
 interface FormData {
   externalLink: string;
   source: "soundcloud" | "youtube" | "";
   title: string;
-  artist: string;
+  artist: string[];
   album: string;
 }
 
@@ -44,7 +45,7 @@ export const AddSong = ({
       externalLink: "",
       source: "",
       title: "",
-      artist: "",
+      artist: [],
       album: "",
     },
   });
@@ -66,6 +67,13 @@ export const AddSong = ({
     onOpenChange(open);
     form.reset();
   };
+
+  const artists = [
+    { value: "evenS", label: "evenS" },
+    { value: "janu4ryss", label: "janu4ryss" },
+    { value: "nujabes", label: "nujabes" },
+    { value: "9lives", label: "9lives" },
+  ];
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -139,11 +147,29 @@ export const AddSong = ({
                 <FormItem>
                   <FormLabel>Artist</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Artist" />
+                    <MultiSelect
+                      options={artists}
+                      selected={field.value}
+                      onChange={field.onChange}
+                      placeholder="Artist"
+                      allowAdd={true}
+                    />
                   </FormControl>
                 </FormItem>
               )}
             />
+            {/* <FormField
+              control={form.control}
+              name="artist"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Artist</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Artist" />
+                  </FormControl>
+                </FormItem>
+              )}
+            /> */}
             <FormField
               control={form.control}
               name="album"
