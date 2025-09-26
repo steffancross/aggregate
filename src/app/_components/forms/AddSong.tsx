@@ -112,7 +112,11 @@ export const AddSong = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Source</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={true}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select Source" />
@@ -158,18 +162,6 @@ export const AddSong = ({
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="artist"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Artist</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Artist" />
-                  </FormControl>
-                </FormItem>
-              )}
-            /> */}
             <FormField
               control={form.control}
               name="album"
