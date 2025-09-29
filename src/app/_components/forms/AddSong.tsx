@@ -25,6 +25,8 @@ import { useForm } from "react-hook-form";
 import { Button } from "~/components/ui/button";
 import { MultiSelect } from "./MultiSelectCombo";
 import { getTrackData } from "~/lib/actions/getTrackData";
+import { useState, useEffect } from "react";
+import { api } from "~/trpc/react";
 
 interface FormData {
   externalLink: string;
@@ -41,6 +43,13 @@ export const AddSong = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
+  const { data = [] } = api.artists.getAll.useQuery();
+  const [artists, setArtists] = useState(data);
+
+  useEffect(() => {
+    setArtists(data);
+  }, [data]);
+
   const form = useForm<FormData>({
     defaultValues: {
       externalLink: "",
@@ -65,21 +74,16 @@ export const AddSong = ({
     );
     form.setValue("title", trackData.title);
     form.setValue("artist", [trackData.artist]);
-
-    console.log(trackData);
+    setArtists([
+      ...artists,
+      { value: trackData.artist, label: trackData.artist },
+    ]);
   };
 
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open);
     form.reset();
   };
-
-  const artists = [
-    { value: "evenS", label: "evenS" },
-    { value: "janu4ryss", label: "janu4ryss" },
-    { value: "nujabes", label: "nujabes" },
-    { value: "9lives", label: "9lives" },
-  ];
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
