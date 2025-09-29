@@ -24,6 +24,7 @@ import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Button } from "~/components/ui/button";
 import { MultiSelect } from "./MultiSelectCombo";
+import { getTrackData } from "~/lib/actions/getTrackData";
 
 interface FormData {
   externalLink: string;
@@ -54,13 +55,18 @@ export const AddSong = ({
     console.log(data);
   };
 
-  const handleLinkInput = (value: string) => {
+  const handleLinkInput = async (value: string) => {
     // TODO: make this more robust, proper checking and validation
+    const trackData = await getTrackData(value);
     form.setValue("externalLink", value);
     form.setValue(
       "source",
       value.includes("soundcloud") ? "soundcloud" : "youtube",
     );
+    form.setValue("title", trackData.title);
+    form.setValue("artist", [trackData.artist]);
+
+    console.log(trackData);
   };
 
   const handleOpenChange = (open: boolean) => {
@@ -99,7 +105,7 @@ export const AddSong = ({
                       placeholder="Link"
                       onChange={(e) => {
                         field.onChange(e);
-                        handleLinkInput(e.target.value);
+                        void handleLinkInput(e.target.value);
                       }}
                     />
                   </FormControl>
