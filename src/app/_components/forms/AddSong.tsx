@@ -1,40 +1,16 @@
+"use client";
+
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
   SheetTitle,
-  SheetFooter,
+  SheetDescription,
 } from "~/components/ui/sheet";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "~/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import { Input } from "~/components/ui/input";
-import { useForm } from "react-hook-form";
-import { Button } from "~/components/ui/button";
-import { MultiSelect } from "./MultiSelectCombo";
-import { getTrackData } from "~/lib/actions/getTrackData";
-import { useState, useEffect } from "react";
+import { LinkStep } from "./LinkStep";
+import { TrackForm } from "./TrackForm";
 import { api } from "~/trpc/react";
-
-interface FormData {
-  externalLink: string;
-  source: "soundcloud" | "youtube" | "";
-  title: string;
-  artist: string[];
-  album: string;
-}
+import { type TrackData } from "~/lib/actions/getTrackData";
 
 export const AddSong = ({
   open,
@@ -43,158 +19,55 @@ export const AddSong = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
-  const { data = [] } = api.artists.getAll.useQuery();
-  const [artists, setArtists] = useState(data);
+  const { data } = api.artists.getAll.useQuery();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [fetchedData, setFetchedData] = useState<TrackData | null>(null);
 
-  useEffect(() => {
-    setArtists(data);
-  }, [data]);
-
-  const form = useForm<FormData>({
-    defaultValues: {
-      externalLink: "",
-      source: "",
-      title: "",
-      artist: [],
-      album: "",
-    },
-  });
-
-  const handleSubmit = (data: FormData) => {
-    console.log(data);
+  const handleStep1Next = (data: TrackData) => {
+    setFetchedData(data);
+    setCurrentStep(2);
   };
 
-  const handleLinkInput = async (value: string) => {
-    // TODO: make this more robust, proper checking and validation
-    const trackData = await getTrackData(value);
-    form.setValue("externalLink", value);
-    form.setValue(
-      "source",
-      value.includes("soundcloud") ? "soundcloud" : "youtube",
-    );
-    form.setValue("title", trackData.title);
-    form.setValue("artist", [trackData.artist]);
-    setArtists([
-      ...artists,
-      { value: trackData.artist, label: trackData.artist },
-    ]);
+  const handleStep2Submit = (data: any) => {
+    console.log("Final form data:", data);
+    // TODO: Implement actual submission logic
+    onOpenChange(false);
   };
 
+  const handleBack = () => {
+    setCurrentStep(1);
+    setFetchedData(null);
+  };
+
+  // Reset state when sheet closes
   const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setCurrentStep(1);
+      setFetchedData(null);
+    }
     onOpenChange(open);
-    form.reset();
   };
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent>
-        <SheetHeader>
+        <div className="hidden">
           <SheetTitle>Add Song</SheetTitle>
-        </SheetHeader>
-        <SheetDescription>Add a song to your library</SheetDescription>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
-            <FormField
-              control={form.control}
-              name="externalLink"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Link</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Link"
-                      onChange={(e) => {
-                        field.onChange(e);
-                        void handleLinkInput(e.target.value);
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="source"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Source</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={true}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Source" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="soundcloud">SoundCloud</SelectItem>
-                      <SelectItem value="youtube">YouTube</SelectItem>
-                      {/* <SelectItem value="spotify">Spotify</SelectItem> */}
-                      {/* <SelectItem value="local">Local</SelectItem> */}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Title" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="artist"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Artist</FormLabel>
-                  <FormControl>
-                    <MultiSelect
-                      options={artists}
-                      selected={field.value}
-                      onChange={field.onChange}
-                      placeholder="Artist"
-                      allowAdd={true}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="album"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Album</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Album" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
-
-        <SheetFooter>
-          <Button type="submit" onClick={form.handleSubmit(handleSubmit)}>
-            Add Song
-          </Button>
-          <Button type="button" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-        </SheetFooter>
+          <SheetDescription>Add a new song to your library.</SheetDescription>
+        </div>
+        {currentStep === 1 && <LinkStep onNext={handleStep1Next} />}
+        {currentStep === 2 && fetchedData && (
+          <TrackForm
+            initialData={fetchedData}
+            onSubmit={handleStep2Submit}
+            onBack={handleBack}
+            mode="add"
+            artists={[
+              { value: fetchedData.artist, label: fetchedData.artist },
+              ...(data ?? []),
+            ]}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );

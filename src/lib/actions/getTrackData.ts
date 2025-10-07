@@ -18,6 +18,7 @@ export interface TrackData {
   artworkUrl: string;
   sourceUrl: string;
   sourceId: string;
+  source: "soundcloud" | "youtube";
 }
 
 export async function getTrackData(url: string): Promise<TrackData> {
@@ -91,6 +92,7 @@ async function fetchSoundCloudMetadata(url: string) {
     artworkUrl: data.artwork_url || "",
     sourceUrl: url,
     sourceId: data.id.toString(),
+    source: "soundcloud" as const,
   };
 }
 
@@ -103,5 +105,6 @@ async function fetchYouTubeMetadata(url: string) {
     artworkUrl: "",
     sourceUrl: url,
     sourceId: "",
+    source: "youtube" as const,
   };
 }

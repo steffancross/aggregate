@@ -48,7 +48,6 @@ export function MultiSelect({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [internalOptions, setInternalOptions] = useState(initialOptions);
-  console.log(internalOptions);
 
   const handleSelect = useCallback(
     (value: string) => {
