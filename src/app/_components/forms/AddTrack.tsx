@@ -11,8 +11,9 @@ import { LinkStep } from "./LinkStep";
 import { TrackForm } from "./TrackForm";
 import { api } from "~/trpc/react";
 import { type TrackData } from "~/lib/actions/getTrackData";
+import { type AddTrackFormData } from "./TrackForm";
 
-export const AddSong = ({
+export const AddTrack = ({
   open,
   onOpenChange,
 }: {
@@ -23,15 +24,36 @@ export const AddSong = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [fetchedData, setFetchedData] = useState<TrackData | null>(null);
 
+  const addTrackMutation = api.tracks.addTrack.useMutation({
+    //TODO: toast
+    onSuccess: () => {
+      setCurrentStep(1);
+      setFetchedData(null);
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
   const handleStep1Next = (data: TrackData) => {
     setFetchedData(data);
     setCurrentStep(2);
   };
 
-  const handleStep2Submit = (data: any) => {
-    console.log("Final form data:", data);
-    // TODO: Implement actual submission logic
-    onOpenChange(false);
+  const handleStep2Submit = (data: AddTrackFormData) => {
+    const preprocessedData = {
+      title: data.title,
+      artist: data.artist.filter((name) => name.trim() !== ""), // Remove empty artist names
+      album: data.album?.trim() || undefined,
+      source: data.source,
+      sourceId: data.sourceId,
+      sourceUrl: data.sourceUrl,
+      artworkUrl: data.artworkUrl || undefined,
+      duration: data.duration || undefined,
+    };
+
+    addTrackMutation.mutate(preprocessedData);
   };
 
   const handleBack = () => {

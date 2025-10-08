@@ -7,7 +7,7 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator,
 } from "~/components/ui/context-menu";
-import { AddSong } from "~/app/_components/forms/AddSong";
+import { AddTrack } from "~/app/_components/forms/AddTrack";
 
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -52,7 +52,7 @@ export const GlobalContextMenu = () => {
         </ContextMenuContent>
       </ContextMenu>
 
-      <AddSong open={addSongOpen} onOpenChange={setAddSongOpen} />
+      <AddTrack open={addSongOpen} onOpenChange={setAddSongOpen} />
     </>
   );
 };
