@@ -9,13 +9,18 @@ import {
 } from "~/components/ui/context-menu";
 import { AddSong } from "~/app/_components/forms/AddSong";
 
-import { SignOutButton } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export const GlobalContextMenu = () => {
   const router = useRouter();
+  const { isSignedIn } = useUser();
   const [addSongOpen, setAddSongOpen] = useState(false);
+
+  if (!isSignedIn) {
+    return null;
+  }
 
   const handlePlaylists = () => {
     router.push("/playlists");
