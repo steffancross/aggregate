@@ -68,4 +68,21 @@ export const playlistsRouter = createTRPCRouter({
 
       return flattenedPlaylist;
     }),
+
+  addPlaylist: protectedProcedure
+    .input(z.object({ name: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      let playlist = await ctx.db.playlist.findFirst({
+        where: { name: input.name, userId: ctx.user.id },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      if (!playlist) {
+        playlist = await ctx.db.playlist.create({
+          data: { name: input.name, userId: ctx.user.id },
+        });
+      }
+
+      return playlist;
+    }),
 });

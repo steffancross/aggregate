@@ -8,6 +8,7 @@ import {
   ContextMenuSeparator,
 } from "~/components/ui/context-menu";
 import { AddTrack } from "~/app/_components/forms/AddTrack";
+import { AddPlaylist } from "~/app/_components/forms/AddPlaylist";
 
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ export const GlobalContextMenu = () => {
   const router = useRouter();
   const { isSignedIn } = useUser();
   const [addSongOpen, setAddSongOpen] = useState(false);
+  const [addPlaylistOpen, setAddPlaylistOpen] = useState(false);
 
   if (!isSignedIn) {
     return null;
@@ -34,6 +36,10 @@ export const GlobalContextMenu = () => {
     setAddSongOpen(true);
   };
 
+  const handleAddPlaylist = () => {
+    setAddPlaylistOpen(true);
+  };
+
   return (
     <>
       <ContextMenu>
@@ -42,6 +48,9 @@ export const GlobalContextMenu = () => {
         </ContextMenuTrigger>
         <ContextMenuContent className="z-100">
           <ContextMenuItem onClick={handleAddSong}>add song</ContextMenuItem>
+          <ContextMenuItem onClick={handleAddPlaylist}>
+            add playlist
+          </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem onClick={handlePlaylists}>playlists</ContextMenuItem>
           <ContextMenuItem onClick={handleLibrary}>library</ContextMenuItem>
@@ -53,6 +62,7 @@ export const GlobalContextMenu = () => {
       </ContextMenu>
 
       <AddTrack open={addSongOpen} onOpenChange={setAddSongOpen} />
+      <AddPlaylist open={addPlaylistOpen} onOpenChange={setAddPlaylistOpen} />
     </>
   );
 };
