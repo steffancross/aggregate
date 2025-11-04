@@ -10,16 +10,18 @@ import { useForm } from "react-hook-form";
 import { MultiSelect } from "./MultiSelectCombo";
 import { type TrackData } from "~/lib/actions/getTrackData";
 import { Button } from "~/components/ui/button";
+import type { SongSource } from "@prisma/client";
 
 export interface AddTrackFormData {
   album: string;
   artist: string[];
   artworkUrl: string;
   duration: number;
-  source: "soundcloud" | "youtube";
+  source: SongSource;
   sourceId: string;
   sourceUrl: string;
   title: string;
+  id?: number;
 }
 
 export const TrackForm = ({
@@ -31,20 +33,21 @@ export const TrackForm = ({
 }: {
   initialData: TrackData;
   onSubmit: (data: AddTrackFormData) => void;
-  onBack: () => void;
+  onBack?: () => void;
   mode: "add" | "edit";
   artists: { value: string; label: string }[];
 }) => {
   const form = useForm<AddTrackFormData>({
     defaultValues: {
       album: "",
-      artist: initialData.artist ? [initialData.artist] : [],
+      artist: initialData.artist ? initialData.artist : [],
       artworkUrl: initialData.artworkUrl,
       duration: initialData.duration,
       source: initialData.source,
       sourceId: initialData.sourceId,
       sourceUrl: initialData.sourceUrl,
       title: initialData.title,
+      id: initialData?.id,
     },
   });
 
@@ -60,7 +63,7 @@ export const TrackForm = ({
       return;
     }
 
-    if (!data.source || !data.sourceId || !data.sourceUrl) {
+    if ((!data.source || !data.sourceId || !data.sourceUrl) && mode === "add") {
       alert(
         "Source information is missing. Please try fetching the track data again.",
       );
@@ -68,10 +71,6 @@ export const TrackForm = ({
     }
 
     const validArtists = data.artist.filter((name) => name.trim() !== "");
-    if (validArtists.length === 0) {
-      alert("At least one valid artist name is required");
-      return;
-    }
 
     onSubmit({
       ...data,
@@ -82,12 +81,14 @@ export const TrackForm = ({
   return (
     <div className="mt-10">
       {/* TODO: maybe use, don't always know where the image is coming from */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        className="h-30 w-30"
-        src={initialData.artworkUrl}
-        alt={initialData.title}
-      />
+      {initialData.artworkUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          className="h-30 w-30"
+          src={initialData.artworkUrl}
+          alt={initialData.title}
+        />
+      )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <FormField
@@ -133,10 +134,12 @@ export const TrackForm = ({
             )}
           />
           <p>Source: {initialData.source}</p>
-          <Button type="submit">Add Song</Button>
-          <Button type="button" onClick={onBack}>
-            Back
-          </Button>
+          <Button type="submit">{mode == "add" ? "Add Song" : "Submit"}</Button>
+          {mode == "add" && (
+            <Button type="button" onClick={onBack}>
+              Back
+            </Button>
+          )}
         </form>
       </Form>
     </div>
