@@ -102,4 +102,92 @@ export const tracksRouter = createTRPCRouter({
         return libraryTrack;
       });
     }),
+  updateTrack: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string(),
+        artist: z
+          .array(z.string().min(1, "Artist name cannot be empty"))
+          .min(1, "At least one artist is required"),
+        album: z.string().optional(),
+        artworkUrl: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user.id;
+
+      return await ctx.db.$transaction(async (tx) => {
+        const track = await tx.libraryTrack.findUnique({
+          where: {
+            id: input.id,
+            userId: userId,
+          },
+        });
+
+        if (!track) {
+          throw new Error("Track not found");
+        }
+
+        // artists
+        const artistPromises = input.artist.map(async (artistName) => {
+          let artist = await tx.artist.findFirst({
+            where: {
+              name: artistName,
+            },
+          });
+
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          if (!artist) {
+            artist = await tx.artist.create({
+              data: {
+                name: artistName,
+              },
+            });
+          }
+
+          return artist;
+        });
+        const artists = await Promise.all(artistPromises);
+
+        // album
+        let album = await tx.album.findFirst({
+          where: {
+            name: input.album,
+          },
+        });
+
+        if (!album && input.album) {
+          album = await tx.album.create({
+            data: {
+              name: input.album,
+            },
+          });
+        }
+
+        const updatedTrack = await tx.libraryTrack.update({
+          where: { id: input.id, userId: userId },
+          data: {
+            title: input.title,
+            albumId: album?.id ?? undefined,
+          },
+        });
+
+        // Delete existing artist relationships
+        await tx.libraryTrackArtist.deleteMany({
+          where: {
+            libraryTrackId: input.id,
+          },
+        });
+
+        await tx.libraryTrackArtist.createMany({
+          data: artists.map((artist) => ({
+            libraryTrackId: input.id,
+            artistId: artist.id,
+          })),
+        });
+
+        return updatedTrack;
+      });
+    }),
 });

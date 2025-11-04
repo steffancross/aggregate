@@ -1,5 +1,7 @@
 "use server";
 
+import type { SongSource } from "@prisma/client";
+
 interface SoundCloudResolveResponse {
   title: string;
   duration: number;
@@ -11,14 +13,15 @@ interface SoundCloudResolveResponse {
 }
 
 export interface TrackData {
+  id?: number;
   title: string;
-  artist: string;
+  artist: string[];
   album: string;
   duration: number;
   artworkUrl: string;
   sourceUrl: string;
   sourceId: string;
-  source: "soundcloud" | "youtube";
+  source: SongSource;
 }
 
 export async function getTrackData(url: string): Promise<TrackData> {
@@ -86,7 +89,7 @@ async function fetchSoundCloudMetadata(url: string) {
 
   return {
     title: data.title,
-    artist: data.user?.username || "",
+    artist: data.user?.username ? [data.user.username] : [],
     album: "",
     duration: data.duration,
     artworkUrl: data.artwork_url || "",
@@ -99,7 +102,7 @@ async function fetchSoundCloudMetadata(url: string) {
 async function fetchYouTubeMetadata(url: string) {
   return {
     title: "",
-    artist: "",
+    artist: [],
     album: "",
     duration: 0,
     artworkUrl: "",

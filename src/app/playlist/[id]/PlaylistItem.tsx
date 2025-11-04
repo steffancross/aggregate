@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Ellipsis, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { Button } from "~/components/ui/button";
+import { TrackOptions } from "~/app/_components/TrackOptions";
 
 interface PlaylistItemProps {
   index: number;
@@ -68,7 +69,7 @@ export const PlaylistItem = ({
         </div>
       </div>
       <div className="flex flex-row">
-        <Ellipsis />
+        <TrackOptions song={playlist[index]!} />
       </div>
     </div>
   );

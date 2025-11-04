@@ -28,6 +28,7 @@ export const playlistsRouter = createTRPCRouter({
               libraryTrack: {
                 include: {
                   track: true,
+                  album: true,
                   artists: {
                     include: {
                       artist: true,
@@ -49,6 +50,7 @@ export const playlistsRouter = createTRPCRouter({
             playlistName: dbPlaylist.name,
             trackId: entry.libraryTrackId,
             position: entry.position,
+            album: entry.libraryTrack.album?.name ?? null,
             albumId: entry.libraryTrack.albumId,
             artists: entry.libraryTrack.artists.map((artist) => {
               return {

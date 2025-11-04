@@ -42,7 +42,7 @@ export const AddTrack = ({
   };
 
   const handleStep2Submit = (data: AddTrackFormData) => {
-    const preprocessedData = {
+    const processedData = {
       title: data.title,
       artist: data.artist.filter((name) => name.trim() !== ""), // Remove empty artist names
       album: data.album?.trim() || undefined,
@@ -53,7 +53,7 @@ export const AddTrack = ({
       duration: data.duration || undefined,
     };
 
-    addTrackMutation.mutate(preprocessedData);
+    addTrackMutation.mutate(processedData);
   };
 
   const handleBack = () => {
@@ -85,7 +85,10 @@ export const AddTrack = ({
             onBack={handleBack}
             mode="add"
             artists={[
-              { value: fetchedData.artist, label: fetchedData.artist },
+              ...fetchedData.artist.map((artist) => ({
+                value: artist,
+                label: artist,
+              })),
               ...(data ?? []),
             ]}
           />

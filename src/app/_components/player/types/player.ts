@@ -1,3 +1,5 @@
+import type { SongSource } from "@prisma/client";
+
 export interface MusicPlayerAdapter {
   loadTrack(trackUrl: string): Promise<void>;
   play(): void;
@@ -29,10 +31,11 @@ export interface PlaylistTrack {
   playlistName: string;
   trackId: number;
   position: number;
+  album: string | null;
   albumId: number | null;
   artists: { artistId: number; artistName: string }[];
   title: string;
-  source: "spotify" | "soundcloud" | "youtube" | "local";
+  source: SongSource;
   sourceId: string | null;
   sourceUrl: string | null;
   artworkUrl: string | null;
