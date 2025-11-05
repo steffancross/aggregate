@@ -13,63 +13,75 @@ export const playlistsRouter = createTRPCRouter({
       },
     });
   }),
-
   getById: protectedProcedure
     .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }): Promise<PlaylistTrack[] | []> => {
-      const dbPlaylist = await ctx.db.playlist.findUnique({
-        where: {
-          id: input.id,
-          userId: ctx.user.id,
-        },
-        include: {
-          playlistEntries: {
-            include: {
-              libraryTrack: {
-                include: {
-                  track: true,
-                  album: true,
-                  artists: {
-                    include: {
-                      artist: true,
+    .query(
+      async ({
+        ctx,
+        input,
+      }): Promise<{
+        playlistEntries: PlaylistTrack[];
+        playlistName: string;
+        playlistId: number;
+      } | null> => {
+        const dbPlaylist = await ctx.db.playlist.findUnique({
+          where: {
+            id: input.id,
+            userId: ctx.user.id,
+          },
+          include: {
+            playlistEntries: {
+              include: {
+                libraryTrack: {
+                  include: {
+                    track: true,
+                    album: true,
+                    artists: {
+                      include: {
+                        artist: true,
+                      },
                     },
                   },
                 },
               },
             },
           },
-        },
-      });
+        });
 
-      if (!dbPlaylist) return [];
+        if (!dbPlaylist) return null;
 
-      const flattenedPlaylist = dbPlaylist.playlistEntries
-        .map((entry) => {
-          return {
-            playlistId: entry.playlistId,
-            playlistName: dbPlaylist.name,
-            trackId: entry.libraryTrackId,
-            position: entry.position,
-            album: entry.libraryTrack.album?.name ?? null,
-            albumId: entry.libraryTrack.albumId,
-            artists: entry.libraryTrack.artists.map((artist) => {
-              return {
-                artistId: artist.artistId,
-                artistName: artist.artist.name,
-              };
-            }),
-            title: entry.libraryTrack.title,
-            source: entry.libraryTrack.track.source,
-            sourceId: entry.libraryTrack.track.sourceId,
-            sourceUrl: entry.libraryTrack.track.sourceUrl,
-            artworkUrl: entry.libraryTrack.track.artworkUrl,
-            duration: entry.libraryTrack.track.duration,
-          };
-        })
-        .sort((a, b) => a.position - b.position);
+        const flattenedPlaylist = dbPlaylist.playlistEntries
+          .map((entry) => {
+            return {
+              playlistId: entry.playlistId,
+              playlistName: dbPlaylist.name,
+              trackId: entry.libraryTrackId,
+              position: entry.position,
+              album: entry.libraryTrack.album?.name ?? null,
+              albumId: entry.libraryTrack.albumId,
+              artists: entry.libraryTrack.artists.map((artist) => {
+                return {
+                  artistId: artist.artistId,
+                  artistName: artist.artist.name,
+                };
+              }),
+              title: entry.libraryTrack.title,
+              source: entry.libraryTrack.track.source,
+              sourceId: entry.libraryTrack.track.sourceId,
+              sourceUrl: entry.libraryTrack.track.sourceUrl,
+              artworkUrl: entry.libraryTrack.track.artworkUrl,
+              duration: entry.libraryTrack.track.duration,
+            };
+          })
+          .sort((a, b) => a.position - b.position);
 
-      return flattenedPlaylist;
-    }),
+        return {
+          playlistEntries: flattenedPlaylist,
+          playlistName: dbPlaylist.name,
+          playlistId: dbPlaylist.id,
+        };
+      },
+    ),
 
   addPlaylist: protectedProcedure
     .input(z.object({ name: z.string() }))
@@ -86,5 +98,22 @@ export const playlistsRouter = createTRPCRouter({
       }
 
       return playlist;
+    }),
+  deletePlaylist: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const playlist = await ctx.db.playlist.findUnique({
+        where: { id: input.id, userId: ctx.user.id },
+      });
+
+      if (!playlist) {
+        throw new Error("Playlist not found");
+      }
+
+      await ctx.db.playlist.delete({
+        where: { id: input.id, userId: ctx.user.id },
+      });
+
+      return { success: true };
     }),
 });
