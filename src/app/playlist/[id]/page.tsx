@@ -1,6 +1,8 @@
 import { api } from "~/trpc/server";
 import { PlaylistItem } from "./PlaylistItem";
 
+import { PlaylistHeader } from "./PlaylistHeader";
+
 const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id: playlistId } = await params;
   const playlist = await api.playlists.getById({
@@ -11,8 +13,11 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <div className="grid w-full place-items-center">
-      <h1 className="mt-7">{playlist[0]?.playlistName}</h1>
-      {playlist?.map((song, index) => {
+      <PlaylistHeader
+        playlistId={playlist.playlistId}
+        playlistName={playlist.playlistName}
+      />
+      {playlist.playlistEntries.map((song, index) => {
         return (
           <PlaylistItem
             key={song.position}
@@ -20,7 +25,7 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
             title={song.title}
             position={song.position}
             artists={song.artists}
-            playlist={playlist}
+            playlist={playlist.playlistEntries}
             playlistId={song.playlistId}
           />
         );
