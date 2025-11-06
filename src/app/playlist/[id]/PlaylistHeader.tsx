@@ -2,9 +2,10 @@
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ConfirmationDialog } from "~/app/_components/ConfirmationDialog";
+import { Input } from "~/components/ui/input";
 
 export const PlaylistHeader = ({
   playlistId,
@@ -16,7 +17,18 @@ export const PlaylistHeader = ({
   const utils = api.useUtils();
   const router = useRouter();
   const [hovered, setHovered] = useState(false);
+  const [currentPlaylistName, setCurrentPlaylistName] = useState(playlistName);
+  const [isEditing, setIsEditing] = useState(false);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+
+  const updatePlaylistMutation = api.playlists.updatePlaylist.useMutation({
+    onSuccess: async () => {
+      await utils.playlists.getAll.invalidate();
+    },
+    onError: () => {
+      //TODO: toast
+    },
+  });
 
   const deletePlaylistMutation = api.playlists.deletePlaylist.useMutation({
     onSuccess: async () => {
@@ -28,6 +40,12 @@ export const PlaylistHeader = ({
     },
   });
 
+  const handleUpdatePlaylistName = (name: string) => {
+    updatePlaylistMutation.mutate({ id: playlistId, name: name });
+    setCurrentPlaylistName(name);
+    setIsEditing(false);
+  };
+
   return (
     <>
       <div
@@ -35,15 +53,31 @@ export const PlaylistHeader = ({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <h1 className="mt-7">{playlistName}</h1>
-        {hovered && (
-          <Button
-            size="icon"
-            className="rounded-full"
-            onClick={() => setConfirmationDialogOpen(true)}
-          >
-            <Trash2 />
-          </Button>
+        {isEditing ? (
+          <Input
+            defaultValue={currentPlaylistName}
+            onBlur={(e) => handleUpdatePlaylistName(e.target.value)}
+          />
+        ) : (
+          <h1 className="mt-7">{currentPlaylistName}</h1>
+        )}
+        {hovered && !isEditing && (
+          <div>
+            <Button
+              size="icon"
+              className="rounded-full"
+              onClick={() => setIsEditing(true)}
+            >
+              <Pencil />
+            </Button>
+            <Button
+              size="icon"
+              className="rounded-full"
+              onClick={() => setConfirmationDialogOpen(true)}
+            >
+              <Trash2 />
+            </Button>
+          </div>
         )}
       </div>
       <ConfirmationDialog
