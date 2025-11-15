@@ -9,7 +9,6 @@ import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { MultiSelect } from "./MultiSelectCombo";
 import { type TrackData } from "~/lib/actions/getTrackData";
-import { Button } from "~/components/ui/button";
 import type { SongSource } from "@prisma/client";
 
 export interface AddTrackFormData {
@@ -27,7 +26,6 @@ export interface AddTrackFormData {
 export const TrackForm = ({
   initialData,
   onSubmit,
-  onBack,
   mode,
   artists,
 }: {
@@ -90,7 +88,11 @@ export const TrackForm = ({
         />
       )}
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="space-y-4"
+          id="track-form"
+        >
           <FormField
             control={form.control}
             name="title"
@@ -134,12 +136,6 @@ export const TrackForm = ({
             )}
           />
           <p>Source: {initialData.source}</p>
-          <Button type="submit">{mode == "add" ? "Add Song" : "Submit"}</Button>
-          {mode == "add" && (
-            <Button type="button" onClick={onBack}>
-              Back
-            </Button>
-          )}
         </form>
       </Form>
     </div>
