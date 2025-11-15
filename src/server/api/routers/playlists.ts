@@ -131,4 +131,121 @@ export const playlistsRouter = createTRPCRouter({
 
       return { name: input.name };
     }),
+  updateTrackPlaylists: protectedProcedure
+    .input(z.object({ trackId: z.number(), playlistIds: z.array(z.number()) }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.$transaction(async (tx) => {
+        const libraryTrack = await tx.libraryTrack.findUnique({
+          where: { id: input.trackId, userId: ctx.user.id },
+        });
+
+        if (!libraryTrack) {
+          throw new Error("Library track not found");
+        }
+
+        const currentlyInPlaylists = await tx.playlistEntry.findMany({
+          where: { libraryTrackId: input.trackId },
+        });
+
+        const currentPlaylistIds = new Set(
+          currentlyInPlaylists.map((entry) => entry.playlistId),
+        );
+        const newPlaylistIds = new Set(input.playlistIds);
+
+        const playlistsToAddTo = Array.from(newPlaylistIds).filter(
+          (id) => !currentPlaylistIds.has(id),
+        );
+        const playlistsToRemoveFrom = Array.from(currentPlaylistIds).filter(
+          (id) => !newPlaylistIds.has(id),
+        );
+
+        // adding track to playlists
+        for (const playlistId of playlistsToAddTo) {
+          const playlist = await tx.playlist.findUnique({
+            where: {
+              id: playlistId,
+              userId: ctx.user.id,
+            },
+          });
+
+          if (!playlist) {
+            throw new Error(`Playlist ${playlistId} not found`);
+          }
+
+          const maxPositionEntry = await tx.playlistEntry.findFirst({
+            where: {
+              playlistId: playlistId,
+            },
+            orderBy: {
+              position: "desc",
+            },
+          });
+
+          const newPosition = maxPositionEntry
+            ? maxPositionEntry.position + 1
+            : 0;
+
+          await tx.playlistEntry.create({
+            data: {
+              playlistId: playlistId,
+              libraryTrackId: libraryTrack.id,
+              position: newPosition,
+            },
+          });
+        }
+
+        // remove track from playlists
+        for (const playlistId of playlistsToRemoveFrom) {
+          const playlistEntry = await tx.playlistEntry.findFirst({
+            where: {
+              playlistId: playlistId,
+              libraryTrackId: libraryTrack.id,
+            },
+          });
+
+          if (!playlistEntry) {
+            throw new Error(
+              `Playlist entry for playlist ${playlistId} not found`,
+            );
+          }
+
+          const removedPosition = playlistEntry.position;
+
+          await tx.playlistEntry.delete({
+            where: {
+              playlistId_libraryTrackId: {
+                playlistId: playlistId,
+                libraryTrackId: libraryTrack.id,
+              },
+            },
+          });
+
+          // all entries in this playlist with position > removed position and decrement by 1
+          const entriesToShift = await tx.playlistEntry.findMany({
+            where: {
+              playlistId: playlistId,
+              position: {
+                gt: removedPosition,
+              },
+            },
+          });
+
+          for (const entry of entriesToShift) {
+            await tx.playlistEntry.update({
+              where: {
+                playlistId_libraryTrackId: {
+                  playlistId: entry.playlistId,
+                  libraryTrackId: entry.libraryTrackId,
+                },
+              },
+              data: {
+                position: entry.position - 1,
+              },
+            });
+          }
+        }
+
+        return { success: true };
+      });
+    }),
 });
