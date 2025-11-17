@@ -12,6 +12,8 @@ import { TrackForm } from "./TrackForm";
 import { api } from "~/trpc/react";
 import { type TrackData } from "~/lib/actions/getTrackData";
 import { type AddTrackFormData } from "./TrackForm";
+import { PlaylistSelector } from "./PlaylistSelector";
+import { Button } from "~/components/ui/button";
 
 export const AddTrack = ({
   open,
@@ -20,15 +22,44 @@ export const AddTrack = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
-  const { data } = api.artists.getAll.useQuery();
+  const utils = api.useUtils();
   const [currentStep, setCurrentStep] = useState(1);
   const [fetchedData, setFetchedData] = useState<TrackData | null>(null);
+  const [selectedPlaylists, setSelectedPlaylists] = useState<number[]>([]);
+  const { data: artists } = api.artists.getAll.useQuery();
+
+  const { data: playlists } = api.playlists.getAll.useQuery();
+  const formattedPlaylists = playlists?.map((playlist) => ({
+    value: playlist.id,
+    label: playlist.name,
+  }));
+
+  const updatePlaylistsMutation =
+    api.playlists.updateTrackPlaylists.useMutation({
+      onSuccess: async () => {
+        await utils.playlists.getAll.invalidate();
+        for (const playlistId of selectedPlaylists) {
+          await utils.playlists.getById.invalidate({ id: playlistId });
+        }
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
 
   const addTrackMutation = api.tracks.addTrack.useMutation({
     //TODO: toast
-    onSuccess: () => {
+    onSuccess: (libraryTrack) => {
+      if (selectedPlaylists.length > 0) {
+        updatePlaylistsMutation.mutate({
+          trackId: libraryTrack.id,
+          playlistIds: selectedPlaylists,
+        });
+      }
+
       setCurrentStep(1);
       setFetchedData(null);
+      setSelectedPlaylists([]);
       onOpenChange(false);
     },
     onError: (error) => {
@@ -59,6 +90,7 @@ export const AddTrack = ({
   const handleBack = () => {
     setCurrentStep(1);
     setFetchedData(null);
+    setSelectedPlaylists([]);
   };
 
   // Reset state when sheet closes
@@ -66,6 +98,7 @@ export const AddTrack = ({
     if (!open) {
       setCurrentStep(1);
       setFetchedData(null);
+      setSelectedPlaylists([]);
     }
     onOpenChange(open);
   };
@@ -79,19 +112,30 @@ export const AddTrack = ({
         </div>
         {currentStep === 1 && <LinkStep onNext={handleStep1Next} />}
         {currentStep === 2 && fetchedData && (
-          <TrackForm
-            initialData={fetchedData}
-            onSubmit={handleStep2Submit}
-            onBack={handleBack}
-            mode="add"
-            artists={[
-              ...fetchedData.artist.map((artist) => ({
-                value: artist,
-                label: artist,
-              })),
-              ...(data ?? []),
-            ]}
-          />
+          <>
+            <TrackForm
+              initialData={fetchedData}
+              onSubmit={handleStep2Submit}
+              onBack={handleBack}
+              mode="add"
+              artists={[
+                ...fetchedData.artist.map((artist) => ({
+                  value: artist,
+                  label: artist,
+                })),
+                ...(artists ?? []),
+              ]}
+            />
+            <PlaylistSelector
+              options={formattedPlaylists ?? []}
+              selected={selectedPlaylists}
+              onChange={setSelectedPlaylists}
+            />
+            <Button type="submit" form="track-form">
+              Add Song
+            </Button>
+            <Button onClick={handleBack}>Back</Button>
+          </>
         )}
       </SheetContent>
     </Sheet>

@@ -11,6 +11,7 @@ import { api } from "~/trpc/react";
 import { type AddTrackFormData } from "./TrackForm";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { useRouter } from "next/navigation";
+import { Button } from "~/components/ui/button";
 
 export const EditTrack = ({
   open,
@@ -74,12 +75,17 @@ export const EditTrack = ({
           <SheetDescription>Edit a song in your library.</SheetDescription>
         </div>
         {initialData && (
-          <TrackForm
-            initialData={initialData}
-            onSubmit={handleSubmit}
-            mode="edit"
-            artists={data ?? []}
-          />
+          <>
+            <TrackForm
+              initialData={initialData}
+              onSubmit={handleSubmit}
+              mode="edit"
+              artists={data ?? []}
+            />
+            <Button type="submit" form="track-form">
+              Submit
+            </Button>
+          </>
         )}
       </SheetContent>
     </Sheet>
