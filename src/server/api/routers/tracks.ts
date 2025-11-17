@@ -190,4 +190,28 @@ export const tracksRouter = createTRPCRouter({
         return updatedTrack;
       });
     }),
+  getTrackPlaylists: protectedProcedure
+    .input(z.object({ trackId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const libraryTrack = await ctx.db.libraryTrack.findUnique({
+        where: {
+          id: input.trackId,
+          userId: ctx.user.id,
+        },
+      });
+
+      if (!libraryTrack) {
+        throw new Error("Library track not found");
+      }
+
+      const playlistEntries = await ctx.db.playlistEntry.findMany({
+        where: {
+          libraryTrackId: input.trackId,
+        },
+      });
+
+      return playlistEntries.map((entry) => {
+        return entry.playlistId;
+      });
+    }),
 });
