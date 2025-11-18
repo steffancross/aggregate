@@ -137,3 +137,12 @@ model LibraryTrackArtist {
 
     @@id([libraryTrackId, artistId])
 }
+
+model SpotifyAuthState {
+    id        Int      @id @default(autoincrement())
+    state     String   @unique
+    userId    String
+    createdAt DateTime @default(now())
+
+    @@index([state])
+}
