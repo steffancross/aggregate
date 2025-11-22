@@ -25,7 +25,7 @@ export const GlobalContextMenu = ({
   const [addPlaylistOpen, setAddPlaylistOpen] = useState(false);
 
   if (!isSignedIn) {
-    return null;
+    return <>{children}</>;
   }
 
   const handleAddSong = () => {
