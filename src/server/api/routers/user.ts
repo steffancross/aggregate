@@ -4,4 +4,7 @@ export const userRouter = createTRPCRouter({
   getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
     return ctx.user;
   }),
+  userConnectedToSpotify: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.user.spotifyAccessToken !== null;
+  }),
 });

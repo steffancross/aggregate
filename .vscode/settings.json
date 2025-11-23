@@ -8,5 +8,6 @@
     "streamable",
     "unstarted",
     "vibecoded"
-  ]
+  ],
+  "prisma.pinToPrisma6": true
 }

@@ -1,7 +1,7 @@
 // see https://clerk.com/docs/references/nextjs/clerk-middleware
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isPublicRoute = createRouteMatcher(["/login"]);
+const isPublicRoute = createRouteMatcher(["/login", "/api/spotify/callback"]);
 
 export default clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
