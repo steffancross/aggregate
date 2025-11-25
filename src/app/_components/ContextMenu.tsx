@@ -14,7 +14,11 @@ import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export const GlobalContextMenu = () => {
+export const GlobalContextMenu = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const router = useRouter();
   const { isSignedIn } = useUser();
   const [addSongOpen, setAddSongOpen] = useState(false);
@@ -23,14 +27,6 @@ export const GlobalContextMenu = () => {
   if (!isSignedIn) {
     return null;
   }
-
-  const handlePlaylists = () => {
-    router.push("/playlists");
-  };
-
-  const handleLibrary = () => {
-    router.push("/library");
-  };
 
   const handleAddSong = () => {
     setAddSongOpen(true);
@@ -43,8 +39,8 @@ export const GlobalContextMenu = () => {
   return (
     <>
       <ContextMenu>
-        <ContextMenuTrigger>
-          <div className="fixed inset-0 -z-10" />
+        <ContextMenuTrigger asChild>
+          <div className="fixed inset-0">{children}</div>
         </ContextMenuTrigger>
         <ContextMenuContent className="z-100">
           <ContextMenuItem onClick={handleAddSong}>add song</ContextMenuItem>
@@ -52,9 +48,16 @@ export const GlobalContextMenu = () => {
             add playlist
           </ContextMenuItem>
           <ContextMenuSeparator />
-          <ContextMenuItem onClick={handlePlaylists}>playlists</ContextMenuItem>
-          <ContextMenuItem onClick={handleLibrary}>library</ContextMenuItem>
+          <ContextMenuItem onClick={() => router.push("/playlists")}>
+            playlists
+          </ContextMenuItem>
+          <ContextMenuItem onClick={() => router.push("/library")}>
+            library
+          </ContextMenuItem>
           <ContextMenuSeparator />
+          <ContextMenuItem onClick={() => router.push("/account")}>
+            account
+          </ContextMenuItem>
           <ContextMenuItem>
             <SignOutButton>log out</SignOutButton>
           </ContextMenuItem>

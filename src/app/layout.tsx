@@ -27,8 +27,7 @@ export default function RootLayout({
       <html lang="en" className={`${geist.variable}`}>
         <body>
           <TRPCReactProvider>
-            {children}
-            <GlobalContextMenu />
+            <GlobalContextMenu>{children}</GlobalContextMenu>
             <MusicPlayer />
           </TRPCReactProvider>
         </body>
