@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { getTrackData, type TrackData } from "~/lib/actions/getTrackData";
+import { getTrackData } from "~/lib/actions/getTrackData";
+import { type TrackData } from "~/server/lib/getTrackData";
 
 interface LinkStepProps {
   onNext: (data: TrackData) => void;
@@ -15,8 +16,6 @@ export const LinkStep = ({ onNext }: LinkStepProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleLinkSubmit = async () => {
-    setIsLoading(true);
-
     setIsLoading(true);
     setError(null);
 

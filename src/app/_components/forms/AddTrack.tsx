@@ -10,7 +10,7 @@ import {
 import { LinkStep } from "./LinkStep";
 import { TrackForm } from "./TrackForm";
 import { api } from "~/trpc/react";
-import { type TrackData } from "~/lib/actions/getTrackData";
+import { type TrackData } from "~/server/lib/getTrackData";
 import { type AddTrackFormData } from "./TrackForm";
 import { PlaylistSelector } from "./PlaylistSelector";
 import { Button } from "~/components/ui/button";
