@@ -25,6 +25,10 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    spotifyAccessToken String?
+    spotifyRefreshToken String?
+    spotifyTokenExpiresAt DateTime?
+
     playlists         Playlist[]
     libraryTracks     LibraryTrack[]
 }
