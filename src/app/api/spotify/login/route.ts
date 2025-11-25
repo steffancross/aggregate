@@ -7,7 +7,7 @@ export const GET = async () => {
 
   if (!userId) {
     console.error("Spotify login attempted without userId");
-    // TODO
+    // TODO: logger and replace url
     return NextResponse.redirect(
       new URL("/account?error=unauthorized", "http://localhost:3000"),
     );
@@ -25,7 +25,7 @@ export const GET = async () => {
       clientSecret,
       redirectUri,
     });
-    // TODO
+    // TODO: logger and replace url
     return NextResponse.redirect(
       new URL("/account?error=config_error", "http://localhost:3000"),
     );
