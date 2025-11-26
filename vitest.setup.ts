@@ -40,4 +40,4 @@ beforeEach(async () => {
   } as unknown as never);
 });
 
-export { testDb as db };
+export { testDb };

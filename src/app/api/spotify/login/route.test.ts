@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { db } from "@/vitest.setup";
+import { testDb } from "@/vitest.setup";
 
 import { mockClerkUnauthenticated, mockClerkAuth } from "~/test-utils/mocks";
 import { GET } from "./route";
@@ -23,6 +23,7 @@ describe("spotify login route", () => {
     expect(response.status).toBe(307);
     const location = response.headers.get("Location");
     expect(location).toContain("/account?error=config_error");
+
     vi.unstubAllEnvs();
   });
   it("should redirect to spotify and store state in db", async () => {
@@ -43,7 +44,7 @@ describe("spotify login route", () => {
     const state = params.get("state");
     expect(state).toBeDefined();
 
-    const storedState = await db.spotifyAuthState.findUnique({
+    const storedState = await testDb.spotifyAuthState.findUnique({
       where: { state: state! },
     });
     expect(storedState).toBeDefined();
