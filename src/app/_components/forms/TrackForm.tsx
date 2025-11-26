@@ -8,7 +8,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { useForm } from "react-hook-form";
 import { MultiSelect } from "./MultiSelectCombo";
-import { type TrackData } from "~/lib/actions/getTrackData";
+import { type TrackData } from "~/server/lib/getTrackData";
 import type { SongSource } from "@prisma/client";
 
 export interface AddTrackFormData {
