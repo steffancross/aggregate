@@ -25,10 +25,12 @@ interface YoutubeResponse {
   }[];
 }
 
+// TODO: brittle :)
 const getYoutubeId = (url: string) => {
   const parsed = new URL(url);
   return parsed.searchParams.get("v");
 };
+
 // TODO: make this still function without auth and test it
 export async function fetchYouTubeTrackData(url: string): Promise<TrackData> {
   const youtubeId = getYoutubeId(url);

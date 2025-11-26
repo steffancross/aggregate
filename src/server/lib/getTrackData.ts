@@ -1,6 +1,7 @@
 import { type SongSource } from "@prisma/client";
 import { fetchSoundCloudTrackData } from "./soundcloud/fetchSoundCloudTrackData";
 import { fetchYouTubeTrackData } from "./youtube/fetchYouTubeTrackData";
+import { fetchSpotifyTrackData } from "./spotify/fetchSpotifyTrackData";
 
 export interface TrackData {
   id?: number;
@@ -14,17 +15,28 @@ export interface TrackData {
   source: SongSource;
 }
 
-export async function getTrackData(url: string): Promise<TrackData> {
-  const source = url.includes("soundcloud") ? "soundcloud" : "youtube";
+export async function getTrackData({
+  url,
+  clerkId,
+}: {
+  url: string;
+  clerkId: string;
+}): Promise<TrackData> {
+  const sources: SongSource[] = ["soundcloud", "youtube", "spotify"];
+  const source = sources.find((s) => url.includes(s)) ?? null;
 
-  try {
-    if (source === "soundcloud") {
+  if (!source) {
+    throw new Error("Invalid source");
+  }
+
+  switch (source) {
+    case "soundcloud":
       return await fetchSoundCloudTrackData(url);
-    } else {
+    case "youtube":
       return await fetchYouTubeTrackData(url);
-    }
-  } catch (error) {
-    console.error(error);
-    throw new Error("Failed to get track data");
+    case "spotify":
+      return await fetchSpotifyTrackData({ url, clerkId });
+    default:
+      throw new Error("Invalid source");
   }
 }
