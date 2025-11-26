@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { db } from "@/vitest.setup";
+import { testDb } from "@/vitest.setup";
 
 import { GET } from "./route";
 import { NextRequest } from "next/server";
@@ -34,7 +34,7 @@ describe("spotify callback route", () => {
     expect(location).toContain("/account?error=state_mismatch");
   });
   it("should redirect if there is a state mismatch", async () => {
-    await db.spotifyAuthState.create({
+    await testDb.spotifyAuthState.create({
       data: {
         state: "wrongstate",
         userId: "test-user-id",
@@ -53,7 +53,7 @@ describe("spotify callback route", () => {
   it("should redirect if env variables are not set", async () => {
     vi.stubEnv("SPOTIFY_CLIENT_ID", undefined);
 
-    await db.spotifyAuthState.create({
+    await testDb.spotifyAuthState.create({
       data: {
         state: "teststate",
         userId: "test-user-id",
@@ -69,12 +69,12 @@ describe("spotify callback route", () => {
     const location = response.headers.get("Location");
     expect(location).toContain("/account?error=config_error");
 
-    await expect(db.spotifyAuthState.findFirst()).resolves.toBeNull();
+    await expect(testDb.spotifyAuthState.findFirst()).resolves.toBeNull();
 
     vi.unstubAllEnvs();
   });
   it("should redirect if token exchange fails", async () => {
-    await db.spotifyAuthState.create({
+    await testDb.spotifyAuthState.create({
       data: {
         state: "teststate",
         userId: "test-user-id",
@@ -98,7 +98,7 @@ describe("spotify callback route", () => {
     fetchSpy.mockRestore();
   });
   it("should redirect if invalid token data", async () => {
-    await db.spotifyAuthState.create({
+    await testDb.spotifyAuthState.create({
       data: {
         state: "teststate",
         userId: "test-user-id",
@@ -129,14 +129,14 @@ describe("spotify callback route", () => {
   it("should redirect to account page with success", async () => {
     const fixedDate = new Date("2025-01-01T12:00:00.000Z");
     vi.useFakeTimers({ now: fixedDate });
-    await db.spotifyAuthState.create({
+    await testDb.spotifyAuthState.create({
       data: {
         state: "teststate",
         userId: "test-user-id",
       },
     });
 
-    await db.user.create({
+    await testDb.user.create({
       data: {
         clerkId: "test-user-id",
       },
@@ -161,7 +161,7 @@ describe("spotify callback route", () => {
     const location = response.headers.get("Location");
     expect(location).toContain("/account?success=true");
 
-    const user = await db.user.findUnique({
+    const user = await testDb.user.findUnique({
       where: { clerkId: "test-user-id" },
     });
     expect(user).toBeDefined();
@@ -174,7 +174,7 @@ describe("spotify callback route", () => {
     vi.useRealTimers();
   });
   it("should redirect to account page with error", async () => {
-    await db.spotifyAuthState.create({
+    await testDb.spotifyAuthState.create({
       data: {
         state: "teststate",
         userId: "test-user-id",
