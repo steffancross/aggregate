@@ -1,6 +1,6 @@
 import { type TrackData } from "~/server/lib/getTrackData";
 
-interface SoundCloudResolveResponse {
+interface SoundCloudResponse {
   title: string;
   duration: number;
   artwork_url: string;
@@ -58,7 +58,7 @@ export async function fetchSoundCloudTrackData(
     );
   }
 
-  const data = (await res.json()) as SoundCloudResolveResponse;
+  const data = (await res.json()) as SoundCloudResponse;
 
   return {
     title: data.title,
