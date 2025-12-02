@@ -194,13 +194,13 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     return state.position / 1000;
   }
 
-  async seekTo(seconds: number): Promise<void> {
+  async seekTo(milliseconds: number): Promise<void> {
     if (!this.player || !this.isReady) {
       console.warn("Spotify player not ready for seekTo");
       return;
     }
 
-    await this.player.seek(seconds * 1000);
+    await this.player.seek(milliseconds);
   }
 
   async setVolume(value: number): Promise<void> {
@@ -217,7 +217,6 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
       console.warn("Spotify player not ready for getDuration");
       return 0;
     }
-    // TODO: do the duration from track data
     // spotify doesn't make it available here and not worth a call
     return 0;
   }
