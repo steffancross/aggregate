@@ -52,9 +52,9 @@ export const refreshSpotifyToken = async ({
           Date.now() + tokenData.expires_in * 1000,
         ),
         // usually not included but they can be rotated
-        ...(tokenData.refresh_token
-          ? { spotifyRefreshToken: tokenData.refresh_token }
-          : {}),
+        ...(tokenData.refresh_token && {
+          spotifyRefreshToken: tokenData.refresh_token,
+        }),
       },
     });
 
