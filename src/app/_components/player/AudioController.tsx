@@ -194,6 +194,12 @@ export class AudioController {
       console.warn("no adapter, getDuration");
       return 0;
     }
+
+    const trackDuration = this.currentTrack?.duration;
+    if (trackDuration !== null && trackDuration !== undefined) {
+      return trackDuration / 1000;
+    }
+
     return this.currentAdapter.duration;
   }
 
