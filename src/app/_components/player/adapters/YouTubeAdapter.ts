@@ -193,11 +193,7 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
     return this.player.getDuration();
   }
 
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
-  get sound(): null {
-    return null;
-  }
+  readonly sound: null = null;
 
   private getOrCreateIframe(): HTMLIFrameElement {
     let iframe = document.getElementById(this.iframeId) as HTMLIFrameElement;
