@@ -2,12 +2,12 @@ import type { SongSource } from "@prisma/client";
 
 export interface MusicPlayerAdapter {
   loadTrack(trackUrl: string): Promise<void>;
-  play(): void;
-  pause(): void;
+  play(): void | Promise<void>;
+  pause(): void | Promise<void>;
   isPlaying(): Promise<boolean>;
   getCurrentTime(): Promise<number>;
-  seekTo(seconds: number): void;
-  setVolume(value: number): void;
+  seekTo(seconds: number): void | Promise<void>;
+  setVolume(value: number): void | Promise<void>;
   readonly duration: number;
   readonly sound: SoundCloudSound | null;
 }
