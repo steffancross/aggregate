@@ -47,9 +47,18 @@ export function useMusicPlayer() {
     };
     document.head.appendChild(ytScript);
 
+    const spotifyScript = document.createElement("script");
+    spotifyScript.src = "https://sdk.scdn.co/spotify-player.js";
+    spotifyScript.async = true;
+    spotifyScript.onload = () => {
+      console.log("Spotify API loaded");
+    };
+    document.body.appendChild(spotifyScript);
+
     return () => {
       document.head.removeChild(scScript);
       document.head.removeChild(ytScript);
+      document.body.removeChild(spotifyScript);
     };
   }, []);
 
@@ -124,7 +133,7 @@ export function useMusicPlayer() {
         setController(newController);
         setIsLoaded(true);
         await newController.play();
-        newController.setVolume(volume);
+        await newController.setVolume(volume);
         setDuration(newController.duration);
         setIsPlaying(true);
       } catch (error) {
@@ -138,7 +147,7 @@ export function useMusicPlayer() {
           setCurrentTime(0);
           setDuration(controller.duration);
           await controller.play();
-          controller.setVolume(volume);
+          await controller.setVolume(volume);
         } catch (error) {
           console.error("Failed to load new track:", error);
         }
@@ -175,7 +184,7 @@ export function useMusicPlayer() {
       setDuration(0.9);
 
       await controller.nextTrack();
-      controller.setVolume(volume);
+      await controller.setVolume(volume);
       setDuration(controller.duration);
       setIsPlaying(true);
     }
@@ -196,7 +205,7 @@ export function useMusicPlayer() {
       // user expectation, if into the song, hitting previous should go back to the start
       // if at the start, go previous track
       if (currentTime > 3) {
-        controller.seekTo(0);
+        await controller.seekTo(0);
         setCurrentTime(0);
         return;
       }
@@ -207,7 +216,7 @@ export function useMusicPlayer() {
       setDuration(0.9);
 
       await controller.previousTrack();
-      controller.setVolume(volume);
+      await controller.setVolume(volume);
       setDuration(controller.duration);
       setIsPlaying(true);
     }
@@ -225,12 +234,12 @@ export function useMusicPlayer() {
   ]);
 
   const handleVolumeChange = useCallback(
-    (volume: number[]) => {
+    async (volume: number[]) => {
       if (volume[0] !== undefined) {
         setVolume(volume[0]);
 
         if (controller && isLoaded) {
-          controller.setVolume(volume[0]);
+          await controller.setVolume(volume[0]);
         }
       }
     },
@@ -248,9 +257,9 @@ export function useMusicPlayer() {
   );
 
   const handleProgressCommit = useCallback(
-    (value: number[]) => {
+    async (value: number[]) => {
       if (controller && isLoaded && value[0] !== undefined) {
-        controller.seekTo(value[0] * 1000);
+        await controller.seekTo(value[0] * 1000);
         setIsSeeking(false);
       }
     },

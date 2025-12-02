@@ -1,5 +1,6 @@
 import { SoundCloudAdapter } from "./adapters/SoundCloudAdapter";
 import { YouTubeAdapter } from "./adapters/YouTubeAdapter";
+import { SpotifyAdapter } from "./adapters/SpotifyAdapter";
 import type {
   MusicPlayerAdapter,
   PlaylistTrack,
@@ -29,6 +30,9 @@ export class AudioController {
         break;
       case "youtube":
         adapter = new YouTubeAdapter();
+        break;
+      case "spotify":
+        adapter = new SpotifyAdapter();
         break;
       default:
         console.error(`Unsupported track source: ${source}`);
@@ -62,6 +66,8 @@ export class AudioController {
         return track.sourceUrl;
       case "youtube":
         return track.sourceId;
+      case "spotify":
+        return track.sourceId;
       default:
         console.error(`Unsupported track source: ${track.source}`);
         return "";
@@ -82,7 +88,7 @@ export class AudioController {
 
     // if check, only to filter the noise on first play
     if (this.currentAdapter) {
-      this.currentAdapter.pause();
+      await this.currentAdapter.pause();
     }
 
     await this.createAdapterForSource(track.source);
@@ -117,7 +123,7 @@ export class AudioController {
       console.warn("no adapter, play");
       return;
     }
-    this.currentAdapter.play();
+    await this.currentAdapter.play();
   }
 
   async pause() {
@@ -125,7 +131,7 @@ export class AudioController {
       console.warn("no adapter, pause");
       return;
     }
-    this.currentAdapter.pause();
+    await this.currentAdapter.pause();
   }
 
   async isPlaying() {
@@ -136,6 +142,7 @@ export class AudioController {
     return await this.currentAdapter.isPlaying();
   }
 
+  // time related values at this level are in seconds
   async getCurrentTime() {
     if (!this.currentAdapter) {
       console.warn("no adapter, getCurrentTime");
@@ -144,20 +151,21 @@ export class AudioController {
     return await this.currentAdapter.getCurrentTime();
   }
 
-  seekTo(seconds: number) {
+  async seekTo(seconds: number) {
     if (!this.currentAdapter) {
       console.warn("no adapter, seekTo");
       return;
     }
-    this.currentAdapter.seekTo(seconds);
+    await this.currentAdapter.seekTo(seconds);
   }
 
-  setVolume(value: number) {
+  // value is between 0 - 100, adapters are responsible for converting to their own range
+  async setVolume(value: number) {
     if (!this.currentAdapter) {
       console.warn("no adapter, setVolume");
       return;
     }
-    this.currentAdapter.setVolume(value);
+    await this.currentAdapter.setVolume(value);
   }
 
   // GETTERS
