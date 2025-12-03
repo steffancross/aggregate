@@ -143,6 +143,8 @@ export function useMusicPlayer() {
       const controllerCurrentIndex = controller.getCurrentIndex();
       if (controllerCurrentIndex !== currentTrackIndex) {
         try {
+          await controller.pause();
+          setIsPlaying(false);
           await controller.loadPlaylist(currentPlaylist, currentTrackIndex);
           setCurrentTime(0);
           setDuration(controller.duration);
