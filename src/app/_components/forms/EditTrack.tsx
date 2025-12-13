@@ -12,6 +12,7 @@ import { type AddTrackFormData } from "./TrackForm";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
 
 export const EditTrack = ({
   open,
@@ -39,15 +40,16 @@ export const EditTrack = ({
   };
 
   const editTrackMutation = api.tracks.updateTrack.useMutation({
-    //TODO: toast
     onSuccess: async () => {
       onOpenChange(false);
       await utils.playlists.getById.invalidate({ id: song.playlistId });
       await utils.playlists.getAll.invalidate();
       router.refresh();
+      toast.success("Song updated");
     },
     onError: (error) => {
       console.error(error);
+      toast.error("Error updating song");
     },
   });
 

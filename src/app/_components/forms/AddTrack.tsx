@@ -14,6 +14,7 @@ import { type TrackData } from "~/server/lib/getTrackData";
 import { type AddTrackFormData } from "./TrackForm";
 import { PlaylistSelector } from "./PlaylistSelector";
 import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
 
 export const AddTrack = ({
   open,
@@ -48,7 +49,6 @@ export const AddTrack = ({
     });
 
   const addTrackMutation = api.tracks.addTrack.useMutation({
-    //TODO: toast
     onSuccess: (libraryTrack) => {
       if (selectedPlaylists.length > 0) {
         updatePlaylistsMutation.mutate({
@@ -61,9 +61,11 @@ export const AddTrack = ({
       setFetchedData(null);
       setSelectedPlaylists([]);
       onOpenChange(false);
+      toast.success("Song added");
     },
     onError: (error) => {
       console.error(error);
+      toast.error("Error adding song");
     },
   });
 
