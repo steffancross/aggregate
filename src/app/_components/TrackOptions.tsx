@@ -73,6 +73,18 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
         <PopoverContent>
           <div onClick={() => setOpen(true)}>Edit</div>
           <Separator />
+          {song.sourceUrl && (
+            <>
+              <a
+                href={song.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Go to source
+              </a>
+              <Separator />
+            </>
+          )}
           <PlaylistSelector
             options={formattedPlaylists ?? []}
             selected={selectedPlaylists}
