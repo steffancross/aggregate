@@ -16,6 +16,7 @@ import {
   FormLabel,
 } from "~/components/ui/form";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
@@ -39,13 +40,14 @@ export const AddPlaylist = ({
   });
 
   const addPlaylistMutation = api.playlists.addPlaylist.useMutation({
-    //TODO: toast
     onSuccess: async () => {
       await utils.playlists.getAll.invalidate();
       onOpenChange(false);
+      toast.success("Playlist added");
     },
     onError: (error) => {
       console.error(error);
+      toast.error("Error adding playlist");
     },
   });
 

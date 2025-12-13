@@ -6,6 +6,7 @@ import { Trash2, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ConfirmationDialog } from "~/app/_components/ConfirmationDialog";
 import { Input } from "~/components/ui/input";
+import { toast } from "sonner";
 
 export const PlaylistHeader = ({
   playlistId,
@@ -24,9 +25,10 @@ export const PlaylistHeader = ({
   const updatePlaylistMutation = api.playlists.updatePlaylist.useMutation({
     onSuccess: async () => {
       await utils.playlists.getAll.invalidate();
+      toast.success("Playlist updated");
     },
     onError: () => {
-      //TODO: toast
+      toast.error("Error updating playlist");
     },
   });
 
@@ -34,9 +36,10 @@ export const PlaylistHeader = ({
     onSuccess: async () => {
       await utils.playlists.getAll.invalidate();
       router.push("/playlists");
+      toast.success("Playlist deleted");
     },
     onError: () => {
-      //TODO: toast
+      toast.error("Error deleting playlist");
     },
   });
 

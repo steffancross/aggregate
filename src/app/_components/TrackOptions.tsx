@@ -13,6 +13,7 @@ import type { PlaylistTrack } from "./player/types/player";
 import { PlaylistSelector } from "./forms/PlaylistSelector";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
   const utils = api.useUtils();
@@ -44,9 +45,11 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
         await utils.playlists.getAll.invalidate();
         await utils.playlists.getById.invalidate({ id: song.playlistId });
         router.refresh();
+        toast.success("Song playlists updated");
       },
       onError: (error) => {
         console.error(error);
+        toast.error("Error updating song playlists");
       },
     });
 
