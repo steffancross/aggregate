@@ -73,18 +73,25 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
         <PopoverTrigger>
           <Ellipsis className="h-4 w-4" />
         </PopoverTrigger>
-        <PopoverContent>
-          <div onClick={() => setOpen(true)}>Edit</div>
+        <PopoverContent className="p-2">
+          <div
+            onClick={() => setOpen(true)}
+            className="hover:bg-accent m-1 mt-0 cursor-pointer rounded-md p-1 pl-1.5"
+          >
+            edit song
+          </div>
           <Separator />
           {song.sourceUrl && (
             <>
-              <a
-                href={song.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Go to source
-              </a>
+              <div className="hover:bg-accent m-1 cursor-pointer rounded-md p-1 pl-1.5">
+                <a
+                  href={song.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  go to source
+                </a>
+              </div>
               <Separator />
             </>
           )}
@@ -94,6 +101,7 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
             onChange={(selectedPlaylists) => {
               handleUpdateTrackPlaylists(selectedPlaylists);
             }}
+            className="mt-2"
           />
         </PopoverContent>
       </Popover>

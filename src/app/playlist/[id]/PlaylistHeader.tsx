@@ -52,7 +52,7 @@ export const PlaylistHeader = ({
   return (
     <>
       <div
-        className="flex w-120 items-center justify-between"
+        className="mx-auto flex w-full max-w-120 items-center justify-between"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
