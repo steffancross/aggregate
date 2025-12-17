@@ -7,7 +7,8 @@ import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { Button } from "~/components/ui/button";
 import { TrackOptions } from "~/app/_components/TrackOptions";
-
+import Lottie from "lottie-react";
+import SoundWave from "./SoundWave.json";
 interface PlaylistItemProps {
   index: number;
   title: string;
@@ -51,26 +52,36 @@ export const PlaylistItem = ({
   return (
     <div
       key={position}
-      className={`flex w-7/10 flex-row items-center justify-between ${isCurrentTrack ? "border-green-500 bg-green-50" : "border-blue-500"}`}
+      className={`flex w-full max-w-full flex-row items-center justify-between p-1 text-sm md:w-[70%]`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="flex flex-row items-center gap-4">
-        {hovered ? (
-          <Button onClick={handlePlay}>
-            <Play />
-          </Button>
-        ) : (
-          <p>{index + 1}</p>
-        )}
-        <div className="flex flex-col">
-          <p>{title}</p>
-          <p>{artists.map((artist) => artist.artistName).join(", ")}</p>
+      <div className="flex min-w-0 flex-1 flex-row items-center gap-4">
+        <div className="flex w-8 flex-shrink-0 items-center justify-center">
+          {isCurrentTrack ? (
+            <Lottie animationData={SoundWave} loop={true} />
+          ) : hovered ? (
+            <Button
+              onClick={handlePlay}
+              size="icon"
+              variant="ghost"
+              className="rounded-full"
+            >
+              <Play />
+            </Button>
+          ) : (
+            <p onClick={handlePlay}>{index + 1}</p>
+          )}
+        </div>
+        <div className="flex min-w-0 flex-col">
+          <p className="truncate">{title}</p>
+          <p className="truncate">
+            {artists.map((artist) => artist.artistName).join(", ")}
+          </p>
         </div>
       </div>
-      <div className="flex flex-row">
-        <TrackOptions song={playlist[index]!} />
-      </div>
+
+      <TrackOptions song={playlist[index]!} />
     </div>
   );
 };
