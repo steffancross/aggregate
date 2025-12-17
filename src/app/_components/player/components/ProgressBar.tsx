@@ -1,5 +1,5 @@
 import { Slider } from "~/components/ui/slider";
-import { formatTime } from "../utils";
+import { formatSongTime } from "~/lib/utils";
 
 interface ProgressBarProps {
   currentTime: number;
@@ -26,7 +26,7 @@ export const ProgressBar = ({
       />
 
       <span className="w-24">
-        {formatTime(currentTime)} / {formatTime(duration)}
+        {formatSongTime(currentTime)} / {formatSongTime(duration)}
       </span>
     </>
   );
