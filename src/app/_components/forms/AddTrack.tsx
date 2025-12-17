@@ -107,7 +107,7 @@ export const AddTrack = ({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent>
+      <SheetContent className="justify-center">
         <div className="hidden">
           <SheetTitle>Add Song</SheetTitle>
           <SheetDescription>Add a new song to your library.</SheetDescription>
