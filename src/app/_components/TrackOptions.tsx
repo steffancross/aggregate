@@ -1,14 +1,18 @@
 "use client";
 
 import { Ellipsis } from "lucide-react";
+
 import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "~/components/ui/popover";
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "~/components/ui/dropdown-menu";
+
 import { EditTrack } from "./forms/EditTrack";
 import { useState, useEffect } from "react";
-import { Separator } from "~/components/ui/separator";
+
 import type { PlaylistTrack } from "./player/types/player";
 import { PlaylistSelector } from "./forms/PlaylistSelector";
 import { api } from "~/trpc/react";
@@ -69,21 +73,18 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
 
   return (
     <>
-      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-        <PopoverTrigger>
+      <DropdownMenu open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <DropdownMenuTrigger>
           <Ellipsis className="h-4 w-4" />
-        </PopoverTrigger>
-        <PopoverContent className="p-2">
-          <div
-            onClick={() => setOpen(true)}
-            className="hover:bg-accent m-1 mt-0 cursor-pointer rounded-md p-1 pl-1.5"
-          >
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="p-2">
+          <DropdownMenuItem onClick={() => setOpen(true)}>
             edit song
-          </div>
-          <Separator />
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           {song.sourceUrl && (
             <>
-              <div className="hover:bg-accent m-1 cursor-pointer rounded-md p-1 pl-1.5">
+              <DropdownMenuItem asChild>
                 <a
                   href={song.sourceUrl}
                   target="_blank"
@@ -91,8 +92,8 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
                 >
                   go to source
                 </a>
-              </div>
-              <Separator />
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
             </>
           )}
           <PlaylistSelector
@@ -103,8 +104,8 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
             }}
             className="mt-2"
           />
-        </PopoverContent>
-      </Popover>
+        </DropdownMenuContent>
+      </DropdownMenu>
       {open && <EditTrack open={open} onOpenChange={setOpen} song={song} />}
     </>
   );

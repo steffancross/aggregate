@@ -46,8 +46,8 @@ const columns: ColumnDef<LibraryTrack>[] = [
     header: "Album",
   },
   {
-    accessorKey: "duration",
-    header: "Duration",
+    accessorKey: "time",
+    header: "Time",
     cell: ({ row }) => {
       if (!row.original.duration) return "";
       return formatSongTime(row.original.duration / 1000);
