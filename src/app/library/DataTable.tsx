@@ -1,5 +1,6 @@
 "use client";
 
+import { formatSongTime } from "~/lib/utils";
 import {
   type ColumnDef,
   flexRender,
@@ -47,6 +48,10 @@ const columns: ColumnDef<LibraryTrack>[] = [
   {
     accessorKey: "duration",
     header: "Duration",
+    cell: ({ row }) => {
+      if (!row.original.duration) return "";
+      return formatSongTime(row.original.duration / 1000);
+    },
   },
   {
     accessorKey: "source",
