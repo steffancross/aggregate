@@ -11,7 +11,7 @@ const Login = async () => {
   }
 
   return (
-    <main className="bg-green flex min-h-screen flex-col items-center justify-center text-black">
+    <main className="flex min-h-screen flex-col items-center justify-center">
       <h1 className="text-4xl font-bold">Aggregate</h1>
       <SignInButton mode="modal" />
     </main>
