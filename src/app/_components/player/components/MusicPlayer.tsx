@@ -1,10 +1,10 @@
 "use client";
 
-import { useMusicPlayer } from "./useMusicPlayer";
-import { ProgressBar } from "./components/ProgressBar";
-import { PlaybackControl } from "./components/PlaybackControl";
-import { VolumeControl } from "./components/VolumeControl";
-import { useMusicPlayerStore } from "./MusicPlayerStore";
+import { useMusicPlayer } from "../useMusicPlayer";
+import { ProgressBar } from "./ProgressBar";
+import { PlaybackControl } from "./PlaybackControl";
+import { VolumeControl } from "./VolumeControl";
+import { useMusicPlayerStore } from "../MusicPlayerStore";
 
 export const MusicPlayer = () => {
   const { loadedOnce, isPlaying, volume, duration, currentTime } =
