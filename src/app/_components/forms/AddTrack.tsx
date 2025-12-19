@@ -61,11 +61,13 @@ export const AddTrack = ({
       setFetchedData(null);
       setSelectedPlaylists([]);
       onOpenChange(false);
-      toast.success("Song added");
+      // TODO
+      toast.success("Song added", { position: "top-right" });
     },
     onError: (error) => {
       console.error(error);
-      toast.error("Error adding song");
+      //  TODO
+      toast.error("Error adding song", { position: "top-right" });
     },
   });
 
