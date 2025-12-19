@@ -26,8 +26,8 @@ export const libraryRouter = createTRPCRouter({
         title: track.title,
         artists: track.artists.map((artist) => {
           return {
-            id: artist.artistId,
-            name: artist.artist.name,
+            artistId: artist.artistId,
+            artistName: artist.artist.name,
           };
         }),
         album: track.album,
@@ -36,6 +36,13 @@ export const libraryRouter = createTRPCRouter({
         sourceId: track.track.sourceId,
         sourceUrl: track.track.sourceUrl,
         artworkUrl: track.track.artworkUrl,
+
+        // additional fields to satisfy playlistTrack type
+        trackId: track.id,
+        playlistId: -1,
+        playlistName: "",
+        position: 1,
+        albumId: track.album?.id ?? null,
       };
     });
 

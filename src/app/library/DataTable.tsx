@@ -27,6 +27,11 @@ export type LibraryTrack = {
   sourceId: string | null;
   sourceUrl: string | null;
   artworkUrl: string | null;
+  trackId: number;
+  playlistId: number;
+  playlistName: string;
+  position: number;
+  albumId: number | null;
 };
 
 const columns: ColumnDef<LibraryTrack>[] = [
