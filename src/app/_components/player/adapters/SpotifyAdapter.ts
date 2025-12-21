@@ -118,7 +118,7 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
   }
 
   private async loadNewTrack(trackId: string): Promise<void> {
-    if (!this.player || !this.isReady) {
+    if (!this.player) {
       console.warn("Spotify player not ready for loadNewTrack");
       return;
     }
@@ -154,6 +154,7 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     if (!response.ok) {
       console.error("Failed to load Spotify track");
     }
+    this.isReady = true;
   }
 
   async play(): Promise<void> {
