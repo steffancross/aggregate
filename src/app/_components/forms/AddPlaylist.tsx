@@ -8,16 +8,10 @@ import {
 } from "~/components/ui/sheet";
 
 import { api } from "~/trpc/react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "~/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "~/components/ui/form";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-
+import { ArrowRight } from "lucide-react";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 
@@ -68,23 +62,32 @@ export const AddPlaylist = ({
           <SheetTitle>Add Song</SheetTitle>
           <SheetDescription>Add a new song to your library.</SheetDescription>
         </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="mt-10">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Playlist name</FormLabel>
-                  <FormControl>
-                    <Input type="text" placeholder="Playlist name" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <Button type="submit">Add</Button>
-          </form>
-        </Form>
+        <div className="flex h-full items-center justify-center">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
+              <div className="flex flex-col items-center gap-2">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Playlist name"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" variant="ghost">
+                  <ArrowRight />
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </SheetContent>
     </Sheet>
   );
