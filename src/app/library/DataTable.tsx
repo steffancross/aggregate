@@ -1,6 +1,7 @@
 "use client";
 
 import { formatSongTime } from "~/lib/utils";
+import { TrackOptions } from "~/app/_components/TrackOptions";
 import {
   type ColumnDef,
   flexRender,
@@ -20,8 +21,8 @@ import {
 export type LibraryTrack = {
   id: number;
   title: string;
-  artists: { id: number; name: string }[];
-  album: { id: number; name: string } | null;
+  artists: { artistId: number; artistName: string }[];
+  album: string | null;
   duration: number | null;
   source: "soundcloud" | "spotify" | "youtube" | "local";
   sourceId: string | null;
@@ -32,35 +33,42 @@ export type LibraryTrack = {
   playlistName: string;
   position: number;
   albumId: number | null;
+  isPlayable: boolean;
 };
 
 const columns: ColumnDef<LibraryTrack>[] = [
   {
+    id: "title",
     accessorKey: "title",
     header: "Title",
   },
   {
-    accessorKey: "artists",
+    id: "artists",
     header: "Artists",
-    cell: ({ row }) => {
-      return row.original.artists.map((artist) => artist.name).join(", ");
-    },
+    accessorFn: (row) =>
+      row.artists.map((artist) => artist.artistName).join(", "),
   },
   {
+    id: "album",
     accessorKey: "album",
     header: "Album",
   },
   {
-    accessorKey: "time",
+    id: "time",
     header: "Time",
-    cell: ({ row }) => {
-      if (!row.original.duration) return "";
-      return formatSongTime(row.original.duration / 1000);
-    },
+    accessorFn: (row) =>
+      row.duration ? formatSongTime(row.duration / 1000) : "",
   },
   {
+    id: "source",
     accessorKey: "source",
     header: "Source",
+  },
+  {
+    id: "options",
+    cell: ({ row }) => {
+      return <TrackOptions song={row.original} />;
+    },
   },
 ];
 

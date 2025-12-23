@@ -30,7 +30,7 @@ export const libraryRouter = createTRPCRouter({
             artistName: artist.artist.name,
           };
         }),
-        album: track.album,
+        album: track.album?.name ?? null,
         duration: track.track.duration,
         source: track.track.source,
         sourceId: track.track.sourceId,
@@ -43,6 +43,7 @@ export const libraryRouter = createTRPCRouter({
         playlistName: "",
         position: 1,
         albumId: track.album?.id ?? null,
+        isPlayable: track.track.isPlayable,
       };
     });
 
