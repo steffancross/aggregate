@@ -17,7 +17,7 @@ export const GET = async () => {
   const clientSecret = process.env.SPOTIFY_SECRET_KEY;
   const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
   const scope =
-    "user-read-private streaming user-read-playback-state user-modify-playback-state user-read-currently-playing";
+    "user-read-private user-read-email streaming user-read-playback-state user-modify-playback-state user-read-currently-playing";
   const state = crypto.randomUUID();
 
   if (!clientId || !clientSecret || !redirectUri) {
