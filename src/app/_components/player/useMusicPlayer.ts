@@ -4,6 +4,7 @@ import {
   useMusicPlayerStore,
   useMusicPlayerComputed,
 } from "./MusicPlayerStore";
+import { startAnchorAudio, pauseAnchorAudio, setupMediaSession } from "./utils";
 
 export function useMusicPlayer() {
   const {
@@ -35,6 +36,7 @@ export function useMusicPlayer() {
     scScript.src = "https://w.soundcloud.com/player/api.js";
     scScript.async = true;
     scScript.onload = () => {
+      // eslint-disable-next-line no-console
       console.log("SoundCloud API loaded");
     };
     document.head.appendChild(scScript);
@@ -43,6 +45,7 @@ export function useMusicPlayer() {
     ytScript.src = "https://www.youtube.com/iframe_api";
     ytScript.async = true;
     ytScript.onload = () => {
+      // eslint-disable-next-line no-console
       console.log("YouTube API loaded");
     };
     document.head.appendChild(ytScript);
@@ -51,14 +54,24 @@ export function useMusicPlayer() {
     spotifyScript.src = "https://sdk.scdn.co/spotify-player.js";
     spotifyScript.async = true;
     spotifyScript.onload = () => {
+      // eslint-disable-next-line no-console
       console.log("Spotify API loaded");
     };
     document.body.appendChild(spotifyScript);
 
     return () => {
-      document.head.removeChild(scScript);
-      document.head.removeChild(ytScript);
-      document.body.removeChild(spotifyScript);
+      const sc = document.querySelector(
+        'script[src="https://w.soundcloud.com/player/api.js"]',
+      );
+      const yt = document.querySelector(
+        'script[src="https://www.youtube.com/iframe_api"]',
+      );
+      const sp = document.querySelector(
+        'script[src="https://sdk.scdn.co/spotify-player.js"]',
+      );
+      if (sc) document.head.removeChild(sc);
+      if (yt) document.head.removeChild(yt);
+      if (sp) document.body.removeChild(sp);
     };
   }, []);
 
@@ -109,8 +122,6 @@ export function useMusicPlayer() {
   const play = useCallback(async () => {
     setLoadedOnce(true);
     // needed the freshest values from the store as before when calling play,
-    // the react state hadn't updated yet with the new values.
-    // other areas aren't same tick updates so it should be fine.
     const { currentPlaylist, currentTrackIndex } =
       useMusicPlayerStore.getState();
 
@@ -144,6 +155,10 @@ export function useMusicPlayer() {
       if (controllerCurrentIndex !== currentTrackIndex) {
         try {
           await controller.pause();
+
+          // user clicked play on a track while already playing a different one
+          pauseAnchorAudio();
+
           setIsPlaying(false);
           await controller.loadPlaylist(currentPlaylist, currentTrackIndex);
           setCurrentTime(0);
@@ -158,6 +173,15 @@ export function useMusicPlayer() {
       }
       setIsPlaying(true);
     }
+
+    // TODO: all instances of this
+    // super hack job, wouldn't work the ways it should have
+    setTimeout(() => {
+      void startAnchorAudio();
+      const currentController = useMusicPlayerStore.getState().controller;
+      const metadata = currentController?.getMediaMetadata() ?? null;
+      setupMediaSession(metadata);
+    }, 1500);
   }, [
     controller,
     isLoaded,
@@ -174,21 +198,32 @@ export function useMusicPlayer() {
     if (controller && isLoaded) {
       await controller.pause();
       setIsPlaying(false);
+      pauseAnchorAudio();
     }
   }, [controller, isLoaded, setIsPlaying]);
 
   const next = useCallback(async () => {
     if (currentPlaylist && hasNextTrack && controller) {
+      pauseAnchorAudio();
       setCurrentTrackIndex(currentTrackIndex + 1);
 
       // hacky loading state to get the slider and duration to properly display while loading next track
       setCurrentTime(0.01);
       setDuration(0.9);
 
+      await controller.pause();
+      setIsPlaying(false);
       await controller.nextTrack();
       await controller.setVolume(volume);
       setDuration(controller.duration);
       setIsPlaying(true);
+
+      setTimeout(() => {
+        void startAnchorAudio();
+        const currentController = useMusicPlayerStore.getState().controller;
+        const metadata = currentController?.getMediaMetadata() ?? null;
+        setupMediaSession(metadata);
+      }, 1500);
     }
   }, [
     controller,
@@ -212,6 +247,8 @@ export function useMusicPlayer() {
         return;
       }
 
+      pauseAnchorAudio();
+
       setCurrentTrackIndex(currentTrackIndex - 1);
 
       setCurrentTime(0.01);
@@ -221,6 +258,13 @@ export function useMusicPlayer() {
       await controller.setVolume(volume);
       setDuration(controller.duration);
       setIsPlaying(true);
+
+      setTimeout(() => {
+        void startAnchorAudio();
+        const currentController = useMusicPlayerStore.getState().controller;
+        const metadata = currentController?.getMediaMetadata() ?? null;
+        setupMediaSession(metadata);
+      }, 1500);
     }
   }, [
     controller,

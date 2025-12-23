@@ -48,7 +48,6 @@ export class AudioController {
     this.currentIndex = index;
 
     if (this.playlist.length > 0) {
-      await this.createAdapterForSource(this.playlist[index]!.source);
       await this.loadTrackByIndex(this.currentIndex);
     }
   }
@@ -209,5 +208,26 @@ export class AudioController {
       return null;
     }
     return this.currentAdapter.sound;
+  }
+
+  getMediaMetadata(): MediaMetadataInit | null {
+    if (!this.currentTrack) {
+      return null;
+    }
+
+    return {
+      title: this.currentTrack.title,
+      artist: this.currentTrack.artists
+        .map((artist) => artist.artistName)
+        .join(", "),
+      album: this.currentTrack.album ?? undefined,
+      artwork: this.currentTrack.artworkUrl
+        ? [
+            {
+              src: this.currentTrack.artworkUrl,
+            },
+          ]
+        : [],
+    };
   }
 }
