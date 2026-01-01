@@ -50,7 +50,8 @@ export const TrackForm = ({
   });
 
   const handleSubmit = (data: AddTrackFormData) => {
-    //TODO: form validation
+    //TODO: form validation in line
+    // bad
     if (!data.title.trim()) {
       alert("Title is required");
       return;
