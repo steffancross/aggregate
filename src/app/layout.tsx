@@ -5,7 +5,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
-import { MusicPlayer } from "~/app/_components/player/components/MusicPlayer";
+import { MusicPlayer } from "~/app/_components/player/components/desktop/MusicPlayer";
 import { GlobalContextMenu } from "~/app/_components/ContextMenu";
 import { Toaster } from "~/components/ui/sonner";
 import { AppMediaAnchor } from "~/app/_components/player/components/MediaSessionAnchor";
