@@ -36,9 +36,9 @@ export const PlayerCard = () => {
           </div>
           <Button onClick={isPlaying ? pause : play} variant="ghost">
             {isPlaying ? (
-              <Pause fill="#fff" size={20} />
+              <Pause fill="#fff" className="size-5" />
             ) : (
-              <Play fill="#fff" size={30} />
+              <Play fill="#fff" className="size-5" />
             )}
           </Button>
         </div>

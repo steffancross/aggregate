@@ -18,29 +18,24 @@ export const PlaybackControl = ({
 }: PlaybackControlProps) => {
   return (
     <div className="flex flex-row gap-2">
-      <Button
-        onClick={onPrevious}
-        className="px-4 py-2 text-white disabled:bg-gray-300"
-      >
-        <SkipBack className="h-4 w-4" />
+      <Button onClick={onPrevious} variant="ghost">
+        <SkipBack className="h-4 w-4" fill="#fff" />
       </Button>
 
       <Button
         onClick={isPlaying ? onPause : onPlay}
-        className="bg-green-500 disabled:bg-gray-300"
+        variant="ghost"
+        size="icon"
       >
         {isPlaying ? (
-          <Pause className="h-4 w-4" />
+          <Pause className="size-6" fill="#fff" />
         ) : (
-          <Play className="h-4 w-4" />
+          <Play fill="#fff" className="size-6" />
         )}
       </Button>
 
-      <Button
-        onClick={onNext}
-        className="px-4 py-2 text-white disabled:bg-gray-300"
-      >
-        <SkipForward className="h-4 w-4" />
+      <Button onClick={onNext} variant="ghost">
+        <SkipForward className="h-4 w-4" fill="#fff" />
       </Button>
     </div>
   );

@@ -23,7 +23,7 @@ export const MusicPlayer = () => {
   if (!loadedOnce) return null;
 
   return (
-    <div className="fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 gap-4">
+    <div className="bg-background/40 fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 gap-4 rounded-full p-3 backdrop-blur-[2px]">
       <PlaybackControl
         isPlaying={isPlaying}
         onPlay={play}
