@@ -15,7 +15,7 @@ export const ProgressBar = ({
   onProgressCommit,
 }: ProgressBarProps) => {
   return (
-    <>
+    <div className="flex flex-row items-center gap-4">
       <Slider
         value={[currentTime]}
         onValueChange={onProgressChange}
@@ -23,11 +23,12 @@ export const ProgressBar = ({
         max={duration}
         step={1}
         className="w-100"
+        thumbClassName="hidden"
       />
 
       <span className="w-24">
         {formatSongTime(currentTime)} / {formatSongTime(duration)}
       </span>
-    </>
+    </div>
   );
 };
