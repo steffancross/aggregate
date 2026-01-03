@@ -24,9 +24,6 @@ export const MusicPlayer = () => {
 
   return (
     <div className="fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 gap-4">
-      <div id="player-container" className="mb-4">
-        {/* Iframe will be inserted here */}
-      </div>
       <PlaybackControl
         isPlaying={isPlaying}
         onPlay={play}
