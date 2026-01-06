@@ -6,6 +6,7 @@ interface ProgressBarProps {
   duration: number;
   onProgressChange: (value: number[]) => void;
   onProgressCommit: (value: number[]) => void;
+  location?: "desktop" | "mobile";
 }
 
 export const ProgressBar = ({
@@ -13,16 +14,23 @@ export const ProgressBar = ({
   duration,
   onProgressChange,
   onProgressCommit,
+  location = "desktop",
 }: ProgressBarProps) => {
   return (
-    <div className="flex flex-row items-center gap-4">
+    <div
+      className={
+        location === "desktop"
+          ? "flex flex-row items-center gap-4"
+          : "flex flex-col-reverse"
+      }
+    >
       <Slider
         value={[currentTime]}
         onValueChange={onProgressChange}
         onValueCommit={onProgressCommit}
         max={duration}
         step={1}
-        className="w-100"
+        className={location === "desktop" ? "w-80" : "w-full"}
         thumbClassName="hidden"
       />
 
