@@ -4,7 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
@@ -121,5 +122,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* TODO: maybe later, glow effect */
+    /* text-shadow:
+      0 0 1px rgba(255, 255, 255, 0.2),
+      0 0 6px rgba(255, 255, 255, 0.5);
+    filter: blur(0.35px); */
   }
 }
