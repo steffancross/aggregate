@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -71,7 +72,7 @@ export const EditTrack = ({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent>
+      <SheetContent className="justify-center px-4">
         <div className="hidden">
           <SheetTitle>Edit Song</SheetTitle>
           <SheetDescription>Edit a song in your library.</SheetDescription>
@@ -84,9 +85,11 @@ export const EditTrack = ({
               mode="edit"
               artists={data ?? []}
             />
-            <Button type="submit" form="track-form">
-              Submit
-            </Button>
+            <div className="flex justify-center">
+              <Button type="submit" form="track-form" variant="ghost">
+                <ArrowRight />
+              </Button>
+            </div>
           </>
         )}
       </SheetContent>
