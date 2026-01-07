@@ -79,15 +79,6 @@ export const TrackForm = ({
 
   return (
     <div className="mt-10">
-      {/* TODO: maybe use, don't always know where the image is coming from */}
-      {initialData.artworkUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          className="h-30 w-30"
-          src={initialData.artworkUrl}
-          alt={initialData.title}
-        />
-      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
@@ -99,7 +90,9 @@ export const TrackForm = ({
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs">
+                  Title
+                </FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="Title" />
                 </FormControl>
@@ -111,7 +104,9 @@ export const TrackForm = ({
             name="artist"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Artist</FormLabel>
+                <FormLabel className="text-muted-foreground text-xs">
+                  Artist
+                </FormLabel>
                 <FormControl>
                   <MultiSelect
                     options={artists}
@@ -124,7 +119,8 @@ export const TrackForm = ({
               </FormItem>
             )}
           />
-          <FormField
+          {/* TODO: maybe include later */}
+          {/* <FormField
             control={form.control}
             name="album"
             render={({ field }) => (
@@ -136,7 +132,7 @@ export const TrackForm = ({
               </FormItem>
             )}
           />
-          <p>Source: {initialData.source}</p>
+          <p>Source: {initialData.source}</p> */}
         </form>
       </Form>
     </div>

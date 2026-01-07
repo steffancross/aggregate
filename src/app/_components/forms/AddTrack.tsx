@@ -15,6 +15,7 @@ import { type AddTrackFormData } from "./TrackForm";
 import { PlaylistSelector } from "./PlaylistSelector";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 
 export const AddTrack = ({
   open,
@@ -116,7 +117,7 @@ export const AddTrack = ({
         </div>
         {currentStep === 1 && <LinkStep onNext={handleStep1Next} />}
         {currentStep === 2 && fetchedData && (
-          <>
+          <div className="flex flex-col gap-4 px-4">
             <TrackForm
               initialData={fetchedData}
               onSubmit={handleStep2Submit}
@@ -135,11 +136,15 @@ export const AddTrack = ({
               selected={selectedPlaylists}
               onChange={setSelectedPlaylists}
             />
-            <Button type="submit" form="track-form">
-              Add Song
-            </Button>
-            <Button onClick={handleBack}>Back</Button>
-          </>
+            <div className="flex justify-center gap-2">
+              <Button onClick={handleBack} variant="ghost">
+                <ArrowLeft />
+              </Button>
+              <Button type="submit" form="track-form" variant="ghost">
+                <ArrowRight />
+              </Button>
+            </div>
+          </div>
         )}
       </SheetContent>
     </Sheet>
