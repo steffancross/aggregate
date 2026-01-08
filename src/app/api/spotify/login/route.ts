@@ -1,16 +1,14 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
 
-export const GET = async () => {
+export const GET = async (request: NextRequest) => {
   const { userId } = await auth();
+  const url = request.nextUrl;
 
   if (!userId) {
     console.error("Spotify login attempted without userId");
-    // TODO: logger and replace url
-    return NextResponse.redirect(
-      new URL("/account?error=unauthorized", "http://localhost:3000"),
-    );
+    return NextResponse.redirect(new URL("/account?error=unauthorized", url));
   }
 
   const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -27,9 +25,7 @@ export const GET = async () => {
       redirectUri,
     });
     // TODO: logger and replace url
-    return NextResponse.redirect(
-      new URL("/account?error=config_error", "http://localhost:3000"),
-    );
+    return NextResponse.redirect(new URL("/account?error=config_error", url));
   }
 
   await db.spotifyAuthState.create({
