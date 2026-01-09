@@ -1,6 +1,6 @@
 # Aggregate
 
-A music listening that brings together tracks from multiple platforms. Currently supports YouTube, SoundCloud, and Spotify.
+A music listening app that brings together tracks from multiple platforms. Currently supports YouTube, SoundCloud, and Spotify.
 
 ## Tech Stack
 
@@ -22,8 +22,9 @@ This project is somewhat in development. Will make it a bit smoother, add a coup
 
 ### Maybe in the future
 
-- Ability to use app without YouTube or SoundCloud API keys
+- Ability to use the app without YouTube or SoundCloud API keys
 - Upload songs from local device
-- Browser extension to add tracks from respective sites
+- Bulk playlist loader
+- Browser extension to add tracks 
 - More thorough testing and better patterns
 - Performance optimizations
