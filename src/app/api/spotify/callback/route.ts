@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  if (!storedState || returnedState !== storedState.state) {
+  if (returnedState !== storedState?.state) {
     console.error("State mismatch:", { returnedState, storedState });
     return NextResponse.redirect(new URL("/account?error=state_mismatch", url));
   }
