@@ -4,8 +4,9 @@ import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { api } from "~/trpc/react";
+import { Suspense } from "react";
 
-const Account = () => {
+const AccountContent = () => {
   // react strict mode fix
   const firedRef = useRef(false);
   const searchParams = useSearchParams();
@@ -37,6 +38,14 @@ const Account = () => {
         {isLoading ? "Loading..." : data ? "Connected" : "Connect Spotify"}
       </Button>
     </main>
+  );
+};
+
+const Account = () => {
+  return (
+    <Suspense fallback={<div>loading...</div>}>
+      <AccountContent />
+    </Suspense>
   );
 };
 
