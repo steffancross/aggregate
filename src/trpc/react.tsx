@@ -80,7 +80,7 @@ function getBaseUrl() {
     RAILWAY_STATIC_URL: process.env.RAILWAY_STATIC_URL,
     PORT: process.env.PORT,
   };
-  console.warn("[getBaseUrl] Server-side env vars:", envVars);
+  console.error("[getBaseUrl] Server-side env vars:", envVars);
 
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
 
