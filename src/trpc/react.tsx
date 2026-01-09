@@ -73,10 +73,18 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return window.location.origin;
+  const envVars = {
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    VERCEL_URL: process.env.VERCEL_URL,
+    RAILWAY_PUBLIC_DOMAIN: process.env.RAILWAY_PUBLIC_DOMAIN,
+    RAILWAY_STATIC_URL: process.env.RAILWAY_STATIC_URL,
+    PORT: process.env.PORT,
+  };
+  console.warn("[getBaseUrl] Server-side env vars:", envVars);
+
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
 
-  if (process.env.HOSTED_PUBLIC_APP_URL)
-    return process.env.HOSTED_PUBLIC_APP_URL;
+  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
 
   // railway support
   if (process.env.RAILWAY_PUBLIC_DOMAIN)
