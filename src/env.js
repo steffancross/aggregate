@@ -13,7 +13,7 @@ export const env = createEnv({
       .default("development"),
     SPOTIFY_CLIENT_ID: z.string(),
     SPOTIFY_SECRET_KEY: z.string(),
-    SPOTIFY_REDIRECT_URI: z.string().url(),
+    SPOTIFY_REDIRECT_URI: z.string(),
     YT_API_KEY: z.string(),
     SC_CLIENT_ID: z.string(),
     SC_CLIENT_SECRET: z.string(),
