@@ -9,6 +9,7 @@ interface SpotifyTokenResponse {
 
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
+  console.error("Spotify callback URL:", url);
   const code = url.searchParams.get("code");
   const returnedState = url.searchParams.get("state");
   const error = url.searchParams.get("error");
