@@ -7,21 +7,31 @@ interface SpotifyTokenResponse {
   expires_in: number;
 }
 
+const getBaseUrl = (request: NextRequest) => {
+  if (process.env.RAILWAY_PUBLIC_DOMAIN) {
+    return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
+  }
+  return request.nextUrl.origin;
+};
+
 export async function GET(request: NextRequest) {
   const url = request.nextUrl;
-  console.error("Spotify callback URL:", url);
+  const baseUrl = getBaseUrl(request);
+
   const code = url.searchParams.get("code");
   const returnedState = url.searchParams.get("state");
   const error = url.searchParams.get("error");
 
   if (error) {
     console.error("Spotify callback error:", error);
-    return NextResponse.redirect(new URL(`/account?error=${error}`, url));
+    return NextResponse.redirect(new URL(`/account?error=${error}`, baseUrl));
   }
 
   if (!code || !returnedState) {
     console.error("Spotify callback missing params:", { code, returnedState });
-    return NextResponse.redirect(new URL("/account?error=missing_params", url));
+    return NextResponse.redirect(
+      new URL("/account?error=missing_params", baseUrl),
+    );
   }
 
   const storedState = await db.spotifyAuthState.findUnique({
@@ -32,7 +42,9 @@ export async function GET(request: NextRequest) {
 
   if (returnedState !== storedState?.state) {
     console.error("State mismatch:", { returnedState, storedState });
-    return NextResponse.redirect(new URL("/account?error=state_mismatch", url));
+    return NextResponse.redirect(
+      new URL("/account?error=state_mismatch", baseUrl),
+    );
   }
 
   await db.spotifyAuthState.delete({
@@ -49,7 +61,9 @@ export async function GET(request: NextRequest) {
       clientSecret,
       redirectUri,
     });
-    return NextResponse.redirect(new URL("/account?error=config_error", url));
+    return NextResponse.redirect(
+      new URL("/account?error=config_error", baseUrl),
+    );
   }
 
   try {
@@ -74,7 +88,7 @@ export async function GET(request: NextRequest) {
     if (!tokenResponse.ok) {
       console.error("Token exchange error:", await tokenResponse.text());
       return NextResponse.redirect(
-        new URL("/account?error=token_exchange", url),
+        new URL("/account?error=token_exchange", baseUrl),
       );
     }
 
@@ -87,7 +101,7 @@ export async function GET(request: NextRequest) {
     ) {
       console.error("Invalid token data:", tokenData);
       return NextResponse.redirect(
-        new URL("/account?error=invalid_token", url),
+        new URL("/account?error=invalid_token", baseUrl),
       );
     }
 
@@ -102,9 +116,11 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.redirect(new URL("/account?success=true", url));
+    return NextResponse.redirect(new URL("/account?success=true", baseUrl));
   } catch (err) {
     console.error("Error exchanging token:", err);
-    return NextResponse.redirect(new URL("/account?error=server_error", url));
+    return NextResponse.redirect(
+      new URL("/account?error=server_error", baseUrl),
+    );
   }
 }

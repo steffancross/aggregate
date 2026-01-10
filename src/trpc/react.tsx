@@ -73,71 +73,12 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return window.location.origin;
-  // const envVars = {
-  //   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  //   VERCEL_URL: process.env.VERCEL_URL,
-  //   RAILWAY_PUBLIC_DOMAIN: process.env.RAILWAY_PUBLIC_DOMAIN,
-  //   RAILWAY_STATIC_URL: process.env.RAILWAY_STATIC_URL,
-  //   PORT: process.env.PORT,
-  // };
-  // console.error("[getBaseUrl] Server-side env vars:", envVars);
 
-  // if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
 
-  // if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
+  // railway support
+  if (process.env.RAILWAY_PUBLIC_DOMAIN)
+    return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
 
-  // // railway support
-  // if (process.env.RAILWAY_PUBLIC_DOMAIN)
-  //   return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
-  // if (process.env.RAILWAY_STATIC_URL) return process.env.RAILWAY_STATIC_URL;
-  // return `http://localhost:${process.env.PORT ?? 3000}`;
-
-  const envVars = {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-    VERCEL_URL: process.env.VERCEL_URL,
-    RAILWAY_PUBLIC_DOMAIN: process.env.RAILWAY_PUBLIC_DOMAIN,
-    RAILWAY_STATIC_URL: process.env.RAILWAY_STATIC_URL,
-    PORT: process.env.PORT,
-  };
-  console.error("[getBaseUrl] Server-side env vars:", envVars);
-
-  if (process.env.VERCEL_URL) {
-    const url = `https://${process.env.VERCEL_URL}`;
-    console.error("✅ [getBaseUrl] Using VERCEL_URL:", url);
-    return url;
-  }
-
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    console.error(
-      "✅ [getBaseUrl] Using NEXT_PUBLIC_APP_URL:",
-      process.env.NEXT_PUBLIC_APP_URL,
-    );
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
-
-  if (process.env.RAILWAY_PUBLIC_DOMAIN) {
-    const url = `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
-    console.error("✅ [getBaseUrl] Using RAILWAY_PUBLIC_DOMAIN:", url);
-    return url;
-  }
-
-  if (process.env.RAILWAY_STATIC_URL) {
-    console.error(
-      "✅ [getBaseUrl] Using RAILWAY_STATIC_URL:",
-      process.env.RAILWAY_STATIC_URL,
-    );
-    return process.env.RAILWAY_STATIC_URL;
-  }
-
-  const fallback = `http://localhost:${process.env.PORT ?? 3000}`;
-  console.error("❌ [getBaseUrl] FALLBACK TO:", fallback);
-  console.error(
-    "❌ [getBaseUrl] Why? NEXT_PUBLIC_APP_URL truthy?",
-    !!process.env.NEXT_PUBLIC_APP_URL,
-  );
-  console.error(
-    "❌ [getBaseUrl] Why? NEXT_PUBLIC_APP_URL value:",
-    JSON.stringify(process.env.NEXT_PUBLIC_APP_URL),
-  );
-  return fallback;
+  return `http://localhost:${process.env.PORT ?? 3000}`;
 }
