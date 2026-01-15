@@ -7,6 +7,7 @@ interface SpotifyTokenResponse {
   expires_in: number;
 }
 
+// railway proxied or something, so was redirecting to localhost
 const getBaseUrl = (request: NextRequest) => {
   if (process.env.RAILWAY_PUBLIC_DOMAIN) {
     return `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`;
