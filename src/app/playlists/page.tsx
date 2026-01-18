@@ -22,10 +22,14 @@ const Playlists = () => {
           <Link
             href={`/playlist/${playlist.id}`}
             key={playlist.id}
-            className="block focus:outline-none"
+            className="block w-full focus:outline-none"
           >
-            <h3>{playlist.name}</h3>
-            <p>{playlist.playlistEntries.length} songs</p>
+            <h3 className="overflow-hidden text-[clamp(2rem,8vw,8rem)] leading-none font-bold text-ellipsis whitespace-nowrap">
+              {playlist.name}
+            </h3>
+            <p className="text-right opacity-70">
+              {playlist.playlistEntries.length} songs
+            </p>
           </Link>
         );
       })}
