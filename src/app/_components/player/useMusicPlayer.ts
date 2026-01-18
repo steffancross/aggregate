@@ -50,6 +50,12 @@ export function useMusicPlayer() {
     };
     document.head.appendChild(ytScript);
 
+    // blank setup to get rid of noise, override later
+    if (typeof window !== "undefined" && !window.onSpotifyWebPlaybackSDKReady) {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      window.onSpotifyWebPlaybackSDKReady = () => {};
+    }
+
     const spotifyScript = document.createElement("script");
     spotifyScript.src = "https://sdk.scdn.co/spotify-player.js";
     spotifyScript.async = true;
