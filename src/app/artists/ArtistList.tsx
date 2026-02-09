@@ -1,0 +1,35 @@
+"use client";
+
+import { api } from "~/trpc/react";
+import Link from "next/link";
+import { Spinner } from "~/components/ui/spinner";
+import { Separator } from "~/components/ui/separator";
+
+export const ArtistList = () => {
+  const { data: artists, isLoading } = api.artists.getUserArtists.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="grid place-items-center py-12">
+        <Spinner className="size-10" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="scroll h-screen overflow-y-scroll py-4">
+      {artists?.map((artist) => (
+        <Link
+          href={`/artists/${artist.id}`}
+          key={artist.id}
+          className="block w-full focus:outline-none"
+        >
+          <h3 className="overflow-hidden px-2 text-ellipsis whitespace-nowrap">
+            {artist.name}
+          </h3>
+          <Separator className="my-2" />
+        </Link>
+      ))}
+    </div>
+  );
+};
