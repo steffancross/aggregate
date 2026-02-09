@@ -54,6 +54,9 @@ export const GlobalContextMenu = ({
           <ContextMenuItem onClick={() => router.push("/library")}>
             library
           </ContextMenuItem>
+          <ContextMenuItem onClick={() => router.push("/artists")}>
+            artists
+          </ContextMenuItem>
           <ContextMenuSeparator />
           <ContextMenuItem onClick={() => router.push("/account")}>
             account
