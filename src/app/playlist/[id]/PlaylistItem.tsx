@@ -57,7 +57,7 @@ export const PlaylistItem = ({
       onMouseLeave={() => setHovered(false)}
     >
       <div className="flex min-w-0 flex-1 flex-row items-center gap-4">
-        <div className="flex w-8 flex-shrink-0 items-center justify-center">
+        <div className="flex w-8 shrink-0 items-center justify-center">
           {isCurrentTrack ? (
             <Lottie animationData={SoundWave} loop={true} />
           ) : hovered ? (

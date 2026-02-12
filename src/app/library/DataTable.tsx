@@ -28,6 +28,7 @@ import {
 } from "~/components/ui/table";
 import { SortableColumnHeader } from "./components/SortableColumnHeader";
 import { DataTableToolbar } from "./components/Toolbar";
+import { DataTablePlay } from "./components/DataTablePlay";
 
 export type LibraryTrack = {
   id: number;
@@ -49,6 +50,13 @@ export type LibraryTrack = {
 };
 
 const columns: ColumnDef<LibraryTrack>[] = [
+  {
+    id: "play",
+    cell: ({ row }) => {
+      return <DataTablePlay song={row.original} />;
+    },
+    enableHiding: false,
+  },
   {
     id: "title",
     accessorKey: "title",
@@ -185,7 +193,7 @@ export const DataTable = ({ data }: { data: LibraryTrack[] }) => {
                 return (
                   <TableHead
                     key={header.id}
-                    className="bg-chart-2/20 sticky top-0 z-20"
+                    className="bg-chart-2/15 sticky top-0 z-20"
                   >
                     {header.isPlaceholder
                       ? null
@@ -208,11 +216,14 @@ export const DataTable = ({ data }: { data: LibraryTrack[] }) => {
                 className={
                   !row.original.isPlayable
                     ? "bg-destructive/5 hover:bg-destructive/5 text-red-800"
-                    : undefined
+                    : "group hover:bg-transparent"
                 }
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cell.column.id === "play" ? "w-8" : undefined}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
