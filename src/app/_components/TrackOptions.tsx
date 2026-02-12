@@ -8,6 +8,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from "~/components/ui/dropdown-menu";
 
 import { EditTrack } from "./forms/EditTrack";
@@ -96,14 +100,21 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
               <DropdownMenuSeparator />
             </>
           )}
-          <PlaylistSelector
-            options={formattedPlaylists ?? []}
-            selected={selectedPlaylists}
-            onChange={(selectedPlaylists) => {
-              handleUpdateTrackPlaylists(selectedPlaylists);
-            }}
-            className="mt-2"
-          />
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>playlists</DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <PlaylistSelector
+                  options={formattedPlaylists ?? []}
+                  selected={selectedPlaylists}
+                  onChange={(selectedPlaylists) => {
+                    handleUpdateTrackPlaylists(selectedPlaylists);
+                  }}
+                  className="mt-2"
+                />
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
       {open && <EditTrack open={open} onOpenChange={setOpen} song={song} />}
