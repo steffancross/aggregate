@@ -158,7 +158,10 @@ export function useMusicPlayer() {
       }
     } else if (controller && isLoaded) {
       const controllerCurrentIndex = controller.getCurrentIndex();
-      if (controllerCurrentIndex !== currentTrackIndex) {
+      if (
+        controllerCurrentIndex !== currentTrackIndex ||
+        controller.getCurrentTrack()?.trackId !== currentTrack?.trackId
+      ) {
         try {
           await controller.pause();
 
@@ -167,10 +170,12 @@ export function useMusicPlayer() {
 
           setIsPlaying(false);
           await controller.loadPlaylist(currentPlaylist, currentTrackIndex);
+          setIsLoaded(true);
           setCurrentTime(0);
           setDuration(controller.duration);
           await controller.play();
           await controller.setVolume(volume);
+          setIsPlaying(true);
         } catch (error) {
           console.error("Failed to load new track:", error);
         }
