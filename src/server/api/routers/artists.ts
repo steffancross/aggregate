@@ -94,6 +94,8 @@ export const artistsRouter = createTRPCRouter({
         position: 1,
         albumId: track.album?.id ?? null,
         isPlayable: track.track.isPlayable,
+        // TODO: remove, jus tto make the table happy for now
+        isInAnyPlaylist: true,
       }));
 
       return {

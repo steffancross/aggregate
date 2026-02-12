@@ -1,7 +1,7 @@
 // see https://tanstack.com/table/v8/docs/introduction
 "use client";
 
-import { formatSongTime } from "~/lib/utils";
+import { cn, formatSongTime } from "~/lib/utils";
 import { TrackOptions } from "~/app/_components/TrackOptions";
 import {
   flexRender,
@@ -222,7 +222,7 @@ export const DataTable = ({ data }: { data: LibraryTrack[] }) => {
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className={cell.column.id === "play" ? "w-8" : undefined}
+                    className={cn("py-1", cell.column.id === "play" && "w-8")}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
