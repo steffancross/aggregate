@@ -14,6 +14,7 @@ export const libraryRouter = createTRPCRouter({
           },
         },
         album: true,
+        playlistEntries: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -44,6 +45,7 @@ export const libraryRouter = createTRPCRouter({
         position: 1,
         albumId: track.album?.id ?? null,
         isPlayable: track.track.isPlayable,
+        isInAnyPlaylist: track.playlistEntries.length > 0,
       };
     });
 
