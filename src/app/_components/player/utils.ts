@@ -41,6 +41,7 @@ export const setMediaSessionMetadata = (metadata: MediaMetadataInit | null) => {
 
 // TODO: repetitive to useMusicPlayer, make an actions file
 // phase out useMusicPlayer
+// wrap all in try catches as well
 export const setupMediaSession = (metadata: MediaMetadataInit | null) => {
   if (!("mediaSession" in navigator)) return;
 
@@ -152,6 +153,60 @@ export const setupMediaSession = (metadata: MediaMetadataInit | null) => {
     })();
   });
   navigator.mediaSession.setActionHandler("previoustrack", () => {
+    void (async () => {
+      const state = useMusicPlayerStore.getState();
+      const hasPreviousTrack = state.currentTrackIndex > 0;
+      if (state.currentPlaylist && state.controller && hasPreviousTrack) {
+        if (state.currentTime > 3) {
+          await state.controller.seekTo(0);
+          state.setCurrentTime(0);
+        } else {
+          pauseAnchorAudio();
+          state.setCurrentTrackIndex(state.currentTrackIndex - 1);
+          state.setCurrentTime(0.01);
+          state.setDuration(0.9);
+          await state.controller.previousTrack();
+          await state.controller.setVolume(state.volume);
+          state.setDuration(state.controller.duration);
+          state.setIsPlaying(true);
+
+          setTimeout(() => {
+            void startAnchorAudio();
+            const metadata = state.controller?.getMediaMetadata() ?? null;
+            setMediaSessionMetadata(metadata);
+          }, 1500);
+        }
+      }
+    })();
+  });
+  // ios is just displaying the 10 second seeks, override to next and previous track flow
+  navigator.mediaSession.setActionHandler("seekforward", () => {
+    void (async () => {
+      const state = useMusicPlayerStore.getState();
+      const hasNextTrack = state.currentPlaylist
+        ? state.currentTrackIndex < state.currentPlaylist.length - 1
+        : false;
+      if (state.currentPlaylist && state.controller && hasNextTrack) {
+        pauseAnchorAudio();
+        await state.controller.pause();
+        state.setIsPlaying(false);
+        state.setCurrentTrackIndex(state.currentTrackIndex + 1);
+        state.setCurrentTime(0.01);
+        state.setDuration(0.9);
+        await state.controller.nextTrack();
+        await state.controller.setVolume(state.volume);
+        state.setDuration(state.controller.duration);
+        state.setIsPlaying(true);
+
+        setTimeout(() => {
+          void startAnchorAudio();
+          const metadata = state.controller?.getMediaMetadata() ?? null;
+          setMediaSessionMetadata(metadata);
+        }, 1500);
+      }
+    })();
+  });
+  navigator.mediaSession.setActionHandler("seekbackward", () => {
     void (async () => {
       const state = useMusicPlayerStore.getState();
       const hasPreviousTrack = state.currentTrackIndex > 0;
