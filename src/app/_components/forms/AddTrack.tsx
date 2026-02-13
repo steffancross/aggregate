@@ -16,6 +16,7 @@ import { PlaylistSelector } from "./PlaylistSelector";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
 import { ArrowRight, ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const AddTrack = ({
   open,
@@ -24,6 +25,7 @@ export const AddTrack = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
+  const router = useRouter();
   const utils = api.useUtils();
   const [currentStep, setCurrentStep] = useState(1);
   const [fetchedData, setFetchedData] = useState<TrackData | null>(null);
@@ -38,11 +40,12 @@ export const AddTrack = ({
 
   const updatePlaylistsMutation =
     api.playlists.updateTrackPlaylists.useMutation({
-      onSuccess: async () => {
+      onSuccess: async (_data, variables) => {
         await utils.playlists.getAll.invalidate();
-        for (const playlistId of selectedPlaylists) {
+        for (const playlistId of variables.playlistIds) {
           await utils.playlists.getById.invalidate({ id: playlistId });
         }
+        router.refresh();
       },
       onError: (error) => {
         console.error(error);
@@ -51,10 +54,11 @@ export const AddTrack = ({
 
   const addTrackMutation = api.tracks.addTrack.useMutation({
     onSuccess: (libraryTrack) => {
-      if (selectedPlaylists.length > 0) {
+      const playlistIds = selectedPlaylists;
+      if (playlistIds.length > 0) {
         updatePlaylistsMutation.mutate({
           trackId: libraryTrack.id,
-          playlistIds: selectedPlaylists,
+          playlistIds,
         });
       }
 
