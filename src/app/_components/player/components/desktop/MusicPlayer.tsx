@@ -4,7 +4,10 @@ import { useMusicPlayer } from "../../useMusicPlayer";
 import { ProgressBar } from "./ProgressBar";
 import { PlaybackControl } from "./PlaybackControl";
 import { VolumeControl } from "./VolumeControl";
-import { useMusicPlayerStore } from "../../MusicPlayerStore";
+import {
+  useMusicPlayerStore,
+  useMusicPlayerComputed,
+} from "../../MusicPlayerStore";
 
 export const MusicPlayer = () => {
   const { loadedOnce, isPlaying, volume, duration, currentTime } =
@@ -20,10 +23,12 @@ export const MusicPlayer = () => {
     handleProgressCommit,
   } = useMusicPlayer();
 
+  const { currentTrack } = useMusicPlayerComputed();
+
   if (!loadedOnce) return null;
 
   return (
-    <div className="bg-background/40 fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 gap-4 rounded-full p-3 backdrop-blur-[2px]">
+    <div className="bg-background/40 fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 items-center gap-4 rounded-full p-4 backdrop-blur-[2px]">
       <PlaybackControl
         isPlaying={isPlaying}
         onPlay={play}
@@ -31,12 +36,24 @@ export const MusicPlayer = () => {
         onNext={next}
         onPrevious={previous}
       />
-      <ProgressBar
-        currentTime={currentTime}
-        duration={duration}
-        onProgressChange={handleProgressChange}
-        onProgressCommit={handleProgressCommit}
-      />
+      <div className="flex flex-col">
+        <div className="absolute top-[6px] flex gap-2">
+          <p className="line-clamp-1 truncate text-xs font-semibold">
+            {currentTrack?.title}
+          </p>
+          <p className="text-muted-foreground line-clamp-1 truncate text-xs">
+            {currentTrack?.artists
+              .map((artist) => artist.artistName)
+              .join(", ")}
+          </p>
+        </div>
+        <ProgressBar
+          currentTime={currentTime}
+          duration={duration}
+          onProgressChange={handleProgressChange}
+          onProgressCommit={handleProgressCommit}
+        />
+      </div>
       <VolumeControl volume={volume} onVolumeChange={handleVolumeChange} />
     </div>
   );
