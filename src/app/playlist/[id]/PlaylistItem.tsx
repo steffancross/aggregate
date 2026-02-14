@@ -9,6 +9,7 @@ import { TrackOptions } from "~/app/_components/TrackOptions";
 import Lottie from "lottie-react";
 import SoundWave from "./SoundWave.json";
 import Link from "next/link";
+import { useShallow } from "zustand/react/shallow";
 
 interface PlaylistItemProps {
   index: number;
@@ -34,7 +35,14 @@ export const PlaylistItem = ({
     currentTrackIndex,
     setCurrentPlaylist,
     setCurrentTrackIndex,
-  } = useMusicPlayerStore();
+  } = useMusicPlayerStore(
+    useShallow((s) => ({
+      currentPlaylistId: s.currentPlaylistId,
+      currentTrackIndex: s.currentTrackIndex,
+      setCurrentPlaylist: s.setCurrentPlaylist,
+      setCurrentTrackIndex: s.setCurrentTrackIndex,
+    })),
+  );
 
   const { play } = useMusicPlayer();
 
@@ -78,7 +86,7 @@ export const PlaylistItem = ({
                 <Link
                   href={`/artists/${artist.artistId}`}
                   key={artist.artistId}
-                  className="hover:underline"
+                  className="text-muted-foreground hover:underline"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {artist.artistName}

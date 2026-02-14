@@ -6,16 +6,15 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Volume2 } from "lucide-react";
+import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 
 interface VolumeControlProps {
-  volume: number;
   onVolumeChange: (value: number[]) => void;
 }
 
-export const VolumeControl = ({
-  volume,
-  onVolumeChange,
-}: VolumeControlProps) => {
+export const VolumeControl = ({ onVolumeChange }: VolumeControlProps) => {
+  const volume = useMusicPlayerStore((s) => s.volume);
+
   return (
     <Popover>
       <PopoverTrigger asChild>
