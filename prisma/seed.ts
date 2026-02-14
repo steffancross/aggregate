@@ -28,7 +28,7 @@ const seed = async () => {
       source: "youtube",
       sourceId: "hQ5x8pHoIPA",
       sourceUrl: "https://www.youtube.com/watch?v=hQ5x8pHoIPA",
-      duration: 176000,
+      duration: 175000,
     },
   });
   console.log("dont want u added");

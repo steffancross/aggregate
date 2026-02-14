@@ -2,11 +2,16 @@
 
 import { useEffect } from "react";
 import { loadPlayerScripts } from "~/app/_components/player/utils";
+import { startProgressTimer } from "~/app/_components/player/progressTimer";
 
 export const AppMediaAnchor = () => {
   useEffect(() => {
     const cleanup = loadPlayerScripts();
     return cleanup;
+  }, []);
+
+  useEffect(() => {
+    startProgressTimer();
   }, []);
 
   return (

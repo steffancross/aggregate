@@ -1,5 +1,4 @@
 import { Drawer, DrawerContent, DrawerTitle } from "~/components/ui/drawer";
-import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import {
   useMusicPlayerStore,
   useMusicPlayerComputed,
@@ -7,6 +6,14 @@ import {
 import { Button } from "~/components/ui/button";
 import { Play, Pause, SkipForward, SkipBack } from "lucide-react";
 import { ProgressBar } from "~/app/_components/player/components/desktop/ProgressBar";
+import {
+  play,
+  pause,
+  next,
+  previous,
+  handleProgressChange,
+  handleProgressCommit,
+} from "~/app/_components/player/musicPlayerActions";
 
 export const PlayerSheet = ({
   open,
@@ -16,15 +23,6 @@ export const PlayerSheet = ({
   onOpenChange: (open: boolean) => void;
 }) => {
   const isPlaying = useMusicPlayerStore((s) => s.isPlaying);
-
-  const {
-    play,
-    pause,
-    next,
-    previous,
-    handleProgressChange,
-    handleProgressCommit,
-  } = useMusicPlayer();
 
   const { currentTrack, hasNextTrack } = useMusicPlayerComputed();
 

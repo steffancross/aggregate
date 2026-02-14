@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
-import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { TrackOptions } from "~/app/_components/TrackOptions";
 import Lottie from "lottie-react";
 import SoundWave from "./SoundWave.json";
 import Link from "next/link";
 import { useShallow } from "zustand/react/shallow";
+import { play } from "~/app/_components/player/musicPlayerActions";
 
 interface PlaylistItemProps {
   index: number;
@@ -43,8 +43,6 @@ export const PlaylistItem = ({
       setCurrentTrackIndex: s.setCurrentTrackIndex,
     })),
   );
-
-  const { play } = useMusicPlayer();
 
   const isCurrentTrack =
     currentPlaylistId === playlistId && currentTrackIndex === index;

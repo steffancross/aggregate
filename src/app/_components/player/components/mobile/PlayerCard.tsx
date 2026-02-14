@@ -2,7 +2,6 @@
 
 import { Card } from "~/components/ui/card";
 import { useState } from "react";
-import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import {
   useMusicPlayerStore,
   useMusicPlayerComputed,
@@ -12,6 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Play, Pause } from "lucide-react";
 import { PlayerSheet } from "./PlayerSheet";
 import { useShallow } from "zustand/react/shallow";
+import { play, pause } from "~/app/_components/player/musicPlayerActions";
 
 export const PlayerCard = () => {
   const [open, setOpen] = useState(false);
@@ -24,7 +24,6 @@ export const PlayerCard = () => {
     })),
   );
 
-  const { play, pause } = useMusicPlayer();
   const { currentTrack } = useMusicPlayerComputed();
 
   if (!loadedOnce) return null;
