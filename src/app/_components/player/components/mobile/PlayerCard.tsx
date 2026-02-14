@@ -11,14 +11,20 @@ import { Progress } from "~/components/ui/progress";
 import { Button } from "~/components/ui/button";
 import { Play, Pause } from "lucide-react";
 import { PlayerSheet } from "./PlayerSheet";
+import { useShallow } from "zustand/react/shallow";
 
 export const PlayerCard = () => {
   const [open, setOpen] = useState(false);
-  const { loadedOnce, isPlaying, duration, currentTime } =
-    useMusicPlayerStore();
+  const { loadedOnce, isPlaying, duration, currentTime } = useMusicPlayerStore(
+    useShallow((s) => ({
+      loadedOnce: s.loadedOnce,
+      isPlaying: s.isPlaying,
+      duration: s.duration,
+      currentTime: s.currentTime,
+    })),
+  );
 
   const { play, pause } = useMusicPlayer();
-
   const { currentTrack } = useMusicPlayerComputed();
 
   if (!loadedOnce) return null;

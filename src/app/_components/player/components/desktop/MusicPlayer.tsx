@@ -7,11 +7,10 @@ import { VolumeControl } from "./VolumeControl";
 import {
   useMusicPlayerStore,
   useMusicPlayerComputed,
-} from "../../MusicPlayerStore";
+} from "~/app/_components/player/MusicPlayerStore";
 
 export const MusicPlayer = () => {
-  const { loadedOnce, isPlaying, volume, duration, currentTime } =
-    useMusicPlayerStore();
+  const loadedOnce = useMusicPlayerStore((s) => s.loadedOnce);
 
   const {
     play,
@@ -30,7 +29,6 @@ export const MusicPlayer = () => {
   return (
     <div className="bg-background/40 fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 items-center gap-4 rounded-full p-4 backdrop-blur-[2px]">
       <PlaybackControl
-        isPlaying={isPlaying}
         onPlay={play}
         onPause={pause}
         onNext={next}
@@ -48,13 +46,11 @@ export const MusicPlayer = () => {
           </p>
         </div>
         <ProgressBar
-          currentTime={currentTime}
-          duration={duration}
           onProgressChange={handleProgressChange}
           onProgressCommit={handleProgressCommit}
         />
       </div>
-      <VolumeControl volume={volume} onVolumeChange={handleVolumeChange} />
+      <VolumeControl onVolumeChange={handleVolumeChange} />
     </div>
   );
 };

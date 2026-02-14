@@ -15,7 +15,7 @@ export const PlayerSheet = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
-  const { isPlaying, duration, currentTime } = useMusicPlayerStore();
+  const isPlaying = useMusicPlayerStore((s) => s.isPlaying);
 
   const {
     play,
@@ -26,7 +26,7 @@ export const PlayerSheet = ({
     handleProgressCommit,
   } = useMusicPlayer();
 
-  const { currentTrack } = useMusicPlayerComputed();
+  const { currentTrack, hasNextTrack } = useMusicPlayerComputed();
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="bottom">
@@ -56,14 +56,12 @@ export const PlayerSheet = ({
                 <Play className="size-5" fill="#fff" />
               )}
             </Button>
-            <Button variant="ghost" onClick={next}>
+            <Button variant="ghost" onClick={next} disabled={!hasNextTrack}>
               <SkipForward className="size-5" fill="#fff" />
             </Button>
           </div>
           <div>
             <ProgressBar
-              currentTime={currentTime}
-              duration={duration}
               onProgressChange={handleProgressChange}
               onProgressCommit={handleProgressCommit}
               location="mobile"

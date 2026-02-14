@@ -249,7 +249,7 @@ export function useMusicPlayer() {
   ]);
 
   const previous = useCallback(async () => {
-    if (currentPlaylist && hasPreviousTrack && controller) {
+    if (currentPlaylist && controller) {
       // user expectation, if into the song, hitting previous should go back to the start
       // if at the start, go previous track
       if (currentTime > 3) {
@@ -258,24 +258,26 @@ export function useMusicPlayer() {
         return;
       }
 
-      pauseAnchorAudio();
+      if (hasPreviousTrack) {
+        pauseAnchorAudio();
 
-      setCurrentTrackIndex(currentTrackIndex - 1);
+        setCurrentTrackIndex(currentTrackIndex - 1);
 
-      setCurrentTime(0.01);
-      setDuration(0.9);
+        setCurrentTime(0.01);
+        setDuration(0.9);
 
-      await controller.previousTrack();
-      await controller.setVolume(volume);
-      setDuration(controller.duration);
-      setIsPlaying(true);
+        await controller.previousTrack();
+        await controller.setVolume(volume);
+        setDuration(controller.duration);
+        setIsPlaying(true);
 
-      setTimeout(() => {
-        void startAnchorAudio();
-        const currentController = useMusicPlayerStore.getState().controller;
-        const metadata = currentController?.getMediaMetadata() ?? null;
-        setupMediaSession(metadata);
-      }, 1500);
+        setTimeout(() => {
+          void startAnchorAudio();
+          const currentController = useMusicPlayerStore.getState().controller;
+          const metadata = currentController?.getMediaMetadata() ?? null;
+          setupMediaSession(metadata);
+        }, 1500);
+      }
     }
   }, [
     controller,

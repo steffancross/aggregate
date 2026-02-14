@@ -156,11 +156,11 @@ export const setupMediaSession = (metadata: MediaMetadataInit | null) => {
     void (async () => {
       const state = useMusicPlayerStore.getState();
       const hasPreviousTrack = state.currentTrackIndex > 0;
-      if (state.currentPlaylist && state.controller && hasPreviousTrack) {
+      if (state.currentPlaylist && state.controller) {
         if (state.currentTime > 3) {
           await state.controller.seekTo(0);
           state.setCurrentTime(0);
-        } else {
+        } else if (hasPreviousTrack) {
           pauseAnchorAudio();
           state.setCurrentTrackIndex(state.currentTrackIndex - 1);
           state.setCurrentTime(0.01);
@@ -210,11 +210,11 @@ export const setupMediaSession = (metadata: MediaMetadataInit | null) => {
     void (async () => {
       const state = useMusicPlayerStore.getState();
       const hasPreviousTrack = state.currentTrackIndex > 0;
-      if (state.currentPlaylist && state.controller && hasPreviousTrack) {
+      if (state.currentPlaylist && state.controller) {
         if (state.currentTime > 3) {
           await state.controller.seekTo(0);
           state.setCurrentTime(0);
-        } else {
+        } else if (hasPreviousTrack) {
           pauseAnchorAudio();
           state.setCurrentTrackIndex(state.currentTrackIndex - 1);
           state.setCurrentTime(0.01);

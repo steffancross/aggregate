@@ -32,11 +32,6 @@ interface MusicPlayerState {
   setIsSeeking: (isSeeking: boolean) => void;
   setLoadedOnce: (loadedOnce: boolean) => void;
   setController: (controller: AudioController) => void;
-
-  // computed values
-  currentTrack: PlaylistTrack | null;
-  hasNextTrack: boolean;
-  hasPreviousTrack: boolean;
 }
 
 export const useMusicPlayerStore = create<MusicPlayerState>()(
@@ -83,7 +78,8 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
 
 // computed getters didn't work with devtools, so moving outside
 export const useMusicPlayerComputed = () => {
-  const { currentPlaylist, currentTrackIndex } = useMusicPlayerStore();
+  const currentPlaylist = useMusicPlayerStore((s) => s.currentPlaylist);
+  const currentTrackIndex = useMusicPlayerStore((s) => s.currentTrackIndex);
 
   return {
     currentTrack: currentPlaylist?.[currentTrackIndex] ?? null,

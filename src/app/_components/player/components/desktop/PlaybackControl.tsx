@@ -1,8 +1,11 @@
 import { Button } from "~/components/ui/button";
 import { Play, Pause, SkipForward, SkipBack } from "lucide-react";
+import {
+  useMusicPlayerStore,
+  useMusicPlayerComputed,
+} from "~/app/_components/player/MusicPlayerStore";
 
 interface PlaybackControlProps {
-  isPlaying: boolean;
   onPlay: () => void;
   onPause: () => void;
   onNext: () => void;
@@ -10,12 +13,14 @@ interface PlaybackControlProps {
 }
 
 export const PlaybackControl = ({
-  isPlaying,
   onPlay,
   onPause,
   onNext,
   onPrevious,
 }: PlaybackControlProps) => {
+  const isPlaying = useMusicPlayerStore((s) => s.isPlaying);
+  const { hasNextTrack } = useMusicPlayerComputed();
+
   return (
     <div className="flex flex-row gap-2">
       <Button onClick={onPrevious} variant="ghost">
@@ -34,7 +39,7 @@ export const PlaybackControl = ({
         )}
       </Button>
 
-      <Button onClick={onNext} variant="ghost">
+      <Button onClick={onNext} variant="ghost" disabled={!hasNextTrack}>
         <SkipForward className="h-4 w-4" fill="#fff" />
       </Button>
     </div>

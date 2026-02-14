@@ -10,10 +10,18 @@ import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import { Button } from "~/components/ui/button";
 import Lottie from "lottie-react";
 import SoundWave from "~/app/playlist/[id]/SoundWave.json";
+import { useShallow } from "zustand/react/shallow";
 
 export const DataTablePlay = ({ song }: { song: LibraryTrack }) => {
   const { currentPlaylistId, setCurrentPlaylist, setCurrentTrackIndex } =
-    useMusicPlayerStore();
+    useMusicPlayerStore(
+      useShallow((s) => ({
+        currentPlaylistId: s.currentPlaylistId,
+        setCurrentPlaylist: s.setCurrentPlaylist,
+        setCurrentTrackIndex: s.setCurrentTrackIndex,
+      })),
+    );
+
   const { currentTrack } = useMusicPlayerComputed();
   const { play } = useMusicPlayer();
   const LIBRARY_PLAYLIST_ID = -1;
