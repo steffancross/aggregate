@@ -1,6 +1,14 @@
 "use client";
 
+import { useEffect } from "react";
+import { loadPlayerScripts } from "~/app/_components/player/utils";
+
 export const AppMediaAnchor = () => {
+  useEffect(() => {
+    const cleanup = loadPlayerScripts();
+    return cleanup;
+  }, []);
+
   return (
     <>
       <audio
