@@ -30,57 +30,6 @@ export function useMusicPlayer() {
 
   const { hasNextTrack, hasPreviousTrack } = useMusicPlayerComputed();
 
-  // load scripts
-  useEffect(() => {
-    const scScript = document.createElement("script");
-    scScript.src = "https://w.soundcloud.com/player/api.js";
-    scScript.async = true;
-    scScript.onload = () => {
-      // eslint-disable-next-line no-console
-      console.log("SoundCloud API loaded");
-    };
-    document.head.appendChild(scScript);
-
-    const ytScript = document.createElement("script");
-    ytScript.src = "https://www.youtube.com/iframe_api";
-    ytScript.async = true;
-    ytScript.onload = () => {
-      // eslint-disable-next-line no-console
-      console.log("YouTube API loaded");
-    };
-    document.head.appendChild(ytScript);
-
-    // blank setup to get rid of noise, override later
-    if (typeof window !== "undefined" && !window.onSpotifyWebPlaybackSDKReady) {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      window.onSpotifyWebPlaybackSDKReady = () => {};
-    }
-
-    const spotifyScript = document.createElement("script");
-    spotifyScript.src = "https://sdk.scdn.co/spotify-player.js";
-    spotifyScript.async = true;
-    spotifyScript.onload = () => {
-      // eslint-disable-next-line no-console
-      console.log("Spotify API loaded");
-    };
-    document.body.appendChild(spotifyScript);
-
-    return () => {
-      const sc = document.querySelector(
-        'script[src="https://w.soundcloud.com/player/api.js"]',
-      );
-      const yt = document.querySelector(
-        'script[src="https://www.youtube.com/iframe_api"]',
-      );
-      const sp = document.querySelector(
-        'script[src="https://sdk.scdn.co/spotify-player.js"]',
-      );
-      if (sc) document.head.removeChild(sc);
-      if (yt) document.head.removeChild(yt);
-      if (sp) document.body.removeChild(sp);
-    };
-  }, []);
-
   // timer to update current time
   useEffect(() => {
     let interval: NodeJS.Timeout;
