@@ -6,11 +6,11 @@ import {
   useMusicPlayerStore,
   useMusicPlayerComputed,
 } from "~/app/_components/player/MusicPlayerStore";
-import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import { Button } from "~/components/ui/button";
 import Lottie from "lottie-react";
 import SoundWave from "~/app/playlist/[id]/SoundWave.json";
 import { useShallow } from "zustand/react/shallow";
+import { play } from "~/app/_components/player/musicPlayerActions";
 
 export const DataTablePlay = ({ song }: { song: LibraryTrack }) => {
   const { currentPlaylistId, setCurrentPlaylist, setCurrentTrackIndex } =
@@ -23,7 +23,6 @@ export const DataTablePlay = ({ song }: { song: LibraryTrack }) => {
     );
 
   const { currentTrack } = useMusicPlayerComputed();
-  const { play } = useMusicPlayer();
   const LIBRARY_PLAYLIST_ID = -1;
 
   const isCurrentTrack =

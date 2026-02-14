@@ -1,6 +1,5 @@
 "use client";
 
-import { useMusicPlayer } from "../../useMusicPlayer";
 import { ProgressBar } from "./ProgressBar";
 import { PlaybackControl } from "./PlaybackControl";
 import { VolumeControl } from "./VolumeControl";
@@ -8,19 +7,18 @@ import {
   useMusicPlayerStore,
   useMusicPlayerComputed,
 } from "~/app/_components/player/MusicPlayerStore";
+import {
+  play,
+  pause,
+  next,
+  previous,
+  handleVolumeChange,
+  handleProgressChange,
+  handleProgressCommit,
+} from "../../musicPlayerActions";
 
 export const MusicPlayer = () => {
   const loadedOnce = useMusicPlayerStore((s) => s.loadedOnce);
-
-  const {
-    play,
-    pause,
-    next,
-    previous,
-    handleVolumeChange,
-    handleProgressChange,
-    handleProgressCommit,
-  } = useMusicPlayer();
 
   const { currentTrack } = useMusicPlayerComputed();
 

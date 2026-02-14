@@ -83,6 +83,15 @@ export const pauseAnchorAudio = (): void => {
   }
 };
 
+export const scheduleAnchorAndMediaSession = (): void => {
+  setTimeout(() => {
+    void startAnchorAudio();
+    const controller = useMusicPlayerStore.getState().controller;
+    const metadata = controller?.getMediaMetadata() ?? null;
+    setMediaSessionMetadata(metadata);
+  }, 1500);
+};
+
 export const setMediaSessionMetadata = (metadata: MediaMetadataInit | null) => {
   if (!("mediaSession" in navigator)) return;
   if (metadata) {
