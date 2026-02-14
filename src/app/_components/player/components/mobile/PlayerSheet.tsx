@@ -30,7 +30,7 @@ export const PlayerSheet = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="bottom">
-      <DrawerContent className="pb-[calc(env(safe-area-inset-bottom)+4rem)]">
+      <DrawerContent>
         <div className="hidden">
           <DrawerTitle>Player</DrawerTitle>
         </div>
