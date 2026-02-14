@@ -1,6 +1,7 @@
 import { useMusicPlayerStore } from "./MusicPlayerStore";
 import { next } from "./musicPlayerActions";
 
+// TODO: still may be a better way to do this, revisit
 let intervalId: ReturnType<typeof setInterval> | null = null;
 
 function tick(): void {

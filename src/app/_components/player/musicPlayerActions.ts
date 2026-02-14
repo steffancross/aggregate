@@ -1,6 +1,39 @@
 import { useMusicPlayerStore } from "./MusicPlayerStore";
-import { pauseAnchorAudio, scheduleAnchorAndMediaSession } from "./utils";
+import {
+  pauseAnchorAudio,
+  scheduleAnchorAndMediaSession,
+  setMediaSessionMetadata,
+} from "./utils";
 import { AudioController } from "./AudioController";
+
+export const setupMediaSession = (metadata: MediaMetadataInit | null): void => {
+  if (typeof navigator === "undefined" || !("mediaSession" in navigator))
+    return;
+
+  navigator.mediaSession.setActionHandler("play", () => {
+    void play();
+  });
+  navigator.mediaSession.setActionHandler("pause", () => {
+    void pause();
+  });
+  navigator.mediaSession.setActionHandler("nexttrack", () => {
+    void next();
+  });
+  navigator.mediaSession.setActionHandler("previoustrack", () => {
+    void previous();
+  });
+  // iOS shows 10s seek buttons; map them to next/previous track
+  navigator.mediaSession.setActionHandler("seekforward", () => {
+    void next();
+  });
+  navigator.mediaSession.setActionHandler("seekbackward", () => {
+    void previous();
+  });
+
+  if (metadata) {
+    setMediaSessionMetadata(metadata);
+  }
+};
 
 export const pause = async (): Promise<void> => {
   const { controller, isLoaded, setIsPlaying } = useMusicPlayerStore.getState();

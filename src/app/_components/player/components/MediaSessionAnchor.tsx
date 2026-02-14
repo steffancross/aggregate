@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { loadPlayerScripts } from "~/app/_components/player/utils";
 import { startProgressTimer } from "~/app/_components/player/progressTimer";
+import { setupMediaSession } from "~/app/_components/player/musicPlayerActions";
 
 export const AppMediaAnchor = () => {
   useEffect(() => {
@@ -12,6 +13,10 @@ export const AppMediaAnchor = () => {
 
   useEffect(() => {
     startProgressTimer();
+  }, []);
+
+  useEffect(() => {
+    setupMediaSession(null);
   }, []);
 
   return (
