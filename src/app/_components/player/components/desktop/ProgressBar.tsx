@@ -34,7 +34,7 @@ export const ProgressBar = ({
         thumbClassName="hidden"
       />
 
-      <span className="w-24">
+      <span className="flex w-26 justify-center">
         {formatSongTime(currentTime)} / {formatSongTime(duration)}
       </span>
     </div>

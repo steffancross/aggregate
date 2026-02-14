@@ -5,10 +5,11 @@ import { Play } from "lucide-react";
 import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import { useMusicPlayer } from "~/app/_components/player/useMusicPlayer";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
-import { Button } from "~/components/ui/button";
 import { TrackOptions } from "~/app/_components/TrackOptions";
 import Lottie from "lottie-react";
 import SoundWave from "./SoundWave.json";
+import Link from "next/link";
+
 interface PlaylistItemProps {
   index: number;
   title: string;
@@ -56,27 +57,35 @@ export const PlaylistItem = ({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="flex min-w-0 flex-1 flex-row items-center gap-4">
+      <div
+        className="flex min-w-0 flex-1 flex-row items-center gap-4"
+        onClick={handlePlay}
+      >
         <div className="flex w-8 shrink-0 items-center justify-center">
           {isCurrentTrack ? (
             <Lottie animationData={SoundWave} loop={true} />
           ) : hovered ? (
-            <Button
-              onClick={handlePlay}
-              size="icon"
-              variant="ghost"
-              className="rounded-full"
-            >
-              <Play />
-            </Button>
+            <Play className="size-4" />
           ) : (
-            <p onClick={handlePlay}>{index + 1}</p>
+            <p>{index + 1}</p>
           )}
         </div>
         <div className="flex min-w-0 flex-col">
           <p className="truncate">{title}</p>
           <p className="truncate">
-            {artists.map((artist) => artist.artistName).join(", ")}
+            {artists.map((artist, index) => {
+              return (
+                <Link
+                  href={`/artists/${artist.artistId}`}
+                  key={artist.artistId}
+                  className="hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {artist.artistName}
+                  {index < artists.length - 1 && ", "}
+                </Link>
+              );
+            })}
           </p>
         </div>
       </div>

@@ -30,11 +30,11 @@ export const PlayerSheet = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="bottom">
-      <DrawerContent>
+      <DrawerContent className="pb-[calc(env(safe-area-inset-bottom)+4rem)]">
         <div className="hidden">
           <DrawerTitle>Player</DrawerTitle>
         </div>
-        <div className="flex h-screen flex-col justify-between px-4 py-8">
+        <div className="flex flex-col justify-between gap-4 px-4 py-8">
           <div className="flex flex-col">
             <p className="line-clamp-1 truncate font-semibold">
               {currentTrack?.title}
