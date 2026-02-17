@@ -1,17 +1,17 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { type SongSource } from "@prisma/client";
+import { type Album, type SongSource } from "@prisma/client";
 
 export const tracksRouter = createTRPCRouter({
   addTrack: protectedProcedure
     .input(
       z.object({
-        album: z.string().optional(),
+        album: z.string().nullable(),
         artist: z
           .array(z.string().min(1, "Artist name cannot be empty"))
           .min(1, "At least one artist is required"),
-        artworkUrl: z.string().optional(),
-        duration: z.number().optional(),
+        artworkUrl: z.string().nullable(),
+        duration: z.number().nullable(),
         source: z.string(),
         sourceId: z.string(),
         sourceUrl: z.string(),
@@ -67,25 +67,29 @@ export const tracksRouter = createTRPCRouter({
         const artists = await Promise.all(artistPromises);
 
         // album
-        let album = await tx.album.findFirst({
-          where: {
-            name: input.album,
-          },
-        });
-
-        if (!album && input.album) {
-          album = await tx.album.create({
-            data: {
+        let album: Album | null = null;
+        if (input.album !== null && input.album !== "") {
+          album = await tx.album.findFirst({
+            where: {
               name: input.album,
             },
           });
+
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          if (!album) {
+            album = await tx.album.create({
+              data: {
+                name: input.album,
+              },
+            });
+          }
         }
 
         // library track
         const libraryTrack = await tx.libraryTrack.create({
           data: {
             title: input.title,
-            albumId: album?.id ?? undefined,
+            albumId: album?.id ?? null,
             trackId: track.id,
             userId,
           },
@@ -110,8 +114,8 @@ export const tracksRouter = createTRPCRouter({
         artist: z
           .array(z.string().min(1, "Artist name cannot be empty"))
           .min(1, "At least one artist is required"),
-        album: z.string().optional(),
-        artworkUrl: z.string().optional(),
+        album: z.string().nullable(),
+        artworkUrl: z.string().nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -151,25 +155,29 @@ export const tracksRouter = createTRPCRouter({
         const artists = await Promise.all(artistPromises);
 
         // album
-        let album = await tx.album.findFirst({
-          where: {
-            name: input.album,
-          },
-        });
-
-        if (!album && input.album) {
-          album = await tx.album.create({
-            data: {
+        let album: Album | null = null;
+        if (input.album !== null && input.album !== "") {
+          album = await tx.album.findFirst({
+            where: {
               name: input.album,
             },
           });
+
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          if (!album) {
+            album = await tx.album.create({
+              data: {
+                name: input.album,
+              },
+            });
+          }
         }
 
         const updatedTrack = await tx.libraryTrack.update({
           where: { id: input.id, userId: userId },
           data: {
             title: input.title,
-            albumId: album?.id ?? undefined,
+            albumId: album?.id ?? null,
           },
         });
 

@@ -84,13 +84,13 @@ export const AddTrack = ({
   const handleStep2Submit = (data: AddTrackFormData) => {
     const processedData = {
       title: data.title,
-      artist: data.artist.filter((name) => name.trim() !== ""), // Remove empty artist names
-      album: data.album?.trim() || undefined,
+      artist: data.artist,
+      album: data.album?.trim() || null,
       source: data.source,
       sourceId: data.sourceId,
       sourceUrl: data.sourceUrl,
-      artworkUrl: data.artworkUrl || undefined,
-      duration: data.duration || undefined,
+      artworkUrl: data.artworkUrl || null,
+      duration: data.duration ?? null, // 0
     };
 
     addTrackMutation.mutate(processedData);

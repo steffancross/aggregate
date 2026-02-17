@@ -37,7 +37,7 @@ export const TrackForm = ({
 }) => {
   const form = useForm<AddTrackFormData>({
     defaultValues: {
-      album: "",
+      album: initialData.album || "",
       artist: initialData.artist ? initialData.artist : [],
       artworkUrl: initialData.artworkUrl,
       duration: initialData.duration,
@@ -119,8 +119,7 @@ export const TrackForm = ({
               </FormItem>
             )}
           />
-          {/* TODO: maybe include later */}
-          {/* <FormField
+          <FormField
             control={form.control}
             name="album"
             render={({ field }) => (
@@ -132,7 +131,9 @@ export const TrackForm = ({
               </FormItem>
             )}
           />
-          <p>Source: {initialData.source}</p> */}
+          <p className="text-muted-foreground text-xs">
+            Source: {initialData.source}
+          </p>
         </form>
       </Form>
     </div>
