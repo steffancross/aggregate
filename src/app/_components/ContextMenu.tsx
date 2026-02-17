@@ -67,8 +67,12 @@ export const GlobalContextMenu = ({
         </ContextMenuContent>
       </ContextMenu>
 
-      <AddTrack open={addSongOpen} onOpenChange={setAddSongOpen} />
-      <AddPlaylist open={addPlaylistOpen} onOpenChange={setAddPlaylistOpen} />
+      {addSongOpen && (
+        <AddTrack open={addSongOpen} onOpenChange={setAddSongOpen} />
+      )}
+      {addPlaylistOpen && (
+        <AddPlaylist open={addPlaylistOpen} onOpenChange={setAddPlaylistOpen} />
+      )}
     </>
   );
 };
