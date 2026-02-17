@@ -59,7 +59,8 @@ export const EditTrack = ({
       id: song.trackId,
       title: data.title,
       artist: data.artist,
-      album: data.album?.trim() || undefined,
+      album: data.album?.trim() || null,
+      artworkUrl: data.artworkUrl || null,
     };
 
     editTrackMutation.mutate(processedData);

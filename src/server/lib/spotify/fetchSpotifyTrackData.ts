@@ -76,7 +76,7 @@ export const fetchSpotifyTrackData = async ({
   return {
     title: data.name,
     artist: data.artists.map((artist) => artist.name),
-    album: "",
+    album: data.album.name ?? "",
     duration: data.duration_ms,
     artworkUrl: data.album.images[0]?.url ?? "",
     sourceUrl: url,
