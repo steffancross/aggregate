@@ -43,11 +43,15 @@ export class AudioController {
     this.currentAdapter = adapter;
   }
 
-  async loadPlaylist(playlist: PlaylistTrack[], index: number) {
+  async loadPlaylist(
+    playlist: PlaylistTrack[],
+    index: number,
+    skipTrackLoad: boolean = false,
+  ) {
     this.playlist = playlist;
     this.currentIndex = index;
 
-    if (this.playlist.length > 0) {
+    if (this.playlist.length > 0 && !skipTrackLoad) {
       await this.loadTrackByIndex(this.currentIndex);
     }
   }
