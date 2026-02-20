@@ -31,7 +31,6 @@ model Playlist {
     updatedAt DateTime @updatedAt
 
     name      String
-    shuffleOn Boolean @default(false)
 
     userId          Int
     user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
