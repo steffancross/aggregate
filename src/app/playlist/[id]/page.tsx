@@ -16,6 +16,7 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
       <PlaylistHeader
         playlistId={playlist.playlistId}
         playlistName={playlist.playlistName}
+        playlist={playlist.playlistEntries}
       />
       <div className="mx-auto flex flex-col items-center justify-center">
         {playlist.playlistEntries.map((song, index) => {
@@ -28,6 +29,7 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
               artists={song.artists}
               playlist={playlist.playlistEntries}
               playlistId={song.playlistId}
+              trackId={song.trackId}
             />
           );
         })}

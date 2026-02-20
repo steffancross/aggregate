@@ -10,6 +10,7 @@ import SoundWave from "./SoundWave.json";
 import Link from "next/link";
 import { useShallow } from "zustand/react/shallow";
 import { play } from "~/app/_components/player/musicPlayerActions";
+import { reserveCurrentAndShuffleRest } from "~/app/_components/player/helpers/shuffleFunctions";
 
 interface PlaylistItemProps {
   index: number;
@@ -18,6 +19,7 @@ interface PlaylistItemProps {
   artists: { artistId: number; artistName: string }[];
   playlist: PlaylistTrack[];
   playlistId: number;
+  trackId: number;
 }
 
 export const PlaylistItem = ({
@@ -27,31 +29,37 @@ export const PlaylistItem = ({
   artists,
   playlist,
   playlistId,
+  trackId,
 }: PlaylistItemProps) => {
   const [hovered, setHovered] = useState(false);
 
-  const {
-    currentPlaylistId,
-    currentTrackIndex,
-    setCurrentPlaylist,
-    setCurrentTrackIndex,
-  } = useMusicPlayerStore(
-    useShallow((s) => ({
-      currentPlaylistId: s.currentPlaylistId,
-      currentTrackIndex: s.currentTrackIndex,
-      setCurrentPlaylist: s.setCurrentPlaylist,
-      setCurrentTrackIndex: s.setCurrentTrackIndex,
-    })),
-  );
+  const { currentPlaylistId, currentTrackIndex, currentPlaylist, isShuffleOn } =
+    useMusicPlayerStore(
+      useShallow((s) => ({
+        currentPlaylistId: s.currentPlaylistId,
+        currentTrackIndex: s.currentTrackIndex,
+        currentPlaylist: s.currentPlaylist,
+        isShuffleOn: s.isShuffleOn,
+      })),
+    );
+  const { setCurrentPlaylist, setCurrentTrackIndex, setOriginalPlaylist } =
+    useMusicPlayerStore.getState();
 
   const isCurrentTrack =
-    currentPlaylistId === playlistId && currentTrackIndex === index;
+    currentPlaylistId === playlistId &&
+    currentPlaylist![currentTrackIndex]!.trackId === trackId;
 
   const handlePlay = async () => {
-    if (currentPlaylistId !== playlistId) {
-      setCurrentPlaylist(playlist, playlistId);
-    }
+    setCurrentPlaylist(playlist, playlistId);
+    setOriginalPlaylist(playlist);
     setCurrentTrackIndex(index);
+
+    if (isShuffleOn) {
+      const shuffledPlaylist = reserveCurrentAndShuffleRest();
+      setCurrentPlaylist(shuffledPlaylist, playlistId, {
+        newTrackIndex: 0,
+      });
+    }
 
     await play();
   };

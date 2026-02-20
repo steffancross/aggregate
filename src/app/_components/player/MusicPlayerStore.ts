@@ -3,13 +3,20 @@ import { devtools } from "zustand/middleware";
 import type { PlaylistTrack } from "./types/player";
 import type { AudioController } from "./AudioController";
 
+type setPlaylistOptions = {
+  preservePlaybackState?: boolean;
+  newTrackIndex?: number;
+};
+
 interface MusicPlayerState {
   // playlist state
   currentPlaylist: PlaylistTrack[] | null;
+  originalPlaylist: PlaylistTrack[] | null;
   currentPlaylistId: number | null;
   currentTrackIndex: number;
 
   // player state
+  isShuffleOn: boolean;
   isPlaying: boolean;
   isLoaded: boolean;
   volume: number;
@@ -22,8 +29,14 @@ interface MusicPlayerState {
   controller: AudioController | null;
 
   // actions
-  setCurrentPlaylist: (playlist: PlaylistTrack[], playlistId: number) => void;
+  setCurrentPlaylist: (
+    playlist: PlaylistTrack[],
+    playlistId: number,
+    options?: setPlaylistOptions,
+  ) => void;
+  setOriginalPlaylist: (playlist: PlaylistTrack[]) => void;
   setCurrentTrackIndex: (trackIndex: number) => void;
+  setIsShuffleOn: (isShuffleOn: boolean) => void;
   setIsPlaying: (isPlaying: boolean) => void;
   setIsLoaded: (isLoaded: boolean) => void;
   setVolume: (volume: number) => void;
@@ -38,8 +51,10 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
   devtools(
     (set) => ({
       currentPlaylist: null,
+      originalPlaylist: null,
       currentPlaylistId: null,
       currentTrackIndex: 0,
+      isShuffleOn: false,
       isPlaying: false,
       isLoaded: false,
       volume: 100,
@@ -48,19 +63,35 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       isSeeking: false,
       loadedOnce: false,
 
-      setCurrentPlaylist: (playlist: PlaylistTrack[], playlistId: number) =>
-        set({
-          currentPlaylist: playlist,
-          currentPlaylistId: playlistId,
-          currentTrackIndex: 0,
-          currentTime: 0,
-          duration: 0,
-          isLoaded: false,
-          isPlaying: false,
+      setCurrentPlaylist: (
+        playlist: PlaylistTrack[],
+        playlistId: number,
+        options?: setPlaylistOptions,
+      ) =>
+        set(() => {
+          const { preservePlaybackState = false, newTrackIndex } =
+            options ?? {};
+
+          return {
+            currentPlaylist: playlist,
+            currentPlaylistId: playlistId,
+            currentTrackIndex: newTrackIndex ?? 0,
+            ...(preservePlaybackState
+              ? {}
+              : {
+                  currentTime: 0,
+                  duration: 0,
+                  isLoaded: false,
+                  isPlaying: false,
+                }),
+          };
         }),
 
+      setOriginalPlaylist: (playlist: PlaylistTrack[]) =>
+        set({ originalPlaylist: playlist }),
       setCurrentTrackIndex: (index: number) =>
         set({ currentTrackIndex: index }),
+      setIsShuffleOn: (isShuffleOn: boolean) => set({ isShuffleOn }),
       setIsPlaying: (playing: boolean) => set({ isPlaying: playing }),
       setIsLoaded: (loaded: boolean) => set({ isLoaded: loaded }),
       setVolume: (volume: number) => set({ volume }),
