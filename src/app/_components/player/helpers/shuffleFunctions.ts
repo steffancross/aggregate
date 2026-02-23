@@ -1,3 +1,4 @@
+import { LIBRARY_PLAYLIST_ID } from "~/lib/constants";
 import { useMusicPlayerStore } from "../MusicPlayerStore";
 import type { PlaylistTrack } from "../types/player";
 
@@ -24,6 +25,8 @@ export const toggleShuffle = async () => {
     currentPlaylistId,
     controller,
   } = useMusicPlayerStore.getState();
+
+  if (currentPlaylistId === LIBRARY_PLAYLIST_ID) return;
 
   setIsShuffleOn(!isShuffleOn);
 
