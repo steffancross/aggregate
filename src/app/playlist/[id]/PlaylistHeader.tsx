@@ -1,5 +1,7 @@
 "use client";
-import { Pencil, Play, Shuffle, Trash2 } from "lucide-react";
+import { PlayIcon } from "@heroicons/react/24/solid";
+import { ArrowsCrossingIcon } from "@sidekickicons/react/24/solid";
+import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -114,14 +116,14 @@ export const PlaylistHeader = ({
         <div className="flex items-center justify-end gap-2">
           {/* TODO */}
           <Button
-            size="icon"
-            className={isShuffleOn ? "bg-amber-600" : "bg-primary"}
+            variant="ghost"
+            className={isShuffleOn ? "text-amber-600" : "text-primary"}
             onClick={toggleShuffle}
           >
-            <Shuffle />
+            <ArrowsCrossingIcon className="size-6" />
           </Button>
-          <Button size="icon" onClick={handlePlay}>
-            <Play />
+          <Button size="icon" onClick={handlePlay} variant="ghost">
+            <PlayIcon className="size-6" />
           </Button>
         </div>
       </div>

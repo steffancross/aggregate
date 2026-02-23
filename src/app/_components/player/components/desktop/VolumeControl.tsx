@@ -1,12 +1,12 @@
+import { SpeakerWaveIcon } from "@heroicons/react/24/solid";
+import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import { Button } from "~/components/ui/button";
-import { Slider } from "~/components/ui/slider";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-import { Volume2 } from "lucide-react";
-import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
+import { Slider } from "~/components/ui/slider";
 
 interface VolumeControlProps {
   onVolumeChange: (value: number[]) => void;
@@ -19,7 +19,7 @@ export const VolumeControl = ({ onVolumeChange }: VolumeControlProps) => {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="-ml-1">
-          <Volume2 className="size-4.5" fill="#fff" />
+          <SpeakerWaveIcon className="size-4.5" fill="#fff" />
         </Button>
       </PopoverTrigger>
       <PopoverContent side="top" className="z-101 w-fit">
