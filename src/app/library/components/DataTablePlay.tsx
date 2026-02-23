@@ -1,16 +1,17 @@
 "use client";
 
-import type { LibraryTrack } from "../DataTable";
-import { Play } from "lucide-react";
-import {
-  useMusicPlayerStore,
-  useMusicPlayerComputed,
-} from "~/app/_components/player/MusicPlayerStore";
-import { Button } from "~/components/ui/button";
 import Lottie from "lottie-react";
-import SoundWave from "~/app/playlist/[id]/SoundWave.json";
+import { Play } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { play } from "~/app/_components/player/musicPlayerActions";
+import {
+  useMusicPlayerComputed,
+  useMusicPlayerStore,
+} from "~/app/_components/player/MusicPlayerStore";
+import SoundWave from "~/app/playlist/[id]/SoundWave.json";
+import { Button } from "~/components/ui/button";
+import { LIBRARY_PLAYLIST_ID } from "~/lib/constants";
+import type { LibraryTrack } from "../DataTable";
 
 export const DataTablePlay = ({ song }: { song: LibraryTrack }) => {
   const { currentPlaylistId, setCurrentPlaylist, setCurrentTrackIndex } =
@@ -23,7 +24,6 @@ export const DataTablePlay = ({ song }: { song: LibraryTrack }) => {
     );
 
   const { currentTrack } = useMusicPlayerComputed();
-  const LIBRARY_PLAYLIST_ID = -1;
 
   const isCurrentTrack =
     currentPlaylistId === LIBRARY_PLAYLIST_ID &&
