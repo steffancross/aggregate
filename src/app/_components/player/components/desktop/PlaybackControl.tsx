@@ -1,9 +1,18 @@
-import { Button } from "~/components/ui/button";
-import { Play, Pause, SkipForward, SkipBack } from "lucide-react";
 import {
-  useMusicPlayerStore,
+  BackwardIcon,
+  ForwardIcon,
+  PauseIcon,
+  PlayIcon,
+} from "@heroicons/react/24/solid";
+import { ArrowsCrossingIcon } from "@sidekickicons/react/24/solid";
+
+import { toggleShuffle } from "~/app/_components/player/helpers/shuffleFunctions";
+import {
   useMusicPlayerComputed,
+  useMusicPlayerStore,
 } from "~/app/_components/player/MusicPlayerStore";
+import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 interface PlaybackControlProps {
   onPlay: () => void;
@@ -19,12 +28,20 @@ export const PlaybackControl = ({
   onPrevious,
 }: PlaybackControlProps) => {
   const isPlaying = useMusicPlayerStore((s) => s.isPlaying);
+  const isShuffleOn = useMusicPlayerStore((s) => s.isShuffleOn);
   const { hasNextTrack } = useMusicPlayerComputed();
 
   return (
-    <div className="flex flex-row gap-2">
-      <Button onClick={onPrevious} variant="ghost">
-        <SkipBack className="h-4 w-4" fill="#fff" />
+    <div className="flex flex-row">
+      <Button
+        onClick={toggleShuffle}
+        variant="ghost"
+        className={cn("px-2!", isShuffleOn ? "text-amber-600" : "text-primary")}
+      >
+        <ArrowsCrossingIcon />
+      </Button>
+      <Button onClick={onPrevious} variant="ghost" className="px-2!">
+        <BackwardIcon className="size-5" fill="#fff" />
       </Button>
 
       <Button
@@ -33,14 +50,19 @@ export const PlaybackControl = ({
         size="icon"
       >
         {isPlaying ? (
-          <Pause className="size-6" fill="#fff" />
+          <PauseIcon className="size-7" fill="#fff" />
         ) : (
-          <Play fill="#fff" className="size-6" />
+          <PlayIcon className="size-7" fill="#fff" />
         )}
       </Button>
 
-      <Button onClick={onNext} variant="ghost" disabled={!hasNextTrack}>
-        <SkipForward className="h-4 w-4" fill="#fff" />
+      <Button
+        onClick={onNext}
+        variant="ghost"
+        disabled={!hasNextTrack}
+        className="px-2!"
+      >
+        <ForwardIcon className="size-5" fill="#fff" />
       </Button>
     </div>
   );
