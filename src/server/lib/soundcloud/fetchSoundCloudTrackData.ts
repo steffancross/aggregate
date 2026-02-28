@@ -21,17 +21,19 @@ export async function fetchSoundCloudTrackData(
   }
 
   // access token
-  const tokenResponse = await fetch("https://api.soundcloud.com/oauth2/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
+  const tokenResponse = await fetch(
+    "https://secure.soundcloud.com/oauth/token",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+      },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+      }),
     },
-    body: new URLSearchParams({
-      grant_type: "client_credentials",
-      client_id: clientId,
-      client_secret: clientSecret,
-    }),
-  });
+  );
 
   if (!tokenResponse.ok) {
     const errorText = await tokenResponse.text();
