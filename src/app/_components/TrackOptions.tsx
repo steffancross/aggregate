@@ -4,24 +4,25 @@ import { Ellipsis } from "lucide-react";
 
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuSubContent,
-  DropdownMenuPortal,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
+import { useEffect, useState } from "react";
 import { EditTrack } from "./forms/EditTrack";
-import { useState, useEffect } from "react";
 
-import type { PlaylistTrack } from "./player/types/player";
-import { PlaylistSelector } from "./forms/PlaylistSelector";
-import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { api } from "~/trpc/react";
+import { ConfirmationDialog } from "./ConfirmationDialog";
+import { PlaylistSelector } from "./forms/PlaylistSelector";
+import type { PlaylistTrack } from "./player/types/player";
 
 export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
   const utils = api.useUtils();
@@ -29,6 +30,7 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
   const [open, setOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectedPlaylists, setSelectedPlaylists] = useState<number[]>([]);
+  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
   const { data: trackPlaylists } = api.tracks.getTrackPlaylists.useQuery(
     {
@@ -61,6 +63,22 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
       },
     });
 
+  const deleteTrackMutation = api.tracks.deleteTrack.useMutation({
+    onSuccess: async () => {
+      await utils.tracks.getTrackPlaylists.invalidate({
+        trackId: song.trackId,
+      });
+      await utils.playlists.getAll.invalidate();
+      await utils.playlists.getById.invalidate({ id: song.playlistId });
+      router.refresh();
+      toast.success("Song deleted");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Error deleting song");
+    },
+  });
+
   useEffect(() => {
     if (trackPlaylists) {
       setSelectedPlaylists(trackPlaylists);
@@ -84,6 +102,12 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
         <DropdownMenuContent className="p-2">
           <DropdownMenuItem onClick={() => setOpen(true)}>
             edit song
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setConfirmationDialogOpen(true)}
+            className="text-red-500 hover:text-red-500!"
+          >
+            delete song
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {song.sourceUrl && (
@@ -118,6 +142,12 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
         </DropdownMenuContent>
       </DropdownMenu>
       {open && <EditTrack open={open} onOpenChange={setOpen} song={song} />}
+      <ConfirmationDialog
+        text="Are you sure you want to delete this song? It will be removed from your library and all playlists."
+        onConfirm={() => deleteTrackMutation.mutate({ id: song.trackId })}
+        open={confirmationDialogOpen}
+        onOpenChange={setConfirmationDialogOpen}
+      />
     </>
   );
 };

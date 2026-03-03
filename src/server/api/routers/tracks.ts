@@ -1,6 +1,6 @@
+import { type Album, type SongSource } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { type Album, type SongSource } from "@prisma/client";
 
 export const tracksRouter = createTRPCRouter({
   addTrack: protectedProcedure
@@ -221,5 +221,15 @@ export const tracksRouter = createTRPCRouter({
       return playlistEntries.map((entry) => {
         return entry.playlistId;
       });
+    }),
+  // TODO: will leave a gap in playlist positions
+  // the original track will also remain,
+  deleteTrack: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.libraryTrack.delete({
+        where: { id: input.id, userId: ctx.user.id },
+      });
+      return { success: true };
     }),
 });
