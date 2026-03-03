@@ -21,7 +21,7 @@ export const ConfirmationDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader className="sm:text-center">{text}</DialogHeader>
+        <DialogHeader className="pt-3 sm:text-center">{text}</DialogHeader>
         <DialogFooter className="sm:justify-center">
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
