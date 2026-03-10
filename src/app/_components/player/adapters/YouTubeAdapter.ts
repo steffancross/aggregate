@@ -1,5 +1,6 @@
 // https://developers.google.com/youtube/iframe_api_reference
 
+import { useMusicPlayerStore } from "../MusicPlayerStore";
 import type { MusicPlayerAdapter } from "../types/player";
 
 declare global {
@@ -10,7 +11,7 @@ declare global {
         config: {
           events?: {
             onReady?: (event: string) => void;
-            onStateChange?: (event: number) => void;
+            onStateChange?: (event: { data: number }) => void;
             onError?: (event: { data: number }) => void;
           };
           playerVars?: {
@@ -99,6 +100,11 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
           },
           onError: (event) => {
             console.error("YouTube player error:", event.data);
+          },
+          onStateChange: (event) => {
+            if (event.data === 1) {
+              useMusicPlayerStore.getState().setIsPlaying(true);
+            }
           },
         },
       });

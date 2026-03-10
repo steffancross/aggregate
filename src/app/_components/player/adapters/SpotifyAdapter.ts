@@ -1,6 +1,7 @@
 // https://developer.spotify.com/documentation/web-playback-sdk/reference#spotifyplayer
 
 import { getOrRefreshSpotifyToken } from "~/lib/actions/getOrRefreshSpotifyToken";
+import { useMusicPlayerStore } from "../MusicPlayerStore";
 import type { MusicPlayerAdapter } from "../types/player";
 
 declare global {
@@ -27,30 +28,63 @@ interface SpotifyWidget {
   resume: () => Promise<void>;
   togglePlay: () => Promise<void>;
   seek: (position: number) => Promise<void>; // position in milliseconds
-  addListener: (
-    event:
-      | "ready"
-      | "not_ready"
-      | "player_state_changed"
-      | "autoplay_failed"
-      | "initialization_error"
-      | "authentication_error"
-      | "account_error"
-      | "playback_error",
-    callback: (data: {
-      device_id: string;
-      message: string;
-    }) => Promise<void> | void,
-  ) => void;
+  addListener<E extends keyof PlayerEventMap>(
+    event: E,
+    callback: (data: PlayerEventMap[E]) => Promise<void> | void,
+  ): void;
   removeListener: (eventname: string) => void;
   on: (event: string, callback: (data: { message: string }) => void) => void;
 }
 
 interface SpotifyPlayerState {
   // https://developer.spotify.com/documentation/web-playback-sdk/reference#webplaybackstate-object
+  // not really complete? just console the data and will see a bunch more
+  context: {
+    uri: string | null;
+  };
+  loading: boolean;
   paused: boolean;
   position: number; // in ms
+  duration: number; // in ms
+  repeat_mode: number | null;
+  shuffle: boolean;
+  track_window: {
+    current_track: SpotifyTrack;
+    next_tracks: SpotifyTrack[];
+    previous_tracks: SpotifyTrack[];
+  };
 }
+
+type SpotifyTrack = {
+  uri: string;
+  id: string;
+  type: string;
+  media_type: string;
+  name: string;
+  is_playable: boolean;
+};
+
+type ErrorData = {
+  message: string;
+};
+
+type PlayerData = {
+  device_id: string;
+};
+
+type PlayerEventMap = {
+  ready: PlayerData;
+  not_ready: PlayerData;
+
+  player_state_changed: SpotifyPlayerState;
+
+  initialization_error: ErrorData;
+  authentication_error: ErrorData;
+  playback_error: ErrorData;
+  account_error: ErrorData;
+
+  autoplay_failed: null;
+};
 
 export class SpotifyAdapter implements MusicPlayerAdapter {
   private player: SpotifyWidget | null = null;
@@ -80,6 +114,15 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
           resolve();
         });
 
+        player.addListener(
+          "player_state_changed",
+          async ({ paused, loading }) => {
+            if (!paused && !loading) {
+              useMusicPlayerStore.getState().setIsPlaying(true);
+            }
+          },
+        );
+
         player.addListener("not_ready", ({ device_id }) => {
           console.warn("Spotify not ready", device_id);
         });
@@ -94,6 +137,10 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
 
         player.on("playback_error", ({ message }) => {
           console.error("Spotify failed to connect", message);
+        });
+
+        player.on("autoplay_failed", () => {
+          console.error("Spotify failed to autoplay");
         });
 
         player.connect();
@@ -164,6 +211,7 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     }
 
     await this.player.resume();
+    useMusicPlayerStore.getState().setIsPlaying(true);
   }
 
   async pause(): Promise<void> {

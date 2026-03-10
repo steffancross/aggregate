@@ -1,5 +1,6 @@
 // reference: https://developers.soundcloud.com/docs/api/html5-widget#methods
 
+import { useMusicPlayerStore } from "../MusicPlayerStore";
 import type { MusicPlayerAdapter, SoundCloudSound } from "../types/player";
 
 declare global {
@@ -12,6 +13,8 @@ declare global {
           ERROR: string;
           LOAD_PROGRESS: number;
           FINISH: string;
+          PLAY: string;
+          PAUSE: string;
         };
       };
     };
@@ -106,6 +109,10 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
 
         this.player.bind(window.SC.Widget.Events.ERROR, (error?: string) => {
           console.warn(`SoundCloud widget error: ${error}`);
+        });
+
+        this.player.bind(window.SC.Widget.Events.PLAY, () => {
+          useMusicPlayerStore.getState().setIsPlaying(true);
         });
 
         this.player.bind(window.SC.Widget.Events.FINISH, () => {

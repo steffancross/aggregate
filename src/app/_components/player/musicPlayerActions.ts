@@ -1,10 +1,10 @@
+import { AudioController } from "./AudioController";
 import { useMusicPlayerStore } from "./MusicPlayerStore";
 import {
   pauseAnchorAudio,
   scheduleAnchorAndMediaSession,
   setMediaSessionMetadata,
 } from "./utils";
-import { AudioController } from "./AudioController";
 
 export const setupMediaSession = (metadata: MediaMetadataInit | null): void => {
   if (typeof navigator === "undefined" || !("mediaSession" in navigator))
@@ -76,11 +76,11 @@ export const previous = async (): Promise<void> => {
 
       setCurrentTime(0.01);
       setDuration(0.9);
-
+      await controller.pause();
+      setIsPlaying(false);
       await controller.previousTrack();
       await controller.setVolume(volume);
       setDuration(controller.duration);
-      setIsPlaying(true);
 
       scheduleAnchorAndMediaSession();
     }
@@ -116,7 +116,6 @@ export const next = async (): Promise<void> => {
     await controller.nextTrack();
     await controller.setVolume(volume);
     setDuration(controller.duration);
-    setIsPlaying(true);
 
     scheduleAnchorAndMediaSession();
   }
@@ -156,10 +155,13 @@ export const play = async (): Promise<void> => {
     setDuration(controller.duration);
   };
   const syncAndPlay = async (controller: AudioController) => {
-    await controller.play();
-    await controller.setVolume(volume);
-    setIsPlaying(true);
-    scheduleAnchorAndMediaSession();
+    try {
+      await controller.play();
+      await controller.setVolume(volume);
+      scheduleAnchorAndMediaSession();
+    } catch {
+      setIsPlaying(false);
+    }
   };
 
   if (!controller) {
