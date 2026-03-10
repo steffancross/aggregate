@@ -2,6 +2,7 @@
 
 import { useMusicPlayerStore } from "../MusicPlayerStore";
 import type { MusicPlayerAdapter } from "../types/player";
+import { startAnchorAndUpdateMediaSession } from "../utils";
 
 declare global {
   interface Window {
@@ -104,6 +105,7 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
           onStateChange: (event) => {
             if (event.data === 1) {
               useMusicPlayerStore.getState().setIsPlaying(true);
+              void startAnchorAndUpdateMediaSession();
             }
           },
         },
