@@ -3,6 +3,7 @@
 import { getOrRefreshSpotifyToken } from "~/lib/actions/getOrRefreshSpotifyToken";
 import { useMusicPlayerStore } from "../MusicPlayerStore";
 import type { MusicPlayerAdapter } from "../types/player";
+import { startAnchorAndUpdateMediaSession } from "../utils";
 
 declare global {
   interface Window {
@@ -119,6 +120,7 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
           async ({ paused, loading }) => {
             if (!paused && !loading) {
               useMusicPlayerStore.getState().setIsPlaying(true);
+              void startAnchorAndUpdateMediaSession();
             }
           },
         );
@@ -211,7 +213,6 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     }
 
     await this.player.resume();
-    useMusicPlayerStore.getState().setIsPlaying(true);
   }
 
   async pause(): Promise<void> {

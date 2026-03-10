@@ -82,19 +82,39 @@ export const pauseAnchorAudio = (): void => {
   }
 };
 
-// TODO: find a better way to regain media session control, still too brittle
-// see if events can be relied on or listening for audio starting with js maybe
-export const scheduleAnchorAndMediaSession = (): void => {
-  setTimeout(() => {
-    void startAnchorAudio();
+const ANCHOR_SESSION_DELAY_MS = 500;
+let anchorSessionUpdateInProgress = false;
+/**
+ * Start anchor audio and update Media Session after a short delay so the main
+ * player (iframe/SDK) can settle and we don't race for the session. Guard
+ * prevents overlapping runs when adapters fire "playback started" multiple times.
+ */
+export const startAnchorAndUpdateMediaSession = async (): Promise<void> => {
+  if (anchorSessionUpdateInProgress) return;
+  anchorSessionUpdateInProgress = true;
+  try {
+    /* needed to do this because when hitting 'pause' we don't actually pause the 
+    anchor to retain media session control. When restarting playback, 
+    have to pause the anchor or else the start call doesn't take control */
+    pauseAnchorAudio();
+
+    await new Promise((r) => setTimeout(r, ANCHOR_SESSION_DELAY_MS));
+    await startAnchorAudio();
     const controller = useMusicPlayerStore.getState().controller;
     const metadata = controller?.getMediaMetadata() ?? null;
     setMediaSessionMetadata(metadata);
-  }, 1500);
+  } catch (e) {
+    console.warn("Failed to start anchor / media session", e);
+  } finally {
+    anchorSessionUpdateInProgress = false;
+  }
 };
 
 export const setMediaSessionMetadata = (metadata: MediaMetadataInit | null) => {
-  if (!("mediaSession" in navigator)) return;
+  if (!("mediaSession" in navigator)) {
+    console.warn("Media session not in navigator");
+    return;
+  }
   if (metadata) {
     navigator.mediaSession.metadata = new MediaMetadata(metadata);
   }

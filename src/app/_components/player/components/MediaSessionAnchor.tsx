@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { loadPlayerScripts } from "~/app/_components/player/utils";
-import { startProgressTimer } from "~/app/_components/player/progressTimer";
 import { setupMediaSession } from "~/app/_components/player/musicPlayerActions";
+import { startProgressTimer } from "~/app/_components/player/progressTimer";
+import { loadPlayerScripts } from "~/app/_components/player/utils";
 
 export const AppMediaAnchor = () => {
   useEffect(() => {

@@ -2,6 +2,7 @@
 
 import { useMusicPlayerStore } from "../MusicPlayerStore";
 import type { MusicPlayerAdapter, SoundCloudSound } from "../types/player";
+import { startAnchorAndUpdateMediaSession } from "../utils";
 
 declare global {
   interface Window {
@@ -113,6 +114,7 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
 
         this.player.bind(window.SC.Widget.Events.PLAY, () => {
           useMusicPlayerStore.getState().setIsPlaying(true);
+          void startAnchorAndUpdateMediaSession();
         });
 
         this.player.bind(window.SC.Widget.Events.FINISH, () => {
