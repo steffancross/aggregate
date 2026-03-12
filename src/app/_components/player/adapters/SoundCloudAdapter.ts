@@ -43,7 +43,6 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
   private player: SoundCloudWidget | null = null;
   private iframeId: string;
   private isReady: boolean = false;
-  private isInitialized: boolean = false;
   private currentSound: SoundCloudSound | null = null;
 
   constructor(iframeId: string = "soundcloud-player") {
@@ -53,13 +52,7 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
   async loadTrack(trackUrl: string): Promise<void> {
     this.isReady = false;
 
-    if (!this.isInitialized) {
-      // First time, create the widget
-      await this.initializeWidget(trackUrl);
-    } else {
-      // Subsequent loads
-      await this.loadNewTrack(trackUrl);
-    }
+    await this.initializeWidget(trackUrl);
   }
 
   private async waitForValidSound(): Promise<SoundCloudSound> {
@@ -78,6 +71,8 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
   }
 
   private async initializeWidget(trackUrl: string): Promise<void> {
+    this.removeExistingPlayer();
+
     const iframe = this.getOrCreateIframe();
     const encodedUrl = encodeURIComponent(trackUrl);
     const scUrl = `https://w.soundcloud.com/player/?url=${encodedUrl}`;
@@ -91,6 +86,7 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
 
         if (!this.player) {
           console.warn("SoundCloud widget not found");
+          resolve();
           return;
         }
 
@@ -99,7 +95,6 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
             .then((sound) => {
               this.currentSound = sound;
               this.isReady = true;
-              this.isInitialized = true;
               resolve();
             })
             .catch((error) => {
@@ -129,6 +124,9 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
     });
   }
 
+  /*
+  deprecated, tear down iframe each time now.
+
   private async loadNewTrack(trackUrl: string): Promise<void> {
     this.isReady = false;
     if (!this.player) {
@@ -154,6 +152,7 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
       });
     });
   }
+  */
 
   play(): void {
     if (!this.player || !this.isReady) {
@@ -252,5 +251,11 @@ export class SoundCloudAdapter implements MusicPlayerAdapter {
     }
 
     return iframe;
+  }
+
+  private removeExistingPlayer(): void {
+    document.getElementById(this.iframeId)?.remove();
+    this.player = null;
+    this.currentSound = null;
   }
 }
