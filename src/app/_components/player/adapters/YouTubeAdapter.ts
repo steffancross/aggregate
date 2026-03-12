@@ -45,6 +45,17 @@ interface YouTubeWidget {
     startSeconds?: number;
     endSeconds?: number;
   }) => void;
+  // difference between this and load is that it should
+  // cue the video but not play it automatically
+  cueVideoById: ({
+    videoId,
+    startSeconds,
+    endSeconds,
+  }: {
+    videoId: string;
+    startSeconds?: number;
+    endSeconds?: number;
+  }) => void;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
   mute: () => void;
   unMute: () => void;
@@ -67,7 +78,6 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
   private player: YouTubeWidget | null = null;
   private iframeId: string;
   private isReady: boolean = false;
-  private isInitialized: boolean = false;
 
   constructor(iframeId: string = "youtube-player") {
     this.iframeId = iframeId;
@@ -76,14 +86,13 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
   async loadTrack(trackUrl: string): Promise<void> {
     this.isReady = false;
 
-    if (!this.isInitialized) {
-      await this.initializeWidget(trackUrl);
-    } else {
-      await this.loadNewTrack(trackUrl);
-    }
+    await this.initializeWidget(trackUrl);
   }
 
   private async initializeWidget(trackUrl: string): Promise<void> {
+    // fresh iframe each load so mobile suspended/broken reuse state.
+    this.removeExistingPlayer();
+
     const iframe = this.getOrCreateIframe();
     const embedUrl = `https://www.youtube.com/embed/${trackUrl}?enablejsapi=1&autoplay=1&origin=${window.location.origin}`;
     iframe.src = embedUrl;
@@ -96,7 +105,6 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
         events: {
           onReady: () => {
             this.isReady = true;
-            this.isInitialized = true;
             resolve();
           },
           onError: (event) => {
@@ -105,6 +113,7 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
           onStateChange: (event) => {
             if (event.data === 1) {
               useMusicPlayerStore.getState().setIsPlaying(true);
+              this.player!.playVideo();
               void startAnchorAndUpdateMediaSession();
             }
           },
@@ -113,13 +122,16 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
     });
   }
 
+  /*
+  old code, keeping it around in case I revert.
+  used to have branching paths on load track for initializing and loading new tracks.
+  caused issues on mobile so now just tear down each time.
+
   private async loadNewTrack(trackUrl: string): Promise<void> {
     if (!this.player) {
       console.warn("Player not initialized");
       return;
     }
-
-    this.isReady = false;
 
     return new Promise((resolve) => {
       const onStateChange = (event: { data: number }) => {
@@ -137,6 +149,7 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
       });
     });
   }
+  */
 
   play(): void {
     if (!this.player || !this.isReady) {
@@ -219,5 +232,10 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
     }
 
     return iframe;
+  }
+
+  private removeExistingPlayer(): void {
+    document.getElementById(this.iframeId)?.remove();
+    this.player = null;
   }
 }
