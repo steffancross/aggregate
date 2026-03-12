@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import Lottie from "lottie-react";
 import { Play } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { reserveCurrentAndShuffleRest } from "~/app/_components/player/helpers/shuffleFunctions";
+import { play } from "~/app/_components/player/musicPlayerActions";
 import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { TrackOptions } from "~/app/_components/TrackOptions";
-import Lottie from "lottie-react";
 import SoundWave from "./SoundWave.json";
-import Link from "next/link";
-import { useShallow } from "zustand/react/shallow";
-import { play } from "~/app/_components/player/musicPlayerActions";
-import { reserveCurrentAndShuffleRest } from "~/app/_components/player/helpers/shuffleFunctions";
 
 interface PlaylistItemProps {
   index: number;

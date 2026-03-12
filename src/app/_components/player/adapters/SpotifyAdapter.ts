@@ -35,6 +35,7 @@ interface SpotifyWidget {
   ): void;
   removeListener: (eventname: string) => void;
   on: (event: string, callback: (data: { message: string }) => void) => void;
+  activateElement: () => Promise<void>;
 }
 
 interface SpotifyPlayerState {
@@ -269,6 +270,14 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     }
     // spotify doesn't make it available here and not worth a call
     return 0;
+  }
+
+  async activateElement(): Promise<void> {
+    if (!this.player || !this.isReady) {
+      console.warn("Spotify player not ready for activateElement");
+      return;
+    }
+    await this.player.activateElement();
   }
 
   readonly sound: null = null;

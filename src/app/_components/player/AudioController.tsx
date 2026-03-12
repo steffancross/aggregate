@@ -1,6 +1,6 @@
 import { SoundCloudAdapter } from "./adapters/SoundCloudAdapter";
-import { YouTubeAdapter } from "./adapters/YouTubeAdapter";
 import { SpotifyAdapter } from "./adapters/SpotifyAdapter";
+import { YouTubeAdapter } from "./adapters/YouTubeAdapter";
 import type {
   MusicPlayerAdapter,
   PlaylistTrack,
@@ -233,5 +233,13 @@ export class AudioController {
           ]
         : [],
     };
+  }
+
+  async activateElement() {
+    if (!this.currentAdapter) {
+      console.warn("no adapter, activateElement");
+      return;
+    }
+    await this.currentAdapter.activateElement?.();
   }
 }
