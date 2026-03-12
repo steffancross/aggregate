@@ -90,7 +90,7 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
   }
 
   private async initializeWidget(trackUrl: string): Promise<void> {
-    // fresh iframe each load so mobile suspended/broken reuse state.
+    // fresh iframe each load to ignore mobile suspended/broken reuse state.
     this.removeExistingPlayer();
 
     const iframe = this.getOrCreateIframe();
@@ -113,7 +113,6 @@ export class YouTubeAdapter implements MusicPlayerAdapter {
           onStateChange: (event) => {
             if (event.data === 1) {
               useMusicPlayerStore.getState().setIsPlaying(true);
-              this.player!.playVideo();
               void startAnchorAndUpdateMediaSession();
             }
           },

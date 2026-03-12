@@ -82,7 +82,17 @@ export const pauseAnchorAudio = (): void => {
   }
 };
 
-const ANCHOR_SESSION_DELAY_MS = 500;
+export const setMediaSessionMetadata = () => {
+  if (!("mediaSession" in navigator)) {
+    console.warn("Media session not in navigator");
+    return;
+  }
+  const controller = useMusicPlayerStore.getState().controller;
+  const metadata = controller?.getMediaMetadata() ?? undefined;
+  navigator.mediaSession.metadata = new MediaMetadata(metadata);
+};
+
+const ANCHOR_SESSION_DELAY_MS = 600;
 let anchorSessionUpdateInProgress = false;
 /**
  * Start anchor audio and update Media Session after a short delay so the main
@@ -100,22 +110,10 @@ export const startAnchorAndUpdateMediaSession = async (): Promise<void> => {
 
     await new Promise((r) => setTimeout(r, ANCHOR_SESSION_DELAY_MS));
     await startAnchorAudio();
-    const controller = useMusicPlayerStore.getState().controller;
-    const metadata = controller?.getMediaMetadata() ?? null;
-    setMediaSessionMetadata(metadata);
+    setMediaSessionMetadata();
   } catch (e) {
     console.warn("Failed to start anchor / media session", e);
   } finally {
     anchorSessionUpdateInProgress = false;
-  }
-};
-
-export const setMediaSessionMetadata = (metadata: MediaMetadataInit | null) => {
-  if (!("mediaSession" in navigator)) {
-    console.warn("Media session not in navigator");
-    return;
-  }
-  if (metadata) {
-    navigator.mediaSession.metadata = new MediaMetadata(metadata);
   }
 };
