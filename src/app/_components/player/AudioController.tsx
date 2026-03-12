@@ -1,6 +1,7 @@
 import { SoundCloudAdapter } from "./adapters/SoundCloudAdapter";
 import { SpotifyAdapter } from "./adapters/SpotifyAdapter";
 import { YouTubeAdapter } from "./adapters/YouTubeAdapter";
+import { useMusicPlayerStore } from "./MusicPlayerStore";
 import type {
   MusicPlayerAdapter,
   PlaylistTrack,
@@ -32,7 +33,14 @@ export class AudioController {
         adapter = new YouTubeAdapter();
         break;
       case "spotify":
-        adapter = new SpotifyAdapter();
+        const preInitializedAdapter =
+          useMusicPlayerStore.getState().preInitializedSpotifyAdapter;
+
+        if (preInitializedAdapter) {
+          adapter = preInitializedAdapter;
+        } else {
+          adapter = new SpotifyAdapter();
+        }
         break;
       default:
         console.error(`Unsupported track source: ${source}`);
