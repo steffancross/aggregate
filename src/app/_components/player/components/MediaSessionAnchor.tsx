@@ -16,7 +16,7 @@ export const AppMediaAnchor = () => {
   }, []);
 
   useEffect(() => {
-    setupMediaSession(null);
+    setupMediaSession();
   }, []);
 
   return (

@@ -1,36 +1,57 @@
 import { AudioController } from "./AudioController";
 import { useMusicPlayerStore } from "./MusicPlayerStore";
-import { pauseAnchorAudio, setMediaSessionMetadata } from "./utils";
+import {
+  pauseAnchorAudio,
+  setMediaSessionMetadata,
+  startAnchorAndUpdateMediaSession,
+} from "./utils";
 
-export const setupMediaSession = (metadata: MediaMetadataInit | null): void => {
+export const setupMediaSession = (): void => {
   if (typeof navigator === "undefined" || !("mediaSession" in navigator)) {
     console.warn("Media session not in navigator");
     return;
   }
 
-  navigator.mediaSession.setActionHandler("play", () => {
-    void play();
+  /*
+   * ts has the return for this as void, but according to mdn docs it can be async
+   * https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler#examples
+   */
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  navigator.mediaSession.setActionHandler("play", async () => {
+    await play();
+    await startAnchorAndUpdateMediaSession();
   });
-  navigator.mediaSession.setActionHandler("pause", () => {
-    void pause();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  navigator.mediaSession.setActionHandler("pause", async () => {
+    await pause();
+    setMediaSessionMetadata();
+    /* 
+    tend to lose the metadata when pausing even with this
+    playing or next/prev regains
+    at least on mobile 
+    */
   });
-  navigator.mediaSession.setActionHandler("nexttrack", () => {
-    void next();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  navigator.mediaSession.setActionHandler("nexttrack", async () => {
+    await next();
+    await startAnchorAndUpdateMediaSession();
   });
-  navigator.mediaSession.setActionHandler("previoustrack", () => {
-    void previous();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  navigator.mediaSession.setActionHandler("previoustrack", async () => {
+    await previous();
+    await startAnchorAndUpdateMediaSession();
   });
   // iOS shows 10s seek buttons; map them to next/previous track
-  navigator.mediaSession.setActionHandler("seekforward", () => {
-    void next();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  navigator.mediaSession.setActionHandler("seekforward", async () => {
+    await next();
+    await startAnchorAndUpdateMediaSession();
   });
-  navigator.mediaSession.setActionHandler("seekbackward", () => {
-    void previous();
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  navigator.mediaSession.setActionHandler("seekbackward", async () => {
+    await previous();
+    await startAnchorAndUpdateMediaSession();
   });
-
-  if (metadata) {
-    setMediaSessionMetadata(metadata);
-  }
 };
 
 export const pause = async (): Promise<void> => {
