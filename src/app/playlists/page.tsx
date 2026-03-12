@@ -1,8 +1,8 @@
 "use client";
 
-import { api } from "~/trpc/react";
 import Link from "next/link";
 import { Spinner } from "~/components/ui/spinner";
+import { api } from "~/trpc/react";
 
 const Playlists = () => {
   const { data: playlists, isLoading } = api.playlists.getAll.useQuery();

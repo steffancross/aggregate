@@ -8,6 +8,7 @@ export interface MusicPlayerAdapter {
   getCurrentTime(): Promise<number>;
   seekTo(seconds: number): void | Promise<void>;
   setVolume(value: number): void | Promise<void>;
+  activateElement?(): Promise<void>;
   readonly duration: number;
   readonly sound: SoundCloudSound | null;
 }
