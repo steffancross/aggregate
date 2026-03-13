@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { setupMediaSession } from "~/app/_components/player/musicPlayerActions";
 import { startProgressTimer } from "~/app/_components/player/progressTimer";
@@ -9,7 +10,11 @@ import { useMusicPlayerStore } from "../MusicPlayerStore";
 import { SpotifyAdapter } from "../adapters/SpotifyAdapter";
 
 export const AppMediaAnchor = () => {
-  const { data: spotifyAuth } = api.user.userConnectedToSpotify.useQuery();
+  const { isSignedIn, isLoaded } = useAuth();
+  const { data: spotifyAuth } = api.user.userConnectedToSpotify.useQuery(
+    undefined,
+    { enabled: isSignedIn && isLoaded },
+  );
 
   useEffect(() => {
     const cleanup = loadPlayerScripts();

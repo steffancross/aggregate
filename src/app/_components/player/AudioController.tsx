@@ -38,6 +38,7 @@ export class AudioController {
 
         if (preInitializedAdapter) {
           adapter = preInitializedAdapter;
+          useMusicPlayerStore.getState().setPreInitializedSpotifyAdapter(null);
         } else {
           adapter = new SpotifyAdapter();
         }
