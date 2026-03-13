@@ -94,9 +94,14 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
   private isInitialized: boolean = false;
   private deviceId: string | null = null;
 
-  private async initializeWidget(trackId: string): Promise<void> {
+  async initializeWidget(trackId?: string): Promise<void> {
     return new Promise((resolve) => {
       const setupPlayer = () => {
+        if (this.isInitialized) {
+          resolve();
+          return;
+        }
+
         const player = new window.Spotify.Player({
           name: "Aggregate",
           getOAuthToken: async (cb) => {
@@ -112,7 +117,9 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
           this.deviceId = device_id;
           this.isInitialized = true;
           this.isReady = true;
-          await this.loadNewTrack(trackId);
+          if (trackId) {
+            await this.loadNewTrack(trackId);
+          }
           resolve();
         });
 
@@ -139,7 +146,8 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
         });
 
         player.on("playback_error", ({ message }) => {
-          console.error("Spotify failed to connect", message);
+          // sometimes fires on first play, race condition, not really a problem
+          console.warn("Spotify failed to connect", message);
         });
 
         player.on("autoplay_failed", () => {

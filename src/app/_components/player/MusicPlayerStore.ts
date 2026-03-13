@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import type { PlaylistTrack } from "./types/player";
 import type { AudioController } from "./AudioController";
+import type { SpotifyAdapter } from "./adapters/SpotifyAdapter";
+import type { PlaylistTrack } from "./types/player";
 
 type setPlaylistOptions = {
   preservePlaybackState?: boolean;
@@ -27,6 +28,7 @@ interface MusicPlayerState {
 
   // controller
   controller: AudioController | null;
+  preInitializedSpotifyAdapter: SpotifyAdapter | null;
 
   // actions
   setCurrentPlaylist: (
@@ -45,6 +47,7 @@ interface MusicPlayerState {
   setIsSeeking: (isSeeking: boolean) => void;
   setLoadedOnce: (loadedOnce: boolean) => void;
   setController: (controller: AudioController) => void;
+  setPreInitializedSpotifyAdapter: (adapter: SpotifyAdapter) => void;
 }
 
 export const useMusicPlayerStore = create<MusicPlayerState>()(
@@ -62,6 +65,8 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       currentTime: 0,
       isSeeking: false,
       loadedOnce: false,
+      controller: null,
+      preInitializedSpotifyAdapter: null,
 
       setCurrentPlaylist: (
         playlist: PlaylistTrack[],
@@ -100,6 +105,8 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       setIsSeeking: (seeking: boolean) => set({ isSeeking: seeking }),
       setLoadedOnce: (loadedOnce: boolean) => set({ loadedOnce: loadedOnce }),
       setController: (controller: AudioController) => set({ controller }),
+      setPreInitializedSpotifyAdapter: (adapter: SpotifyAdapter) =>
+        set({ preInitializedSpotifyAdapter: adapter }),
     }),
     {
       name: "music-player-store",
