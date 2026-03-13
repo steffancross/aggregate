@@ -113,8 +113,9 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
 
         this.player = player;
 
-        player.addListener("ready", async ({ device_id }) => {
-          this.deviceId = device_id;
+        player.addListener("ready", async (data) => {
+          if (!data.device_id) return;
+          this.deviceId = data.device_id;
           this.isInitialized = true;
           this.isReady = true;
           if (trackId) {
@@ -123,31 +124,33 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
           resolve();
         });
 
-        player.addListener(
-          "player_state_changed",
-          async ({ paused, loading }) => {
-            if (!paused && !loading) {
-              useMusicPlayerStore.getState().setIsPlaying(true);
-              void startAnchorAndUpdateMediaSession();
-            }
-          },
-        );
-
-        player.addListener("not_ready", ({ device_id }) => {
-          console.warn("Spotify not ready", device_id);
+        player.addListener("player_state_changed", async (data) => {
+          if (data === null) return;
+          if (!data.paused && !data.loading) {
+            useMusicPlayerStore.getState().setIsPlaying(true);
+            void startAnchorAndUpdateMediaSession();
+          }
         });
 
-        player.on("initialization_error", ({ message }) => {
-          console.error("Spotify failed to initialize", message);
+        player.addListener("not_ready", (data) => {
+          if (!data.device_id) return;
+          console.warn("Spotify not ready", data.device_id);
         });
 
-        player.on("authentication_error", ({ message }) => {
-          console.error("Spotify failed to authenticate", message);
+        player.on("initialization_error", (data) => {
+          if (!data.message) return;
+          console.error("Spotify failed to initialize", data.message);
         });
 
-        player.on("playback_error", ({ message }) => {
+        player.on("authentication_error", (data) => {
+          if (!data.message) return;
+          console.error("Spotify failed to authenticate", data.message);
+        });
+
+        player.on("playback_error", (data) => {
+          if (!data.message) return;
           // sometimes fires on first play, race condition, not really a problem
-          console.warn("Spotify failed to connect", message);
+          console.warn("Spotify failed to connect", data.message);
         });
 
         player.on("autoplay_failed", () => {
@@ -210,7 +213,11 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     );
 
     if (!response.ok) {
-      console.error("Failed to load Spotify track");
+      console.error(
+        "Failed to load Spotify track",
+        JSON.stringify(await response.json(), null, 2),
+      );
+      return;
     }
     this.isReady = true;
   }
@@ -250,6 +257,7 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     }
 
     const state = await this.player.getCurrentState();
+    if (state === null) return 0;
     return state.position / 1000;
   }
 
