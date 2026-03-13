@@ -150,13 +150,11 @@ export const play = async (): Promise<void> => {
 
   // https://developer.spotify.com/documentation/web-playback-sdk/reference#spotifyplayeractivateelement
   if (currentTrack.source === "spotify") {
-    const { controller, preInitializedSpotifyAdapter } =
-      useMusicPlayerStore.getState();
-    if (controller) {
-      await controller.activateElement?.();
-    } else {
-      await preInitializedSpotifyAdapter?.activateElement?.();
-    }
+    const preInitializedSpotifyAdapter =
+      useMusicPlayerStore.getState().preInitializedSpotifyAdapter;
+
+    if (preInitializedSpotifyAdapter)
+      await preInitializedSpotifyAdapter.activateElement();
   }
 
   const loadTrack = async (controller: AudioController) => {

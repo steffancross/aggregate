@@ -47,7 +47,7 @@ interface MusicPlayerState {
   setIsSeeking: (isSeeking: boolean) => void;
   setLoadedOnce: (loadedOnce: boolean) => void;
   setController: (controller: AudioController) => void;
-  setPreInitializedSpotifyAdapter: (adapter: SpotifyAdapter) => void;
+  setPreInitializedSpotifyAdapter: (adapter: SpotifyAdapter | null) => void;
 }
 
 export const useMusicPlayerStore = create<MusicPlayerState>()(
