@@ -26,9 +26,8 @@ export const setupMediaSession = (): void => {
     await pause();
     setMediaSessionMetadata();
     /* 
-    tend to lose the metadata when pausing even with this
-    playing or next/prev regains
-    at least on mobile 
+    tend to lose the metadata when pausing even with this.
+    playing or next/prev regains at least on mobile 
     */
   });
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -66,7 +65,6 @@ export const pause = async (): Promise<void> => {
 
 export const previous = async (): Promise<void> => {
   const {
-    volume,
     currentPlaylist,
     controller,
     currentTime,
@@ -74,7 +72,6 @@ export const previous = async (): Promise<void> => {
     setCurrentTime,
     setCurrentTrackIndex,
     setDuration,
-    setIsPlaying,
   } = useMusicPlayerStore.getState();
 
   const hasPreviousTrack = currentTrackIndex > 0;
@@ -89,31 +86,24 @@ export const previous = async (): Promise<void> => {
     }
 
     if (hasPreviousTrack) {
-      pauseAnchorAudio();
-
       setCurrentTrackIndex(currentTrackIndex - 1);
 
       setCurrentTime(0.01);
       setDuration(0.9);
-      await controller.pause();
-      setIsPlaying(false);
-      await controller.previousTrack();
-      await controller.setVolume(volume);
-      setDuration(controller.duration);
+
+      await play();
     }
   }
 };
 
 export const next = async (): Promise<void> => {
   const {
-    volume,
     currentPlaylist,
     controller,
     currentTrackIndex,
     setCurrentTime,
     setCurrentTrackIndex,
     setDuration,
-    setIsPlaying,
   } = useMusicPlayerStore.getState();
 
   const hasNextTrack = currentPlaylist
@@ -121,18 +111,13 @@ export const next = async (): Promise<void> => {
     : false;
 
   if (currentPlaylist && hasNextTrack && controller) {
-    pauseAnchorAudio();
     setCurrentTrackIndex(currentTrackIndex + 1);
 
     // hacky loading state to get the slider and duration to properly display while loading next track
     setCurrentTime(0.01);
     setDuration(0.9);
 
-    await controller.pause();
-    setIsPlaying(false);
-    await controller.nextTrack();
-    await controller.setVolume(volume);
-    setDuration(controller.duration);
+    await play();
   }
 };
 
