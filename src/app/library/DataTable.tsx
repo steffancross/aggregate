@@ -1,23 +1,22 @@
 // see https://tanstack.com/table/v8/docs/introduction
 "use client";
 
-import { cn, formatSongTime } from "~/lib/utils";
-import { TrackOptions } from "~/app/_components/TrackOptions";
 import {
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  getSortedRowModel,
-  getFilteredRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
   type ColumnDef,
+  type FilterFn,
   type SortingState,
   type VisibilityState,
-  type FilterFn,
 } from "@tanstack/react-table";
 import Link from "next/link";
 import { useState } from "react";
+import { TrackOptions } from "~/app/_components/TrackOptions";
 import {
   Table,
   TableBody,
@@ -26,9 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { cn, formatSongTime } from "~/lib/utils";
+import { DataTablePlay } from "./components/DataTablePlay";
 import { SortableColumnHeader } from "./components/SortableColumnHeader";
 import { DataTableToolbar } from "./components/Toolbar";
-import { DataTablePlay } from "./components/DataTablePlay";
 
 export type LibraryTrack = {
   id: number;
@@ -46,7 +46,7 @@ export type LibraryTrack = {
   position: number;
   albumId: number | null;
   isPlayable: boolean;
-  isInAnyPlaylist: boolean;
+  isInAnyPlaylist?: boolean;
 };
 
 const columns: ColumnDef<LibraryTrack>[] = [

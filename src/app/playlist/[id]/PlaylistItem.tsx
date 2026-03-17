@@ -67,7 +67,7 @@ export const PlaylistItem = ({
   return (
     <div
       key={position}
-      className={`flex w-full max-w-full flex-row items-center justify-between p-1 text-sm md:w-[70%]`}
+      className={`flex w-full max-w-full flex-row items-center justify-between p-1 text-sm`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >

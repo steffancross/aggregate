@@ -1,5 +1,6 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import { type LibraryTrack } from "~/app/library/DataTable";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const artistsRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -75,7 +76,7 @@ export const artistsRouter = createTRPCRouter({
         },
       });
 
-      const tracks = libraryTracks.map((track) => ({
+      const trackObjects = libraryTracks.map((track) => ({
         id: track.id,
         title: track.title,
         artists: track.artists.map((a) => ({
@@ -94,13 +95,44 @@ export const artistsRouter = createTRPCRouter({
         position: 1,
         albumId: track.album?.id ?? null,
         isPlayable: track.track.isPlayable,
-        // TODO: remove, jus tto make the table happy for now
-        isInAnyPlaylist: true,
       }));
+
+      const albumMap = new Map<
+        number | null,
+        {
+          albumName: string | null;
+          albumId: number | null;
+          tracks: LibraryTrack[];
+          playlistId: number;
+        }
+      >();
+
+      for (const track of trackObjects) {
+        const albumId = track.albumId;
+        const albumName = track.album;
+        if (!albumMap.has(albumId)) {
+          albumMap.set(albumId, {
+            albumName: albumName,
+            albumId: albumId,
+            playlistId: -1,
+            tracks: [],
+          });
+        }
+        albumMap.get(albumId)!.tracks.push(track);
+      }
+
+      const albums = Array.from(albumMap.values()).sort((a, b) => {
+        if (a.albumName === null) return 1;
+        if (b.albumName === null) return -1;
+        return a.albumName.localeCompare(b.albumName, undefined, {
+          sensitivity: "base",
+        });
+      });
 
       return {
         artistName: artist.name,
-        tracks,
+        artistId: artist.id,
+        albums,
       };
     }),
 });

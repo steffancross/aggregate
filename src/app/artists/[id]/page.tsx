@@ -13,7 +13,5 @@ export default async function ArtistPage({
 
   if (!data) return <div>Artist not found</div>;
 
-  return (
-    <ArtistDetail artistName={data.artistName} tracks={data.tracks} />
-  );
+  return <ArtistDetail artistName={data.artistName} albums={data.albums} />;
 }
