@@ -1,5 +1,5 @@
 import { useMusicPlayerStore } from "./MusicPlayerStore";
-import { next } from "./musicPlayerActions";
+import { clearPlayerState, next } from "./musicPlayerActions";
 
 // TODO: still may be a better way to do this, revisit
 let intervalId: ReturnType<typeof setInterval> | null = null;
@@ -13,8 +13,6 @@ function tick(): void {
     controller,
     duration,
     setCurrentTime,
-    setDuration,
-    setIsPlaying,
     currentPlaylist,
     currentTrackIndex,
   } = state;
@@ -31,9 +29,7 @@ function tick(): void {
       if (hasNextTrack) {
         void next();
       } else {
-        setCurrentTime(0);
-        setDuration(0);
-        setIsPlaying(false);
+        void clearPlayerState();
       }
     }
   });

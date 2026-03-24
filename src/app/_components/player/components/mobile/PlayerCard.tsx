@@ -1,17 +1,17 @@
 "use client";
 
-import { Card } from "~/components/ui/card";
+import { Pause, Play } from "lucide-react";
 import { useState } from "react";
-import {
-  useMusicPlayerStore,
-  useMusicPlayerComputed,
-} from "~/app/_components/player/MusicPlayerStore";
-import { Progress } from "~/components/ui/progress";
-import { Button } from "~/components/ui/button";
-import { Play, Pause } from "lucide-react";
-import { PlayerSheet } from "./PlayerSheet";
 import { useShallow } from "zustand/react/shallow";
-import { play, pause } from "~/app/_components/player/musicPlayerActions";
+import { pause, play } from "~/app/_components/player/musicPlayerActions";
+import {
+  useMusicPlayerComputed,
+  useMusicPlayerStore,
+} from "~/app/_components/player/MusicPlayerStore";
+import { Button } from "~/components/ui/button";
+import { Card } from "~/components/ui/card";
+import { Progress } from "~/components/ui/progress";
+import { PlayerSheet } from "./PlayerSheet";
 
 export const PlayerCard = () => {
   const [open, setOpen] = useState(false);
@@ -66,7 +66,7 @@ export const PlayerCard = () => {
           </div>
 
           <Progress
-            value={(currentTime / duration) * 100}
+            value={duration > 0 ? (currentTime / duration) * 100 : 0}
             className="rounded-none"
           />
         </div>
