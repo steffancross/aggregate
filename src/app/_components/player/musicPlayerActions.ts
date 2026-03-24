@@ -88,8 +88,8 @@ export const previous = async (): Promise<void> => {
     if (hasPreviousTrack) {
       setCurrentTrackIndex(currentTrackIndex - 1);
 
-      setCurrentTime(0.01);
-      setDuration(0.9);
+      setCurrentTime(0);
+      setDuration(0);
 
       await play();
     }
@@ -113,9 +113,8 @@ export const next = async (): Promise<void> => {
   if (currentPlaylist && hasNextTrack && controller) {
     setCurrentTrackIndex(currentTrackIndex + 1);
 
-    // hacky loading state to get the slider and duration to properly display while loading next track
-    setCurrentTime(0.01);
-    setDuration(0.9);
+    setCurrentTime(0);
+    setDuration(0);
 
     await play();
   }
@@ -242,4 +241,19 @@ export const handleProgressCommit = async (value: number[]): Promise<void> => {
     setCurrentTime(value[0]);
     setIsSeeking(false);
   }
+};
+
+export const clearPlayerState = async (): Promise<void> => {
+  await pause();
+  useMusicPlayerStore.setState({
+    currentPlaylist: null,
+    originalPlaylist: null,
+    currentPlaylistId: null,
+    currentTrackIndex: 0,
+    isPlaying: false,
+    isLoaded: false,
+    isSeeking: false,
+    currentTime: 0,
+    duration: 0,
+  });
 };

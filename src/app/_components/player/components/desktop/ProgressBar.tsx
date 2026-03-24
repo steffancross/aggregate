@@ -1,6 +1,6 @@
+import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import { Slider } from "~/components/ui/slider";
 import { formatSongTime } from "~/lib/utils";
-import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 
 interface ProgressBarProps {
   onProgressChange: (value: number[]) => void;
@@ -28,7 +28,7 @@ export const ProgressBar = ({
         value={[currentTime]}
         onValueChange={onProgressChange}
         onValueCommit={onProgressCommit}
-        max={duration}
+        max={duration > 0 ? duration : 1}
         step={1}
         className={location === "desktop" ? "w-80" : "w-full"}
         thumbClassName="hidden"
