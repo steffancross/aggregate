@@ -1,18 +1,9 @@
 "use client";
-import { PlayIcon } from "@heroicons/react/24/solid";
-import { ArrowsCrossingIcon } from "@sidekickicons/react/24/solid";
-import { Pencil, Trash2 } from "lucide-react";
+import { PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmationDialog } from "~/app/_components/ConfirmationDialog";
-import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
-import {
-  fisherYatesShuffle,
-  toggleShuffle,
-} from "~/app/_components/player/helpers/shuffleFunctions";
-import { play } from "~/app/_components/player/musicPlayerActions";
-import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
@@ -20,17 +11,12 @@ import { api } from "~/trpc/react";
 export const PlaylistHeader = ({
   playlistId,
   playlistName,
-  playlist,
 }: {
   playlistId: number;
   playlistName: string;
-  playlist: PlaylistTrack[];
 }) => {
   const utils = api.useUtils();
   const router = useRouter();
-  const { setCurrentPlaylist, setCurrentTrackIndex, setOriginalPlaylist } =
-    useMusicPlayerStore.getState();
-  const isShuffleOn = useMusicPlayerStore((s) => s.isShuffleOn);
   const [hovered, setHovered] = useState(false);
   const [currentPlaylistName, setCurrentPlaylistName] = useState(playlistName);
   const [isEditing, setIsEditing] = useState(false);
@@ -63,26 +49,11 @@ export const PlaylistHeader = ({
     setIsEditing(false);
   };
 
-  const handlePlay = async () => {
-    setCurrentPlaylist(playlist, playlistId);
-    setOriginalPlaylist(playlist);
-    setCurrentTrackIndex(0);
-
-    if (isShuffleOn) {
-      const shuffledPlaylist = fisherYatesShuffle(playlist);
-      setCurrentPlaylist(shuffledPlaylist, playlistId, {
-        newTrackIndex: 0,
-      });
-    }
-
-    await play();
-  };
-
   return (
     <>
-      <div className="mx-auto mt-8 mb-4 flex w-full max-w-120 flex-col gap-2">
+      <div className="mx-auto mt-8 mb-4 w-full max-w-120">
         <div
-          className="flex justify-between"
+          className="flex min-h-10 items-center justify-between"
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
@@ -98,33 +69,22 @@ export const PlaylistHeader = ({
             <div>
               <Button
                 size="icon"
+                variant="ghost"
                 className="rounded-full"
                 onClick={() => setIsEditing(true)}
               >
-                <Pencil />
+                <PencilSquareIcon />
               </Button>
               <Button
                 size="icon"
+                variant="ghost"
                 className="rounded-full"
                 onClick={() => setConfirmationDialogOpen(true)}
               >
-                <Trash2 />
+                <XMarkIcon />
               </Button>
             </div>
           )}
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          {/* TODO */}
-          <Button
-            variant="ghost"
-            className={isShuffleOn ? "text-amber-600" : "text-primary"}
-            onClick={toggleShuffle}
-          >
-            <ArrowsCrossingIcon className="size-6" />
-          </Button>
-          <Button size="icon" onClick={handlePlay} variant="ghost">
-            <PlayIcon className="size-6" />
-          </Button>
         </div>
       </div>
       <ConfirmationDialog

@@ -16,7 +16,6 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
       <PlaylistHeader
         playlistId={playlist.playlistId}
         playlistName={playlist.playlistName}
-        playlist={playlist.playlistEntries}
       />
       <div className="mx-auto flex w-[90%] flex-col items-center justify-center md:w-[70%]">
         {playlist.playlistEntries.map((song, index) => {
