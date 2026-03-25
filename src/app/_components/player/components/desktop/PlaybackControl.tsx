@@ -29,6 +29,7 @@ export const PlaybackControl = ({
 }: PlaybackControlProps) => {
   const isPlaying = useMusicPlayerStore((s) => s.isPlaying);
   const isShuffleOn = useMusicPlayerStore((s) => s.isShuffleOn);
+  const currentPlaylist = useMusicPlayerStore((s) => s.currentPlaylist);
   const { hasNextTrack } = useMusicPlayerComputed();
 
   return (
@@ -40,11 +41,17 @@ export const PlaybackControl = ({
       >
         <ArrowsCrossingIcon />
       </Button>
-      <Button onClick={onPrevious} variant="ghost" className="px-2!">
+      <Button
+        disabled={!currentPlaylist}
+        onClick={onPrevious}
+        variant="ghost"
+        className="px-2!"
+      >
         <BackwardIcon className="size-5" fill="#fff" />
       </Button>
 
       <Button
+        disabled={!currentPlaylist}
         onClick={isPlaying ? onPause : onPlay}
         variant="ghost"
         size="icon"
@@ -59,7 +66,7 @@ export const PlaybackControl = ({
       <Button
         onClick={onNext}
         variant="ghost"
-        disabled={!hasNextTrack}
+        disabled={!hasNextTrack || !currentPlaylist}
         className="px-2!"
       >
         <ForwardIcon className="size-5" fill="#fff" />
