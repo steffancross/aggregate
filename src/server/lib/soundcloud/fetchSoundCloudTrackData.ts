@@ -1,4 +1,5 @@
 import { type TrackData } from "~/server/lib/getTrackData";
+import { getBestArtworkUrl } from "./helperFunctions";
 
 interface SoundCloudResponse {
   title: string;
@@ -9,6 +10,7 @@ interface SoundCloudResponse {
     username: string;
   };
 }
+
 // TODO: make this still function without auth and test it
 export async function fetchSoundCloudTrackData(
   url: string,
@@ -67,7 +69,9 @@ export async function fetchSoundCloudTrackData(
     artist: data.user?.username ? [data.user.username] : [],
     album: "",
     duration: data.duration,
-    artworkUrl: data.artwork_url || "",
+    artworkUrl: data.artwork_url
+      ? await getBestArtworkUrl(data.artwork_url)
+      : "",
     sourceUrl: url,
     sourceId: data.id.toString(),
     source: "soundcloud" as const,
