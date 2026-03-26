@@ -15,14 +15,16 @@ import { PlayerSheet } from "./PlayerSheet";
 
 export const PlayerCard = () => {
   const [open, setOpen] = useState(false);
-  const { loadedOnce, isPlaying, duration, currentTime } = useMusicPlayerStore(
-    useShallow((s) => ({
-      loadedOnce: s.loadedOnce,
-      isPlaying: s.isPlaying,
-      duration: s.duration,
-      currentTime: s.currentTime,
-    })),
-  );
+  const { loadedOnce, isPlaying, duration, currentTime, currentPlaylist } =
+    useMusicPlayerStore(
+      useShallow((s) => ({
+        loadedOnce: s.loadedOnce,
+        isPlaying: s.isPlaying,
+        duration: s.duration,
+        currentTime: s.currentTime,
+        currentPlaylist: s.currentPlaylist,
+      })),
+    );
 
   const { currentTrack } = useMusicPlayerComputed();
 
@@ -47,6 +49,7 @@ export const PlayerCard = () => {
               </p>
             </div>
             <Button
+              disabled={!currentPlaylist}
               onClick={async (e) => {
                 e.stopPropagation();
                 if (isPlaying) {

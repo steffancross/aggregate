@@ -26,6 +26,7 @@ export const PlayerSheet = ({
 }) => {
   const isPlaying = useMusicPlayerStore((s) => s.isPlaying);
   const isShuffleOn = useMusicPlayerStore((s) => s.isShuffleOn);
+  const currentPlaylist = useMusicPlayerStore((s) => s.currentPlaylist);
 
   const { currentTrack, hasNextTrack } = useMusicPlayerComputed();
 
@@ -56,17 +57,29 @@ export const PlayerSheet = ({
             </Button>
           </div>
           <div className="align-center flex justify-between">
-            <Button variant="ghost" onClick={previous}>
+            <Button
+              variant="ghost"
+              onClick={previous}
+              disabled={!currentPlaylist}
+            >
               <SkipBack className="size-5" fill="#fff" />
             </Button>
-            <Button variant="ghost" onClick={isPlaying ? pause : play}>
+            <Button
+              variant="ghost"
+              onClick={isPlaying ? pause : play}
+              disabled={!currentPlaylist}
+            >
               {isPlaying ? (
                 <Pause className="size-5" fill="#fff" />
               ) : (
                 <Play className="size-5" fill="#fff" />
               )}
             </Button>
-            <Button variant="ghost" onClick={next} disabled={!hasNextTrack}>
+            <Button
+              variant="ghost"
+              onClick={next}
+              disabled={!hasNextTrack || !currentPlaylist}
+            >
               <SkipForward className="size-5" fill="#fff" />
             </Button>
           </div>
