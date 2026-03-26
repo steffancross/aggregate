@@ -1,31 +1,30 @@
 "use client";
 
-import { ProgressBar } from "./ProgressBar";
-import { PlaybackControl } from "./PlaybackControl";
-import { VolumeControl } from "./VolumeControl";
+import { useUser } from "@clerk/nextjs";
+import { useMusicPlayerComputed } from "~/app/_components/player/MusicPlayerStore";
 import {
-  useMusicPlayerStore,
-  useMusicPlayerComputed,
-} from "~/app/_components/player/MusicPlayerStore";
-import {
-  play,
-  pause,
-  next,
-  previous,
-  handleVolumeChange,
   handleProgressChange,
   handleProgressCommit,
+  handleVolumeChange,
+  next,
+  pause,
+  play,
+  previous,
 } from "../../musicPlayerActions";
+import { PlaybackControl } from "./PlaybackControl";
+import { ProgressBar } from "./ProgressBar";
+import { VolumeControl } from "./VolumeControl";
 
 export const MusicPlayer = () => {
-  const loadedOnce = useMusicPlayerStore((s) => s.loadedOnce);
-
   const { currentTrack } = useMusicPlayerComputed();
+  const { isSignedIn } = useUser();
 
-  if (!loadedOnce) return null;
+  if (!isSignedIn) {
+    return null;
+  }
 
   return (
-    <div className="bg-background/40 fixed bottom-10 left-1/2 z-100 flex -translate-x-1/2 items-center gap-4 rounded-full p-4 backdrop-blur-[2px]">
+    <div className="bg-background/40 flex w-full items-center gap-4 border border-amber-50 p-4">
       <PlaybackControl
         onPlay={play}
         onPause={pause}

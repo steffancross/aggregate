@@ -1,9 +1,9 @@
 "use client";
 
-import { api } from "~/trpc/react";
 import Link from "next/link";
-import { Spinner } from "~/components/ui/spinner";
 import { Separator } from "~/components/ui/separator";
+import { Spinner } from "~/components/ui/spinner";
+import { api } from "~/trpc/react";
 
 export const ArtistList = () => {
   const { data: artists, isLoading } = api.artists.getUserArtists.useQuery();
@@ -17,7 +17,7 @@ export const ArtistList = () => {
   }
 
   return (
-    <div className="scroll h-screen overflow-y-scroll py-4">
+    <div className="h-full overflow-y-scroll py-4">
       {artists?.map((artist) => (
         <Link
           href={`/artists/${artist.id}`}
