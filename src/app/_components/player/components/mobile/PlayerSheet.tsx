@@ -1,5 +1,10 @@
+import {
+  BackwardIcon,
+  ForwardIcon,
+  PauseIcon,
+  PlayIcon,
+} from "@heroicons/react/24/solid";
 import { ArrowsCrossingIcon } from "@sidekickicons/react/24/solid";
-import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { ProgressBar } from "~/app/_components/player/components/desktop/ProgressBar";
 import { toggleShuffle } from "~/app/_components/player/helpers/shuffleFunctions";
 import {
@@ -16,6 +21,7 @@ import {
 } from "~/app/_components/player/MusicPlayerStore";
 import { Button } from "~/components/ui/button";
 import { Drawer, DrawerContent, DrawerTitle } from "~/components/ui/drawer";
+import { Time } from "../desktop/Time";
 
 export const PlayerSheet = ({
   open,
@@ -62,7 +68,7 @@ export const PlayerSheet = ({
               onClick={previous}
               disabled={!currentPlaylist}
             >
-              <SkipBack className="size-5" fill="#fff" />
+              <BackwardIcon className="size-5" fill="#fff" />
             </Button>
             <Button
               variant="ghost"
@@ -70,9 +76,9 @@ export const PlayerSheet = ({
               disabled={!currentPlaylist}
             >
               {isPlaying ? (
-                <Pause className="size-5" fill="#fff" />
+                <PauseIcon className="size-8" fill="#fff" />
               ) : (
-                <Play className="size-5" fill="#fff" />
+                <PlayIcon className="size-8" fill="#fff" />
               )}
             </Button>
             <Button
@@ -80,14 +86,14 @@ export const PlayerSheet = ({
               onClick={next}
               disabled={!hasNextTrack || !currentPlaylist}
             >
-              <SkipForward className="size-5" fill="#fff" />
+              <ForwardIcon className="size-5" fill="#fff" />
             </Button>
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
+            <Time />
             <ProgressBar
               onProgressChange={handleProgressChange}
               onProgressCommit={handleProgressCommit}
-              location="mobile"
             />
           </div>
         </div>

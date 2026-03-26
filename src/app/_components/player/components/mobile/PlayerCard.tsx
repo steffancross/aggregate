@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Play } from "lucide-react";
+import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { pause, play } from "~/app/_components/player/musicPlayerActions";
@@ -62,9 +62,9 @@ export const PlayerCard = () => {
                 variant="ghost"
               >
                 {isPlaying ? (
-                  <Pause fill="#fff" className="size-5" />
+                  <PauseIcon className="size-5" fill="#fff" />
                 ) : (
-                  <Play fill="#fff" className="size-5" />
+                  <PlayIcon className="size-5" fill="#fff" />
                 )}
               </Button>
             </div>
