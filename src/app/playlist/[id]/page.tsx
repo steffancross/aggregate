@@ -12,12 +12,14 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
   if (!playlist) return <div>Playlist not found</div>;
 
   return (
-    <>
-      <PlaylistHeader
-        playlistId={playlist.playlistId}
-        playlistName={playlist.playlistName}
-      />
-      <div className="mx-auto flex w-[90%] flex-col items-center justify-center md:w-[70%]">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="shrink-0">
+        <PlaylistHeader
+          playlistId={playlist.playlistId}
+          playlistName={playlist.playlistName}
+        />
+      </div>
+      <div className="mx-auto flex min-h-0 w-[90%] flex-1 flex-col items-center overflow-y-auto md:w-[70%]">
         {playlist.playlistEntries.map((song, index) => {
           return (
             <PlaylistItem
@@ -33,7 +35,7 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
           );
         })}
       </div>
-    </>
+    </div>
   );
 };
 

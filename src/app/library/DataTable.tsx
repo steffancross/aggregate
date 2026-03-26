@@ -179,7 +179,7 @@ export const DataTable = ({ data }: { data: LibraryTrack[] }) => {
   });
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-full flex-col">
       <DataTableToolbar
         table={table}
         globalFilter={globalFilter}
@@ -193,7 +193,7 @@ export const DataTable = ({ data }: { data: LibraryTrack[] }) => {
                 return (
                   <TableHead
                     key={header.id}
-                    className="bg-chart-2/15 sticky top-0 z-20"
+                    className="bg-chart-3 sticky top-0 z-20"
                   >
                     {header.isPlaceholder
                       ? null

@@ -1,10 +1,9 @@
 "use client";
-import { Button } from "~/components/ui/button";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
-import { Suspense } from "react";
 
 const AccountContent = () => {
   // react strict mode fix
@@ -29,7 +28,7 @@ const AccountContent = () => {
   }, [router, searchParams]);
 
   return (
-    <main className="flex h-screen flex-col items-center justify-center">
+    <main className="flex h-full flex-col items-center justify-center">
       <h1>Account</h1>
       <Button
         onClick={() => (window.location.href = "/api/spotify/login")}

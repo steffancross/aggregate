@@ -32,48 +32,50 @@ export const PlayerCard = () => {
 
   return (
     <>
-      <Card
-        className="position: fixed bottom-0 w-full rounded-none p-0"
-        onClick={() => setOpen(true)}
-      >
-        <div className="flex h-full flex-col">
-          <div className="flex flex-row items-center justify-between px-6 py-3">
-            <div>
-              <p className="line-clamp-1 truncate font-semibold">
-                {currentTrack?.title}
-              </p>
-              <p className="text-muted-foreground line-clamp-1 truncate text-sm">
-                {currentTrack?.artists
-                  .map((artist) => artist.artistName)
-                  .join(", ")}
-              </p>
+      {currentPlaylist && (
+        <Card
+          className="position: fixed bottom-0 w-full rounded-none p-0"
+          onClick={() => setOpen(true)}
+        >
+          <div className="flex h-full flex-col">
+            <div className="flex flex-row items-center justify-between px-6 py-3">
+              <div>
+                <p className="line-clamp-1 truncate font-semibold">
+                  {currentTrack?.title}
+                </p>
+                <p className="text-muted-foreground line-clamp-1 truncate text-sm">
+                  {currentTrack?.artists
+                    .map((artist) => artist.artistName)
+                    .join(", ")}
+                </p>
+              </div>
+              <Button
+                disabled={!currentPlaylist}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (isPlaying) {
+                    await pause();
+                  } else {
+                    await play();
+                  }
+                }}
+                variant="ghost"
+              >
+                {isPlaying ? (
+                  <Pause fill="#fff" className="size-5" />
+                ) : (
+                  <Play fill="#fff" className="size-5" />
+                )}
+              </Button>
             </div>
-            <Button
-              disabled={!currentPlaylist}
-              onClick={async (e) => {
-                e.stopPropagation();
-                if (isPlaying) {
-                  await pause();
-                } else {
-                  await play();
-                }
-              }}
-              variant="ghost"
-            >
-              {isPlaying ? (
-                <Pause fill="#fff" className="size-5" />
-              ) : (
-                <Play fill="#fff" className="size-5" />
-              )}
-            </Button>
-          </div>
 
-          <Progress
-            value={duration > 0 ? (currentTime / duration) * 100 : 0}
-            className="rounded-none"
-          />
-        </div>
-      </Card>
+            <Progress
+              value={duration > 0 ? (currentTime / duration) * 100 : 0}
+              className="rounded-none"
+            />
+          </div>
+        </Card>
+      )}
       <PlayerSheet open={open} onOpenChange={setOpen} />
     </>
   );

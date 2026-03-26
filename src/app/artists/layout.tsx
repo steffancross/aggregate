@@ -6,11 +6,11 @@ export default function ArtistsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="md:grid md:grid-cols-[minmax(0,1fr)_2fr] md:gap-4">
-      <aside className="hidden md:block">
+    <div className="h-full md:grid md:grid-cols-[minmax(0,1fr)_2fr] md:gap-4">
+      <aside className="hidden min-h-0 md:block">
         <ArtistList />
       </aside>
-      <main>{children}</main>
+      <main className="min-h-0 min-w-0 overflow-y-auto">{children}</main>
     </div>
   );
 }

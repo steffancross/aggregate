@@ -1,14 +1,14 @@
 "use client";
 
+import { AddPlaylist } from "~/app/_components/forms/AddPlaylist";
+import { AddTrack } from "~/app/_components/forms/AddTrack";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuTrigger,
   ContextMenuSeparator,
+  ContextMenuTrigger,
 } from "~/components/ui/context-menu";
-import { AddTrack } from "~/app/_components/forms/AddTrack";
-import { AddPlaylist } from "~/app/_components/forms/AddPlaylist";
 
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
@@ -40,7 +40,7 @@ export const GlobalContextMenu = ({
     <>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <div className="fixed inset-0">{children}</div>
+          <div>{children}</div>
         </ContextMenuTrigger>
         <ContextMenuContent className="z-100">
           <ContextMenuItem onClick={handleAddSong}>add song</ContextMenuItem>
