@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import { Slider } from "~/components/ui/slider";
-
+import { cn } from "~/lib/utils";
 interface VolumeControlProps {
   onVolumeChange: (value: number[]) => void;
 }
@@ -18,8 +18,8 @@ export const VolumeControl = ({ onVolumeChange }: VolumeControlProps) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="-ml-1">
-          <SpeakerWaveIcon className="size-4.5" fill="#fff" />
+        <Button variant="ghost" className={cn("h-4 p-0!")}>
+          <SpeakerWaveIcon className="size-4" fill="#fff" />
         </Button>
       </PopoverTrigger>
       <PopoverContent side="top" className="z-101 w-fit">

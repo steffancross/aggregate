@@ -193,7 +193,7 @@ export const DataTable = ({ data }: { data: LibraryTrack[] }) => {
                 return (
                   <TableHead
                     key={header.id}
-                    className="bg-chart-3 sticky top-0 z-20"
+                    className="bg-primary text-muted sticky top-0 z-20"
                   >
                     {header.isPlaceholder
                       ? null

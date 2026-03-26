@@ -51,7 +51,7 @@ export const PlaylistHeader = ({
 
   return (
     <>
-      <div className="mx-auto mt-8 mb-4 w-full max-w-120">
+      <div className="mx-auto my-2 w-full max-w-120">
         <div
           className="flex min-h-10 items-center justify-between"
           onMouseEnter={() => setHovered(true)}
