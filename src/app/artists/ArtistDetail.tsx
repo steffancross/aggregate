@@ -1,6 +1,6 @@
 import { type LibraryTrack } from "~/app/library/DataTable";
-import { PlaylistItem } from "~/app/playlist/[id]/PlaylistItem";
 import { Separator } from "~/components/ui/separator";
+import { ArtistItem } from "./ArtistItem";
 
 type ArtistDetailProps = {
   artistName: string;
@@ -23,7 +23,7 @@ export const ArtistDetail = ({ artistName, albums }: ArtistDetailProps) => {
             <Separator className="my-1" />
             <div className="flex w-[90%] flex-col gap-2">
               {album.tracks.map((track, index) => (
-                <PlaylistItem
+                <ArtistItem
                   key={track.id}
                   index={index}
                   title={track.title}
