@@ -1,19 +1,18 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import type { PlaylistTrack } from "~/app/_components/player/types/player";
+import { Button } from "~/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTitle,
   SheetDescription,
+  SheetTitle,
 } from "~/components/ui/sheet";
-import { TrackForm } from "./TrackForm";
 import { api } from "~/trpc/react";
-import { type AddTrackFormData } from "./TrackForm";
-import type { PlaylistTrack } from "~/app/_components/player/types/player";
-import { useRouter } from "next/navigation";
-import { Button } from "~/components/ui/button";
-import { toast } from "sonner";
+import { TrackForm, type AddTrackFormData } from "./TrackForm";
 
 export const EditTrack = ({
   open,

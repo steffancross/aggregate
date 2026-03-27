@@ -1,16 +1,13 @@
 "use client";
 
-import Lottie from "lottie-react";
-import { Play } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { reserveCurrentAndShuffleRest } from "~/app/_components/player/helpers/shuffleFunctions";
 import { play } from "~/app/_components/player/musicPlayerActions";
 import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import type { PlaylistTrack } from "~/app/_components/player/types/player";
 import { TrackOptions } from "~/app/_components/TrackOptions";
-import SoundWave from "./SoundWave.json";
+import { cn } from "~/lib/utils";
 
 interface PlaylistItemProps {
   index: number;
@@ -31,8 +28,6 @@ export const PlaylistItem = ({
   playlistId,
   trackId,
 }: PlaylistItemProps) => {
-  const [hovered, setHovered] = useState(false);
-
   const { currentPlaylistId, currentTrackIndex, currentPlaylist, isShuffleOn } =
     useMusicPlayerStore(
       useShallow((s) => ({
@@ -67,44 +62,44 @@ export const PlaylistItem = ({
   return (
     <div
       key={position}
-      className={`flex w-full max-w-full flex-row items-center justify-between p-1 text-sm`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className={cn(
+        "md:hover:bg-accent grid w-full grid-cols-[1fr_1fr_auto] items-center text-sm md:grid-cols-[3fr_2fr_auto]",
+      )}
+      onClick={handlePlay}
     >
-      <div
-        className="flex min-w-0 flex-1 flex-row items-center gap-4"
-        onClick={handlePlay}
+      <p
+        className={cn(
+          "truncate",
+          isCurrentTrack ? "font-semibold text-amber-700" : "",
+        )}
       >
-        <div className="flex w-8 shrink-0 items-center justify-center">
-          {isCurrentTrack ? (
-            <Lottie animationData={SoundWave} loop={true} />
-          ) : hovered ? (
-            <Play className="size-4" />
-          ) : (
-            <p>{index + 1}</p>
-          )}
-        </div>
-        <div className="flex min-w-0 flex-col">
-          <p className="truncate">{title}</p>
-          <p className="truncate">
-            {artists.map((artist, index) => {
-              return (
-                <Link
-                  href={`/artists/${artist.artistId}`}
-                  key={artist.artistId}
-                  className="text-muted-foreground hover:underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {artist.artistName}
-                  {index < artists.length - 1 && ", "}
-                </Link>
-              );
-            })}
-          </p>
-        </div>
-      </div>
+        {title}
+      </p>
 
-      <TrackOptions song={playlist[index]!} />
+      <p
+        className={cn(
+          "truncate pr-6 text-end md:text-start",
+          isCurrentTrack ? "font-semibold" : "",
+        )}
+      >
+        {artists.map((artist, index) => {
+          return (
+            <Link
+              href={`/artists/${artist.artistId}`}
+              key={artist.artistId}
+              className="text-muted-foreground hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {artist.artistName}
+              {index < artists.length - 1 && ", "}
+            </Link>
+          );
+        })}
+      </p>
+
+      <div onClick={(e) => e.stopPropagation()}>
+        <TrackOptions song={playlist[index]!} />
+      </div>
     </div>
   );
 };

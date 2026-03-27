@@ -16,7 +16,7 @@ export const Shuffle = () => {
         isShuffleOn ? "text-amber-600" : "text-primary",
       )}
     >
-      <ArrowsCrossingIcon fill="#fff" />
+      <ArrowsCrossingIcon />
     </Button>
   );
 };

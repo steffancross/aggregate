@@ -62,11 +62,11 @@ export const MusicPlayer = () => {
         <div className="justify-self-end">
           <div className="flex items-center gap-2">
             <Previous onPrevious={previous} />
-            <span>/</span>
+            <span className="text-muted-foreground text-xs">/</span>
             <Next onNext={next} />
-            <span>/</span>
+            <span className="text-muted-foreground text-xs">/</span>
             <Shuffle />
-            <span>/</span>
+            <span className="text-muted-foreground text-xs">/</span>
             <Button
               variant="ghost"
               className="h-4 p-0!"
