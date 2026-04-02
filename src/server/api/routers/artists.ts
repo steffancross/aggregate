@@ -49,7 +49,7 @@ export const artistsRouter = createTRPCRouter({
     .input(z.object({ artistId: z.number() }))
     .query(async ({ ctx, input }) => {
       const artist = await ctx.db.artist.findUnique({
-        where: { id: input.artistId },
+        where: { id: input.artistId, userId: ctx.user.id },
       });
       if (!artist) return null;
 

@@ -50,6 +50,7 @@ export const tracksRouter = createTRPCRouter({
           let artist = await tx.artist.findFirst({
             where: {
               name: artistName,
+              userId,
             },
           });
 
@@ -58,6 +59,7 @@ export const tracksRouter = createTRPCRouter({
             artist = await tx.artist.create({
               data: {
                 name: artistName,
+                userId,
               },
             });
           }
@@ -72,6 +74,7 @@ export const tracksRouter = createTRPCRouter({
           album = await tx.album.findFirst({
             where: {
               name: input.album,
+              userId,
             },
           });
 
@@ -80,6 +83,7 @@ export const tracksRouter = createTRPCRouter({
             album = await tx.album.create({
               data: {
                 name: input.album,
+                userId,
               },
             });
           }
@@ -138,6 +142,7 @@ export const tracksRouter = createTRPCRouter({
           let artist = await tx.artist.findFirst({
             where: {
               name: artistName,
+              userId,
             },
           });
 
@@ -146,6 +151,7 @@ export const tracksRouter = createTRPCRouter({
             artist = await tx.artist.create({
               data: {
                 name: artistName,
+                userId,
               },
             });
           }
@@ -160,6 +166,7 @@ export const tracksRouter = createTRPCRouter({
           album = await tx.album.findFirst({
             where: {
               name: input.album,
+              userId,
             },
           });
 
@@ -168,6 +175,7 @@ export const tracksRouter = createTRPCRouter({
             album = await tx.album.create({
               data: {
                 name: input.album,
+                userId,
               },
             });
           }
