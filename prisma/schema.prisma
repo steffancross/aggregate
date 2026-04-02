@@ -22,6 +22,8 @@ model User {
 
     playlists         Playlist[]
     libraryTracks     LibraryTrack[]
+    albums            Album[]
+    artists           Artist[]
 }
 
 // belongs to a user and contains ordered entries of library tracks
@@ -84,7 +86,12 @@ model Album {
 
     name      String
 
+    userId    Int?
+    user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
     libraryTracks LibraryTrack[]
+
+    @@unique ([name, userId])
 }
 model Artist {
     id        Int      @id @default(autoincrement())
@@ -93,7 +100,12 @@ model Artist {
 
     name      String
 
+    userId    Int?
+    user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
     libraryTracks LibraryTrackArtist[]
+
+    @@unique ([name, userId])
 }
 
 // a library track is a user's personal copy of a track
