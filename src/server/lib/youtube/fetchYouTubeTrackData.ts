@@ -1,5 +1,5 @@
-import { type TrackData } from "~/server/lib/getTrackData";
 import { Temporal } from "@js-temporal/polyfill";
+import { type TrackData } from "~/server/lib/getTrackData";
 
 interface YoutubeResponse {
   items: {
@@ -7,13 +7,13 @@ interface YoutubeResponse {
     snippet: {
       title: string;
       thumbnails: {
-        default: {
+        default?: {
           url: string;
         };
-        standard: {
+        standard?: {
           url: string;
         };
-        maxres: {
+        maxres?: {
           url: string;
         };
       };
@@ -65,8 +65,8 @@ export async function fetchYouTubeTrackData(url: string): Promise<TrackData> {
     album: "",
     duration: duration,
     artworkUrl:
-      videoData.snippet.thumbnails.maxres.url ||
-      videoData.snippet.thumbnails.standard.url ||
+      videoData.snippet.thumbnails.maxres?.url ??
+      videoData.snippet.thumbnails.standard?.url ??
       "",
     sourceUrl: url,
     sourceId: videoData.id,
