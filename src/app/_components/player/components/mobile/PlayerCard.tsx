@@ -33,10 +33,7 @@ export const PlayerCard = () => {
   return (
     <>
       {currentPlaylist && (
-        <Card
-          className="position: fixed bottom-0 w-full rounded-none p-0"
-          onClick={() => setOpen(true)}
-        >
+        <Card className="w-full rounded-none p-0" onClick={() => setOpen(true)}>
           <div className="flex h-full flex-col">
             <div className="flex flex-row items-center justify-between px-6 py-3">
               <div>
