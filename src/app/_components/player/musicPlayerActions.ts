@@ -86,7 +86,6 @@ export const previous = async (): Promise<void> => {
     }
 
     if (hasPreviousTrack) {
-      await controller.pause();
       setCurrentTrackIndex(currentTrackIndex - 1);
 
       setCurrentTime(0);
@@ -112,7 +111,6 @@ export const next = async (): Promise<void> => {
     : false;
 
   if (currentPlaylist && hasNextTrack && controller) {
-    await controller.pause(); // spotify async, starting early in the chain
     setCurrentTrackIndex(currentTrackIndex + 1);
 
     setCurrentTime(0);

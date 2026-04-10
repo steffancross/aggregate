@@ -93,6 +93,7 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
   private isReady: boolean = false;
   private isInitialized: boolean = false;
   private deviceId: string | null = null;
+  private lastLoadedTrackId: string | null = null; // from the last successful 'loadNewTrack', used to defer 'resume()' until the SDK matches.
 
   async initializeWidget(trackId?: string): Promise<void> {
     return new Promise((resolve) => {
@@ -126,9 +127,16 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
 
         player.addListener("player_state_changed", async (data) => {
           if (data === null) return;
+          const { currentPlaylist, currentTrackIndex } =
+            useMusicPlayerStore.getState();
+          const expectedId =
+            currentPlaylist?.[currentTrackIndex]?.sourceId ?? null;
+          const currentId = data.track_window?.current_track?.id ?? null;
           if (!data.paused && !data.loading) {
-            useMusicPlayerStore.getState().setIsPlaying(true);
-            void startAnchorAndUpdateMediaSession();
+            if (expectedId && currentId === expectedId) {
+              useMusicPlayerStore.getState().setIsPlaying(true);
+              void startAnchorAndUpdateMediaSession();
+            }
           }
         });
 
@@ -219,6 +227,7 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
       );
       return;
     }
+    this.lastLoadedTrackId = trackId;
     this.isReady = true;
   }
 
@@ -228,6 +237,9 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
       return;
     }
 
+    if (this.lastLoadedTrackId) {
+      await this.waitUntilCurrentTrackIs(this.lastLoadedTrackId);
+    }
     await this.player.resume();
   }
 
@@ -294,6 +306,22 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
       return;
     }
     await this.player.activateElement();
+  }
+
+  private async waitUntilCurrentTrackIs(trackId: string): Promise<void> {
+    if (!this.player) return;
+    const deadline = Date.now() + 5_000;
+    while (Date.now() < deadline) {
+      const state = await this.player.getCurrentState();
+      if (state?.track_window?.current_track?.id === trackId) {
+        return;
+      }
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    console.warn(
+      "Spotify: timed out waiting for track switch; track id:",
+      trackId,
+    );
   }
 
   readonly sound: null = null;
