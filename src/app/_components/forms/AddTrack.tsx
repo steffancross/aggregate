@@ -1,22 +1,21 @@
 "use client";
 
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTitle,
   SheetDescription,
+  SheetTitle,
 } from "~/components/ui/sheet";
-import { LinkStep } from "./LinkStep";
-import { TrackForm } from "./TrackForm";
-import { api } from "~/trpc/react";
 import { type TrackData } from "~/server/lib/getTrackData";
-import { type AddTrackFormData } from "./TrackForm";
+import { api } from "~/trpc/react";
+import { LinkStep } from "./LinkStep";
 import { PlaylistSelector } from "./PlaylistSelector";
-import { Button } from "~/components/ui/button";
-import { toast } from "sonner";
-import { ArrowRight, ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { TrackForm, type AddTrackFormData } from "./TrackForm";
 
 export const AddTrack = ({
   open,
@@ -67,12 +66,12 @@ export const AddTrack = ({
       setSelectedPlaylists([]);
       onOpenChange(false);
       // TODO
-      toast.success("Song added", { position: "top-right" });
+      toast.success("Song added", { position: "bottom-right" });
     },
     onError: (error) => {
       console.error(error);
       //  TODO
-      toast.error("Error adding song", { position: "top-right" });
+      toast.error("Error adding song", { position: "bottom-right" });
     },
   });
 

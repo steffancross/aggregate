@@ -43,7 +43,7 @@ export default function RootLayout({
               </div>
             </GlobalContextMenu>
 
-            <Toaster position="top-left" />
+            <Toaster position="bottom-right" />
 
             {/* needed for iframe insert and media session control */}
             <AppMediaAnchor />
