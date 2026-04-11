@@ -39,7 +39,10 @@ export const GlobalContextMenu = ({
   return (
     <>
       <ContextMenu>
-        <ContextMenuTrigger asChild>
+        <ContextMenuTrigger
+          asChild
+          className="user-select-none -webkit-user-select-none -webkit-touch-callout-none"
+        >
           <div>{children}</div>
         </ContextMenuTrigger>
         <ContextMenuContent className="z-100">
