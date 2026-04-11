@@ -17,7 +17,7 @@ export const ArtistList = () => {
   }
 
   return (
-    <div className="h-full overflow-y-scroll py-4">
+    <div className="py-4">
       {artists?.map((artist) => (
         <Link
           href={`/artists/${artist.id}`}

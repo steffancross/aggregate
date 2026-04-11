@@ -31,15 +31,14 @@ export default function RootLayout({
         <body>
           <TRPCReactProvider>
             <GlobalContextMenu>
-              <div className="md:flex md:h-dvh md:flex-col md:overflow-hidden">
+              <div className="flex h-dvh min-h-0 flex-col overflow-hidden">
                 <div className="hidden shrink-0 md:block">
                   <MusicPlayer />
                 </div>
-                <div className="min-h-0 flex-1">{children}</div>
-              </div>
-
-              <div className="md:hidden">
-                <PlayerCard />
+                <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
+                <div className="shrink-0 md:hidden">
+                  <PlayerCard />
+                </div>
               </div>
             </GlobalContextMenu>
 
