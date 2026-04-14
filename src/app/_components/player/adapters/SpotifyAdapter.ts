@@ -74,6 +74,16 @@ type PlayerData = {
   device_id: string;
 };
 
+/**
+ * Normalize titles when comparing our playlist row to SDK `current_track` — Spotify may resolve
+ * playback to a different id than we stored (alternate releases, clean vs explicit, etc.).
+ * Brittle fix but idc
+ * https://github.com/steffancross/aggregate/issues/267
+ */
+function normalizedTrackTitle(title: string): string {
+  return title.trim().toLowerCase();
+}
+
 type PlayerEventMap = {
   ready: PlayerData;
   not_ready: PlayerData;
@@ -127,13 +137,29 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
 
         player.addListener("player_state_changed", async (data) => {
           if (data === null) return;
+
           const { currentPlaylist, currentTrackIndex } =
             useMusicPlayerStore.getState();
-          const expectedId =
-            currentPlaylist?.[currentTrackIndex]?.sourceId ?? null;
+          const expectedTrack = currentPlaylist?.[currentTrackIndex];
+          const expectedId = expectedTrack?.sourceId ?? null;
+          const expectedTitle = expectedTrack?.title ?? null;
+
           const currentId = data.track_window?.current_track?.id ?? null;
+          const currentTitle = data.track_window?.current_track?.name ?? null;
+          const idMatches =
+            Boolean(expectedId) &&
+            Boolean(currentId) &&
+            currentId === expectedId;
+          const titleMatches =
+            expectedTitle != null &&
+            currentTitle != null &&
+            expectedTitle.trim() !== "" &&
+            currentTitle.trim() !== "" &&
+            normalizedTrackTitle(expectedTitle) ===
+              normalizedTrackTitle(currentTitle);
+
           if (!data.paused && !data.loading) {
-            if (expectedId && currentId === expectedId) {
+            if (idMatches || titleMatches) {
               useMusicPlayerStore.getState().setIsPlaying(true);
               void startAnchorAndUpdateMediaSession();
             }
@@ -313,7 +339,19 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
     const deadline = Date.now() + 5_000;
     while (Date.now() < deadline) {
       const state = await this.player.getCurrentState();
-      if (state?.track_window?.current_track?.id === trackId) {
+      const current = state?.track_window?.current_track;
+      if (current?.id === trackId) {
+        return;
+      }
+      const { currentPlaylist, currentTrackIndex } =
+        useMusicPlayerStore.getState();
+      const expectedTitle = currentPlaylist?.[currentTrackIndex]?.title;
+      if (
+        expectedTitle?.trim() &&
+        current?.name?.trim() &&
+        normalizedTrackTitle(expectedTitle) ===
+          normalizedTrackTitle(current.name)
+      ) {
         return;
       }
       await new Promise((r) => setTimeout(r, 50));
