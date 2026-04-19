@@ -4,10 +4,7 @@ import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { pause, play } from "~/app/_components/player/musicPlayerActions";
-import {
-  useMusicPlayerComputed,
-  useMusicPlayerStore,
-} from "~/app/_components/player/MusicPlayerStore";
+import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
@@ -26,7 +23,7 @@ export const PlayerCard = () => {
       })),
     );
 
-  const { currentTrack } = useMusicPlayerComputed();
+  const currentTrack = useMusicPlayerStore((s) => s.currentTrack);
 
   if (!loadedOnce) return null;
 

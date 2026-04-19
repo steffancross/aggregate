@@ -6,7 +6,7 @@ import {
   ArrowsPointingOutIcon,
 } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import { useMusicPlayerComputed } from "~/app/_components/player/MusicPlayerStore";
+import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import { Button } from "~/components/ui/button";
 import {
   handleProgressChange,
@@ -26,7 +26,7 @@ import { Time } from "./Time";
 import { VolumeControl } from "./VolumeControl";
 
 export const MusicPlayer = () => {
-  const { currentTrack } = useMusicPlayerComputed();
+  const currentTrack = useMusicPlayerStore((s) => s.currentTrack);
   const { isSignedIn } = useUser();
   const [isExpanded, setIsExpanded] = useState(false);
 

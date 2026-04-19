@@ -15,6 +15,7 @@ function tick(): void {
     setCurrentTime,
     currentPlaylist,
     currentTrackIndex,
+    queue,
   } = state;
 
   if (!isPlaying || !isLoaded || isSeeking || !controller) return;
@@ -24,7 +25,8 @@ function tick(): void {
 
     if (duration > 0 && time >= duration - 0.5) {
       const hasNextTrack = currentPlaylist
-        ? currentTrackIndex < currentPlaylist.length - 1
+        ? currentTrackIndex < currentPlaylist.length - 1 ||
+          (queue && queue.length > 0)
         : false;
       if (hasNextTrack) {
         void next();

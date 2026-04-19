@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { PlaylistSelector } from "./forms/PlaylistSelector";
+import { useMusicPlayerStore } from "./player/MusicPlayerStore";
 import type { PlaylistTrack } from "./player/types/player";
 
 export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
@@ -31,6 +32,7 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectedPlaylists, setSelectedPlaylists] = useState<number[]>([]);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
+  const enqueueTrack = useMusicPlayerStore((s) => s.enqueueTrack);
 
   const { data: trackPlaylists } = api.tracks.getTrackPlaylists.useQuery(
     {
@@ -102,6 +104,14 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
         <DropdownMenuContent className="p-2">
           <DropdownMenuItem onClick={() => setOpen(true)}>
             edit song
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              enqueueTrack(song);
+              toast.success("Song added to queue");
+            }}
+          >
+            add to queue
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setConfirmationDialogOpen(true)}

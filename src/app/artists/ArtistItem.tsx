@@ -33,21 +33,18 @@ export const ArtistItem = ({
 }: PlaylistItemProps) => {
   const [hovered, setHovered] = useState(false);
 
-  const { currentPlaylistId, currentTrackIndex, currentPlaylist, isShuffleOn } =
-    useMusicPlayerStore(
-      useShallow((s) => ({
-        currentPlaylistId: s.currentPlaylistId,
-        currentTrackIndex: s.currentTrackIndex,
-        currentPlaylist: s.currentPlaylist,
-        isShuffleOn: s.isShuffleOn,
-      })),
-    );
+  const { currentPlaylistId, currentTrack, isShuffleOn } = useMusicPlayerStore(
+    useShallow((s) => ({
+      currentPlaylistId: s.currentPlaylistId,
+      currentTrack: s.currentTrack,
+      isShuffleOn: s.isShuffleOn,
+    })),
+  );
   const { setCurrentPlaylist, setCurrentTrackIndex, setOriginalPlaylist } =
     useMusicPlayerStore.getState();
 
   const isCurrentTrack =
-    currentPlaylistId === playlistId &&
-    currentPlaylist![currentTrackIndex]!.trackId === trackId;
+    currentPlaylistId === playlistId && currentTrack?.trackId === trackId;
 
   const handlePlay = async () => {
     setCurrentPlaylist(playlist, playlistId);

@@ -4,26 +4,26 @@ import Lottie from "lottie-react";
 import { Play } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { play } from "~/app/_components/player/musicPlayerActions";
-import {
-  useMusicPlayerComputed,
-  useMusicPlayerStore,
-} from "~/app/_components/player/MusicPlayerStore";
+import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 import SoundWave from "~/app/playlist/[id]/SoundWave.json";
 import { Button } from "~/components/ui/button";
 import { LIBRARY_PLAYLIST_ID } from "~/lib/constants";
 import type { LibraryTrack } from "../DataTable";
 
 export const DataTablePlay = ({ song }: { song: LibraryTrack }) => {
-  const { currentPlaylistId, setCurrentPlaylist, setCurrentTrackIndex } =
-    useMusicPlayerStore(
-      useShallow((s) => ({
-        currentPlaylistId: s.currentPlaylistId,
-        setCurrentPlaylist: s.setCurrentPlaylist,
-        setCurrentTrackIndex: s.setCurrentTrackIndex,
-      })),
-    );
-
-  const { currentTrack } = useMusicPlayerComputed();
+  const {
+    currentPlaylistId,
+    setCurrentPlaylist,
+    setCurrentTrackIndex,
+    currentTrack,
+  } = useMusicPlayerStore(
+    useShallow((s) => ({
+      currentPlaylistId: s.currentPlaylistId,
+      setCurrentPlaylist: s.setCurrentPlaylist,
+      setCurrentTrackIndex: s.setCurrentTrackIndex,
+      currentTrack: s.currentTrack,
+    })),
+  );
 
   const isCurrentTrack =
     currentPlaylistId === LIBRARY_PLAYLIST_ID &&
