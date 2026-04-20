@@ -4,7 +4,8 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
-import { GlobalContextMenu } from "~/app/_components/ContextMenu";
+import { GlobalContextMenu } from "~/app/_components/nav/ContextMenu";
+import { GlobalMobileNavDrawer } from "~/app/_components/nav/MobileNavDrawer";
 import { MusicPlayer } from "~/app/_components/player/components/desktop/MusicPlayer";
 import { AppMediaAnchor } from "~/app/_components/player/components/MediaSessionAnchor";
 import { PlayerCard } from "~/app/_components/player/components/mobile/PlayerCard";
@@ -32,6 +33,9 @@ export default function RootLayout({
           <TRPCReactProvider>
             <GlobalContextMenu>
               <div className="flex h-dvh min-h-0 flex-col overflow-hidden">
+                <div className="shrink-0">
+                  <GlobalMobileNavDrawer />
+                </div>
                 <div className="hidden shrink-0 md:block">
                   <MusicPlayer />
                 </div>
