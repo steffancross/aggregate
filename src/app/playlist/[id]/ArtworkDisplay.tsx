@@ -2,10 +2,9 @@
 import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
 
 export const ArtworkDisplay = () => {
-  const currentPlaylist = useMusicPlayerStore((s) => s.currentPlaylist);
-  const currentTrackIndex = useMusicPlayerStore((s) => s.currentTrackIndex);
+  const currentTrack = useMusicPlayerStore((s) => s.currentTrack);
 
-  const artworkUrl = currentPlaylist?.[currentTrackIndex]?.artworkUrl;
+  const artworkUrl = currentTrack?.artworkUrl;
   return (
     <div className="aspect-square w-full">
       {artworkUrl ? (

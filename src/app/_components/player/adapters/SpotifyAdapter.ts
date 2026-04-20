@@ -138,11 +138,9 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
         player.addListener("player_state_changed", async (data) => {
           if (data === null) return;
 
-          const { currentPlaylist, currentTrackIndex } =
-            useMusicPlayerStore.getState();
-          const expectedTrack = currentPlaylist?.[currentTrackIndex];
-          const expectedId = expectedTrack?.sourceId ?? null;
-          const expectedTitle = expectedTrack?.title ?? null;
+          const { currentTrack } = useMusicPlayerStore.getState();
+          const expectedId = currentTrack?.sourceId ?? null;
+          const expectedTitle = currentTrack?.title ?? null;
 
           const currentId = data.track_window?.current_track?.id ?? null;
           const currentTitle = data.track_window?.current_track?.name ?? null;
@@ -343,9 +341,8 @@ export class SpotifyAdapter implements MusicPlayerAdapter {
       if (current?.id === trackId) {
         return;
       }
-      const { currentPlaylist, currentTrackIndex } =
-        useMusicPlayerStore.getState();
-      const expectedTitle = currentPlaylist?.[currentTrackIndex]?.title;
+      const { currentTrack } = useMusicPlayerStore.getState();
+      const expectedTitle = currentTrack?.title;
       if (
         expectedTitle?.trim() &&
         current?.name?.trim() &&

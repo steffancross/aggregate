@@ -15,11 +15,14 @@ interface MusicPlayerState {
   originalPlaylist: PlaylistTrack[] | null;
   currentPlaylistId: number | null;
   currentTrackIndex: number;
+  currentTrack: PlaylistTrack | null;
+  queue: PlaylistTrack[] | null;
 
   // player state
   isShuffleOn: boolean;
   isPlaying: boolean;
   isLoaded: boolean;
+  isPlayingFromQueue: boolean;
   volume: number;
   duration: number;
   currentTime: number;
@@ -48,6 +51,10 @@ interface MusicPlayerState {
   setLoadedOnce: (loadedOnce: boolean) => void;
   setController: (controller: AudioController) => void;
   setPreInitializedSpotifyAdapter: (adapter: SpotifyAdapter | null) => void;
+  setCurrentTrack: (track: PlaylistTrack) => void;
+  enqueueTrack: (track: PlaylistTrack) => void;
+  dequeueTrack: () => PlaylistTrack | null;
+  setIsPlayingFromQueue: (isPlayingFromQueue: boolean) => void;
 }
 
 export const useMusicPlayerStore = create<MusicPlayerState>()(
@@ -57,9 +64,12 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       originalPlaylist: null,
       currentPlaylistId: null,
       currentTrackIndex: 0,
+      queue: null,
+      currentTrack: null,
       isShuffleOn: false,
       isPlaying: false,
       isLoaded: false,
+      isPlayingFromQueue: false,
       volume: 100,
       duration: 0,
       currentTime: 0,
@@ -73,22 +83,36 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
         playlistId: number,
         options?: setPlaylistOptions,
       ) =>
-        set(() => {
+        set((state) => {
           const { preservePlaybackState = false, newTrackIndex } =
             options ?? {};
+
+          const currentTrackIndex = newTrackIndex ?? 0;
+          const row = playlist[currentTrackIndex] ?? null;
+
+          const playbackReset = preservePlaybackState
+            ? {}
+            : {
+                currentTime: 0,
+                duration: 0,
+                isLoaded: false,
+                isPlaying: false,
+                isPlayingFromQueue: false,
+              };
+
+          const currentTrackUpdate =
+            preservePlaybackState && state.isPlayingFromQueue
+              ? {}
+              : {
+                  currentTrack: row,
+                };
 
           return {
             currentPlaylist: playlist,
             currentPlaylistId: playlistId,
-            currentTrackIndex: newTrackIndex ?? 0,
-            ...(preservePlaybackState
-              ? {}
-              : {
-                  currentTime: 0,
-                  duration: 0,
-                  isLoaded: false,
-                  isPlaying: false,
-                }),
+            currentTrackIndex,
+            ...playbackReset,
+            ...currentTrackUpdate,
           };
         }),
 
@@ -99,6 +123,8 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       setIsShuffleOn: (isShuffleOn: boolean) => set({ isShuffleOn }),
       setIsPlaying: (playing: boolean) => set({ isPlaying: playing }),
       setIsLoaded: (loaded: boolean) => set({ isLoaded: loaded }),
+      setIsPlayingFromQueue: (isPlayingFromQueue: boolean) =>
+        set({ isPlayingFromQueue }),
       setVolume: (volume: number) => set({ volume }),
       setDuration: (duration: number) => set({ duration }),
       setCurrentTime: (time: number) => set({ currentTime: time }),
@@ -107,6 +133,20 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       setController: (controller: AudioController) => set({ controller }),
       setPreInitializedSpotifyAdapter: (adapter: SpotifyAdapter) =>
         set({ preInitializedSpotifyAdapter: adapter }),
+      setCurrentTrack: (track: PlaylistTrack) => set({ currentTrack: track }),
+      enqueueTrack: (track: PlaylistTrack) =>
+        set((state) => ({ queue: [...(state.queue ?? []), track] })),
+      dequeueTrack: () => {
+        let next: PlaylistTrack | null = null;
+        set((state) => {
+          if (!state.queue?.length) return state;
+          next = state.queue[0] ?? null;
+          return {
+            queue: state.queue.length === 1 ? null : state.queue.slice(1),
+          };
+        });
+        return next;
+      },
     }),
     {
       name: "music-player-store",
@@ -118,12 +158,14 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
 export const useMusicPlayerComputed = () => {
   const currentPlaylist = useMusicPlayerStore((s) => s.currentPlaylist);
   const currentTrackIndex = useMusicPlayerStore((s) => s.currentTrackIndex);
+  const queue = useMusicPlayerStore((s) => s.queue);
+  const isPlayingFromQueue = useMusicPlayerStore((s) => s.isPlayingFromQueue);
 
   return {
-    currentTrack: currentPlaylist?.[currentTrackIndex] ?? null,
     hasNextTrack: currentPlaylist
-      ? currentTrackIndex < currentPlaylist.length - 1
+      ? currentTrackIndex < currentPlaylist.length - 1 ||
+        (queue && queue.length > 0)
       : false,
-    hasPreviousTrack: currentTrackIndex > 0,
+    hasPreviousTrack: currentTrackIndex > 0 || isPlayingFromQueue,
   };
 };

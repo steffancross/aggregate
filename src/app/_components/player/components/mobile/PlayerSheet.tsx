@@ -33,8 +33,8 @@ export const PlayerSheet = ({
   const isPlaying = useMusicPlayerStore((s) => s.isPlaying);
   const isShuffleOn = useMusicPlayerStore((s) => s.isShuffleOn);
   const currentPlaylist = useMusicPlayerStore((s) => s.currentPlaylist);
-
-  const { currentTrack, hasNextTrack } = useMusicPlayerComputed();
+  const currentTrack = useMusicPlayerStore((s) => s.currentTrack);
+  const { hasNextTrack } = useMusicPlayerComputed();
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="bottom">

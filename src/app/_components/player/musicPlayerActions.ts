@@ -72,6 +72,8 @@ export const previous = async (): Promise<void> => {
     setCurrentTime,
     setCurrentTrackIndex,
     setDuration,
+    isPlayingFromQueue,
+    setIsPlayingFromQueue,
   } = useMusicPlayerStore.getState();
 
   const hasPreviousTrack = currentTrackIndex > 0;
@@ -82,6 +84,15 @@ export const previous = async (): Promise<void> => {
     if (currentTime > 3) {
       await controller.seekTo(0);
       setCurrentTime(0);
+      return;
+    }
+
+    setIsPlayingFromQueue(false);
+    if (isPlayingFromQueue) {
+      setCurrentTime(0);
+      setDuration(0);
+
+      await play();
       return;
     }
 
@@ -104,7 +115,15 @@ export const next = async (): Promise<void> => {
     setCurrentTime,
     setCurrentTrackIndex,
     setDuration,
+    queue,
+    setIsPlayingFromQueue,
   } = useMusicPlayerStore.getState();
+  setIsPlayingFromQueue(false);
+
+  if (queue && queue.length > 0) {
+    await playFromQueue();
+    return;
+  }
 
   const hasNextTrack = currentPlaylist
     ? currentTrackIndex < currentPlaylist.length - 1
@@ -132,6 +151,7 @@ export const play = async (): Promise<void> => {
     setDuration,
     setCurrentTime,
     volume,
+    setCurrentTrack,
   } = useMusicPlayerStore.getState();
 
   setLoadedOnce(true); // show the player on the app for the rest of the time
@@ -146,6 +166,8 @@ export const play = async (): Promise<void> => {
     console.warn("No current track");
     return;
   }
+
+  setCurrentTrack(currentTrack);
 
   // https://developer.spotify.com/documentation/web-playback-sdk/reference#spotifyplayeractivateelement
   if (currentTrack.source === "spotify") {
@@ -212,6 +234,44 @@ export const play = async (): Promise<void> => {
   }
 };
 
+export const playFromQueue = async (): Promise<void> => {
+  const {
+    controller,
+    setIsPlaying,
+    setIsLoaded,
+    setCurrentTime,
+    setDuration,
+    volume,
+    setCurrentTrack,
+    setIsPlayingFromQueue,
+    dequeueTrack,
+  } = useMusicPlayerStore.getState();
+
+  if (!controller) {
+    return;
+  }
+
+  await controller.pause();
+  pauseAnchorAudio();
+  setIsPlaying(false);
+  setIsPlayingFromQueue(true);
+
+  const trackToPlay = dequeueTrack();
+  if (!trackToPlay) {
+    setIsPlayingFromQueue(false);
+    return;
+  }
+  setCurrentTrack(trackToPlay);
+  await controller.loadTrack(trackToPlay);
+
+  setIsLoaded(true);
+  setCurrentTime(0);
+  setDuration(controller.duration);
+
+  await controller.play();
+  await controller.setVolume(volume);
+};
+
 export const handleVolumeChange = async (volume: number[]): Promise<void> => {
   const { controller, setVolume, isLoaded } = useMusicPlayerStore.getState();
 
@@ -250,6 +310,9 @@ export const clearPlayerState = async (): Promise<void> => {
     originalPlaylist: null,
     currentPlaylistId: null,
     currentTrackIndex: 0,
+    currentTrack: null,
+    queue: null,
+    isPlayingFromQueue: false,
     isPlaying: false,
     isLoaded: false,
     isSeeking: false,
