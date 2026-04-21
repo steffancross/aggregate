@@ -45,7 +45,7 @@ export const GlobalMobileNavDrawer = () => {
     <>
       <Drawer open={open} onOpenChange={setOpen} direction="top">
         <DrawerTrigger asChild className="md:hidden">
-          <div className="flex justify-end px-3 pt-1 md:hidden">
+          <div className="md:hidden">
             <Button
               variant="ghost"
               size="icon"
