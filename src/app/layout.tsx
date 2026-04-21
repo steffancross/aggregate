@@ -9,6 +9,7 @@ import { GlobalMobileNavDrawer } from "~/app/_components/nav/MobileNavDrawer";
 import { MusicPlayer } from "~/app/_components/player/components/desktop/MusicPlayer";
 import { AppMediaAnchor } from "~/app/_components/player/components/MediaSessionAnchor";
 import { PlayerCard } from "~/app/_components/player/components/mobile/PlayerCard";
+import { LibrarySearchCommand } from "~/app/_components/search/LibrarySearchCommand";
 import { Toaster } from "~/components/ui/sonner";
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -33,7 +34,8 @@ export default function RootLayout({
           <TRPCReactProvider>
             <GlobalContextMenu>
               <div className="flex h-dvh min-h-0 flex-col overflow-hidden">
-                <div className="shrink-0">
+                <div className="flex shrink-0 items-center justify-end gap-1 pt-1 pr-2 md:hidden">
+                  <LibrarySearchCommand />
                   <GlobalMobileNavDrawer />
                 </div>
                 <div className="hidden shrink-0 md:block">

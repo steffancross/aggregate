@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from "~/components/ui/dialog";
 
 export const ConfirmationDialog = ({
@@ -21,6 +22,9 @@ export const ConfirmationDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
+        <div className="hidden">
+          <DialogTitle>Confirmation: {text}</DialogTitle>
+        </div>
         <DialogHeader className="pt-3 sm:text-center">{text}</DialogHeader>
         <DialogFooter className="sm:justify-center">
           <DialogClose asChild>
