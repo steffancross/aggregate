@@ -105,12 +105,7 @@ export const TrackOptions = ({ song }: { song: PlaylistTrack }) => {
           <DropdownMenuItem onClick={() => setOpen(true)}>
             edit song
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => {
-              enqueueTrack(song);
-              toast.success("Song added to queue");
-            }}
-          >
+          <DropdownMenuItem onClick={() => enqueueTrack(song)}>
             add to queue
           </DropdownMenuItem>
           <DropdownMenuItem

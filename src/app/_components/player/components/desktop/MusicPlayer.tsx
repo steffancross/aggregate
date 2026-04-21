@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { useMusicPlayerStore } from "~/app/_components/player/MusicPlayerStore";
+import { Queue } from "~/app/_components/queue/Queue";
 import { Button } from "~/components/ui/button";
 import {
   handleProgressChange,
@@ -66,6 +67,8 @@ export const MusicPlayer = () => {
             <Next onNext={next} />
             <span className="text-muted-foreground text-xs">/</span>
             <Shuffle />
+            <span className="text-muted-foreground text-xs">/</span>
+            <Queue direction="right" />
             <span className="text-muted-foreground text-xs">/</span>
             <Button
               variant="ghost"

@@ -19,6 +19,7 @@ import {
   useMusicPlayerComputed,
   useMusicPlayerStore,
 } from "~/app/_components/player/MusicPlayerStore";
+import { Queue } from "~/app/_components/queue/Queue";
 import { Button } from "~/components/ui/button";
 import { Drawer, DrawerContent, DrawerTitle } from "~/components/ui/drawer";
 import { Time } from "../desktop/Time";
@@ -54,13 +55,16 @@ export const PlayerSheet = ({
                   .join(", ")}
               </p>
             </div>
-            <Button
-              variant="ghost"
-              onClick={toggleShuffle}
-              className={isShuffleOn ? "text-amber-600" : "text-primary"}
-            >
-              <ArrowsCrossingIcon className="size-5" />
-            </Button>
+            <div className="flex shrink-0 items-center gap-1">
+              <Queue direction="bottom" />
+              <Button
+                variant="ghost"
+                onClick={toggleShuffle}
+                className={isShuffleOn ? "text-amber-600" : "text-primary"}
+              >
+                <ArrowsCrossingIcon className="size-5" />
+              </Button>
+            </div>
           </div>
           <div className="align-center flex justify-between">
             <Button

@@ -54,6 +54,8 @@ interface MusicPlayerState {
   setCurrentTrack: (track: PlaylistTrack) => void;
   enqueueTrack: (track: PlaylistTrack) => void;
   dequeueTrack: () => PlaylistTrack | null;
+  clearQueue: () => void;
+  removeQueueItemAt: (index: number) => void;
   setIsPlayingFromQueue: (isPlayingFromQueue: boolean) => void;
 }
 
@@ -147,6 +149,14 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
         });
         return next;
       },
+      clearQueue: () => set({ queue: null }),
+      removeQueueItemAt: (index: number) =>
+        set((state) => {
+          if (!state.queue?.length) return state;
+          if (index < 0 || index >= state.queue.length) return state;
+          const next = state.queue.filter((_, i) => i !== index);
+          return { queue: next.length > 0 ? next : null };
+        }),
     }),
     {
       name: "music-player-store",
