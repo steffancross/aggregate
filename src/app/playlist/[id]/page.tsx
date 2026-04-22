@@ -13,14 +13,14 @@ const Playlist = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <div className="grid h-full min-h-0 w-full grid-cols-1 grid-rows-1 p-2 md:grid-cols-[2fr_1fr]">
-      <div className="flex h-full min-h-0 flex-col overflow-hidden pr-4">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden pr-2">
         <div className="shrink-0">
           <PlaylistHeader
             playlistId={playlist.playlistId}
             playlistName={playlist.playlistName}
           />
         </div>
-        <div className="flex min-h-0 flex-1 flex-col items-center gap-4 overflow-y-auto md:gap-2">
+        <div className="flex min-h-0 flex-1 flex-col items-center gap-4 overflow-y-auto [scrollbar-gutter:stable] md:gap-2">
           {playlist.playlistEntries.map((song, index) => {
             return (
               <PlaylistItem

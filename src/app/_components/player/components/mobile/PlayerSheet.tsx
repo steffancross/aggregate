@@ -43,13 +43,12 @@ export const PlayerSheet = ({
         <div className="hidden">
           <DrawerTitle>Player</DrawerTitle>
         </div>
+
         <div className="flex flex-col justify-between gap-4 px-4 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col">
-              <p className="line-clamp-1 truncate font-semibold">
-                {currentTrack?.title}
-              </p>
-              <p className="text-muted-foreground line-clamp-1 truncate text-sm">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 flex-1 flex-col">
+              <p className="truncate font-semibold">{currentTrack?.title}</p>
+              <p className="text-muted-foreground truncate text-sm">
                 {currentTrack?.artists
                   .map((artist) => artist.artistName)
                   .join(", ")}
@@ -66,6 +65,7 @@ export const PlayerSheet = ({
               </Button>
             </div>
           </div>
+
           <div className="align-center flex justify-between">
             <Button
               variant="ghost"
@@ -93,6 +93,7 @@ export const PlayerSheet = ({
               <ForwardIcon className="size-5" fill="#fff" />
             </Button>
           </div>
+
           <div className="flex flex-col gap-2">
             <Time />
             <ProgressBar

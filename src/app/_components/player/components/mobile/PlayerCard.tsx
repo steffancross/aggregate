@@ -33,11 +33,9 @@ export const PlayerCard = () => {
         <Card className="w-full rounded-none p-0" onClick={() => setOpen(true)}>
           <div className="flex h-full flex-col">
             <div className="flex flex-row items-center justify-between px-6 py-3">
-              <div>
-                <p className="line-clamp-1 truncate font-semibold">
-                  {currentTrack?.title}
-                </p>
-                <p className="text-muted-foreground line-clamp-1 truncate text-sm">
+              <div className="min-w-0">
+                <p className="truncate font-semibold">{currentTrack?.title}</p>
+                <p className="text-muted-foreground truncate text-sm">
                   {currentTrack?.artists
                     .map((artist) => artist.artistName)
                     .join(", ")}
