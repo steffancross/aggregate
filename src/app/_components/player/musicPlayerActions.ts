@@ -152,9 +152,16 @@ export const play = async (): Promise<void> => {
     setCurrentTime,
     volume,
     setCurrentTrack,
+    isPlayingFromQueue,
   } = useMusicPlayerStore.getState();
 
   setLoadedOnce(true); // show the player on the app for the rest of the time
+
+  if (isPlayingFromQueue) {
+    await controller?.play();
+    await controller?.setVolume(volume);
+    return;
+  }
 
   if (!currentPlaylist || currentPlaylist.length === 0) {
     console.warn("No playlist loaded");
